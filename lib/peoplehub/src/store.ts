@@ -194,6 +194,19 @@ export async function seed(reset=false) {
       );
       await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v3','{\"seeded\":true}'::jsonb)");
     }
+    const titleSeed=(await client.query("SELECT key FROM site_content WHERE key='sample_content_v4'")).rowCount;
+    if(!titleSeed){
+      const casesRow=(await client.query("SELECT value FROM site_content WHERE key='caseStudies' FOR UPDATE")).rows[0];
+      if(casesRow){
+        const cases={...casesRow.value};
+        cases.items=(Array.isArray(cases.items)?cases.items:[]).map((item:Doc)=>{
+          if(typeof item.sampleId!=="string"||!item.sampleId.startsWith("usecase-sample-")||typeof item.title!=="string")return item;
+          return {...item,title:item.title.replace(/^Sample workflow:\s*/,"")};
+        });
+        await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='caseStudies'",[JSON.stringify(cases)]);
+      }
+      await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v4','{\"seeded\":true}'::jsonb)");
+    }
     const content = await getContent();
     for(let i=0;i<content.suites.items.length;i++){
       const s=content.suites.items[i];

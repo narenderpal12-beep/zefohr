@@ -362,7 +362,7 @@ export const sampleUseCases = [
     sampleId: "usecase-sample-01",
     sample: true,
     slug: "use-case-growing-msme-people-operations",
-    title: "Sample workflow: People operations for a growing MSME",
+    title: "People operations for a growing MSME",
     industry: "Growing businesses",
     summary: "A sample workflow for bringing employee records, onboarding and routine requests into a more consistent operating model.",
     body: useCaseBody("Growing MSME", "A growing business may find that employee information and routine processes are spread across separate files and conversations. This example shows a possible way to organise those handoffs.", [
@@ -376,7 +376,7 @@ export const sampleUseCases = [
     sampleId: "usecase-sample-02",
     sample: true,
     slug: "use-case-multi-location-workforce",
-    title: "Sample workflow: Coordinating a multi-location workforce",
+    title: "Coordinating a multi-location workforce",
     industry: "Multi-location operations",
     summary: "A sample approach to common workflows with documented location-specific handoffs.",
     body: useCaseBody("Multi-location workforce", "Teams in different locations may follow slightly different routines. A shared process can make the common steps visible while documenting approved local variations.", [
@@ -390,7 +390,7 @@ export const sampleUseCases = [
     sampleId: "usecase-sample-03",
     sample: true,
     slug: "use-case-payroll-input-coordination",
-    title: "Sample workflow: Preparing payroll inputs across teams",
+    title: "Preparing payroll inputs across teams",
     industry: "Payroll administration",
     summary: "A sample monthly coordination flow for collecting, reviewing and clarifying payroll-related information.",
     body: useCaseBody("Payroll input coordination", "Payroll preparation may depend on timely information from HR, managers and employees. This sample focuses on organising the internal collection and review process, not statutory calculations.", [
@@ -404,7 +404,7 @@ export const sampleUseCases = [
     sampleId: "usecase-sample-04",
     sample: true,
     slug: "use-case-frontline-attendance-and-shifts",
-    title: "Sample workflow: Attendance and shift coordination",
+    title: "Attendance and shift coordination",
     industry: "Frontline and shift teams",
     summary: "A sample workflow for recording attendance, communicating schedule changes and resolving exceptions.",
     body: useCaseBody("Frontline attendance", "Frontline teams often need straightforward instructions for recording time and reporting schedule changes. The organisation should define its policy and exception process before configuring tools.", [
@@ -418,7 +418,7 @@ export const sampleUseCases = [
     sampleId: "usecase-sample-05",
     sample: true,
     slug: "use-case-structured-hiring",
-    title: "Sample workflow: A more structured hiring workflow",
+    title: "A more structured hiring workflow",
     industry: "Recruitment teams",
     summary: "A sample journey from approved role requirements through interviews, communication and joining coordination.",
     body: useCaseBody("Structured hiring", "A hiring team can use a shared workflow to keep role requirements, interview stages and candidate communication visible without automating hiring decisions.", [
@@ -432,7 +432,7 @@ export const sampleUseCases = [
     sampleId: "usecase-sample-06",
     sample: true,
     slug: "use-case-employee-self-service",
-    title: "Sample workflow: Employee self-service for routine tasks",
+    title: "Employee self-service for routine tasks",
     industry: "Employee experience",
     summary: "A sample design for letting employees find information and submit routine requests with clear support paths.",
     body: useCaseBody("Employee self-service", "Self-service can help employees find common information and complete routine tasks. It should make support easier to reach and use access rules that fit the organisation's responsibilities.", [

@@ -38,12 +38,12 @@ function useDraft(key: string) {
   return { draft, setDraft, doSave, revert, dirty, saving: save.isPending, saved, error: save.isError ? errMsg(save.error) : '', loading: content.isLoading };
 }
 
-function SaveBar({ d, label, disabled = false }: { d: ReturnType<typeof useDraft>; label: string; disabled?: boolean }) {
+function SaveBar({ d, label, disabled = false, saveText = 'Save' }: { d: ReturnType<typeof useDraft>; label: string; disabled?: boolean; saveText?: string }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {d.error ? <span className="text-xs text-red-300">{d.error}</span> : d.dirty ? <span className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--ph-pink)]">Unsaved</span> : null}
       <button type="button" className={aBtn} onClick={d.revert} disabled={!d.dirty} data-testid={`button-revert-${label}`}><RotateCcw className="h-3 w-3" />Revert</button>
-      <button type="button" className={aBtnPrimary} onClick={d.doSave} disabled={disabled || d.saving || !d.draft} data-testid={`button-save-${label}`}>{d.saved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}{d.saving ? 'Saving...' : d.saved ? 'Saved' : 'Save'}</button>
+      <button type="button" className={aBtnPrimary} onClick={d.doSave} disabled={disabled || d.saving || !d.draft} data-testid={`button-save-${label}`}>{d.saved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}{d.saving ? 'Saving...' : d.saved ? 'Saved' : saveText}</button>
     </div>
   );
 }
@@ -107,10 +107,15 @@ export function AppearanceAdmin() {
   const customContainerWidth = Math.max(1080, Math.min(1920, Number(t.customContainerWidth) || 1440));
   return (
     <div>
-      <h1 className="font-display text-3xl font-bold">Appearance</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Pick a palette for the whole site, sign-in screens, dashboard and this admin. Visitors see saved changes within a few seconds.</p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display text-3xl font-bold">Appearance</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Pick a palette for the whole site, sign-in screens, dashboard and this admin. Visitors see saved changes within a few seconds.</p>
+        </div>
+        <SaveBar d={d} label="appearance" saveText="Save appearance" />
+      </div>
       <div className="mt-6 grid gap-5 xl:grid-cols-[1fr_340px]">
-        <Card title="Theme preset" sub="Every preset ships with a tuned light and dark variant." actions={<SaveBar d={d} label="theme" />}>
+        <Card title="Theme preset" sub="Every preset ships with a tuned light and dark variant.">
           <div role="radiogroup" aria-label="Theme preset" className="grid grid-cols-2 gap-3 md:grid-cols-3">
             {PRESETS.map((p) => {
               const on = p.id === preset;

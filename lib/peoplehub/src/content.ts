@@ -9,6 +9,7 @@ import { paymentProvider } from "./payments/provider";
 import { rateLimit } from "express-rate-limit";
 import { clientsSchema, safeLogo } from "./clients";
 import { pageLayoutsSchema, pageSectionsSchema, reservedPageSlug, retargetPageLinks } from "./page-builder";
+import { themeContentSchema } from "./theme-schema";
 
 const uuid=z.string().uuid();
 function validateSectionLinks(value:unknown):void{
@@ -57,13 +58,7 @@ function validateContent(key:string,value:Doc) {
     }
   }
   if(key==="theme"){
-    const theme=z.object({
-      preset:z.enum(["aurora","ocean","emerald","sunset","rose","royal","slate","teal","amber","crimson","indigo","forest"]).optional(),
-      defaultMode:z.enum(["light","dark"]).optional(),allowModeToggle:z.boolean().optional(),customColors:z.boolean().optional(),
-      primary:z.string().regex(/^#[a-f0-9]{3,8}$/i).optional(),cyan:z.string().regex(/^#[a-f0-9]{3,8}$/i).optional(),
-      pink:z.string().regex(/^#[a-f0-9]{3,8}$/i).optional(),background:z.string().regex(/^#[a-f0-9]{3,8}$/i).optional(),
-    }).strict();
-    if(!theme.safeParse(value).success)fail("Choose a valid theme, colour mode and hex colours.");
+    if(!themeContentSchema.safeParse(value).success)fail("Choose a valid theme, colour mode, website width and hex colours.");
   }
   if(key==="brand"){
     if(typeof value.name!=="string"||!value.name.trim()||value.name.length>100)fail("Brand name must be 1–100 characters");

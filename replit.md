@@ -1,45 +1,37 @@
-# [Project name]
+# PeopleHub
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Phase 1 marketing website and organisation signup portal for an Indian HRMS product.
 
 ## Run & Operate
 
-- `pnpm --filter @workspace/api-server run dev` — run the API server (port 5000)
-- `pnpm run typecheck` — full typecheck across all packages
-- `pnpm run build` — typecheck + build all packages
-- `pnpm --filter @workspace/api-spec run codegen` — regenerate API hooks and Zod schemas from the OpenAPI spec
-- `pnpm --filter @workspace/db run push` — push DB schema changes (dev only)
-- Required env: `DATABASE_URL` — Postgres connection string
-
-## Stack
-
-- pnpm workspaces, Node.js 24, TypeScript 5.9
-- API: Express 5
-- DB: PostgreSQL + Drizzle ORM
-- Validation: Zod (`zod/v4`), `drizzle-zod`
-- API codegen: Orval (from OpenAPI spec)
-- Build: esbuild (CJS bundle)
-
-## Where things live
-
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/peoplehub: web` — primary Express/Vite SSR website, including a standalone API for production.
+- `artifacts/api-server: API Server` — existing shared `/api` service using the same domain library.
+- `pnpm run db:setup` — development SQL schema and non-overwriting defaults.
+- `pnpm run typecheck` — workspace library and app checks.
+- `pnpm --filter @workspace/api-spec run codegen` — API hooks and Zod validators.
+- See README.md for secure admin creation, environment configuration and future roadmap.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- Keep the provided pnpm workspace. Website client/server are in the PeopleHub artifact; shared domain logic is in `lib/peoplehub`.
+- The user explicitly requested JWT/bcrypt and pg/plain SQL; do not migrate this app to Clerk or Drizzle without asking.
+- **Do not use Drizzle push for this product:** the SQL migration is authoritative and the starter Drizzle schema does not describe these tables.
+- Production database schema changes go through Replit Publish. Startup seeds missing content only; it never executes schema DDL.
+- API and SSR services must share the same signing secret and business library. JWT lives in an HttpOnly cookie, not localStorage.
 
-## Product
+## Product boundaries
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+The user requested Phase 1 only. HRMS operational modules are future scope. Payment provider is intentionally a stub: subscribe requests stay pending; no simulated successful payments. No public super-admin creation or default password.
 
-## User preferences
+## Key files
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- `lib/peoplehub/src/defaults.ts` — CMS defaults and initial suites/services/plans.
+- `lib/peoplehub/migrations/001_initial.sql` — schema.
+- `lib/peoplehub/src/{auth,content,seo,seo-routes}.ts` — domain handlers.
+- `lib/api-spec/openapi.yaml` — contract.
+- `artifacts/peoplehub/src` — public site, auth, organisation dashboard and admin screens.
+- `artifacts/peoplehub/server/index.ts` — SSR and HTTP routing.
 
-## Gotchas
+## Before launch
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
-
-## Pointers
-
-- See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details
+Configure super-admin credentials securely, actual site URL and business contacts; review draft legal policies. Performance/Lighthouse targets have not been independently audited.

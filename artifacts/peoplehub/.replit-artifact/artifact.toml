@@ -1,0 +1,35 @@
+kind = "web"
+previewPath = "/"
+title = "PeopleHub"
+description = "Editable Indian HRMS marketing website with organisation registration, subscription portal, CMS and SEO management."
+version = "1.0.0"
+id = "artifacts/peoplehub"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24316
+
+[services.development]
+run = "pnpm --filter @workspace/peoplehub run dev"
+
+[services.production.build]
+args = [ "pnpm", "--filter", "@workspace/peoplehub", "run", "build" ]
+
+[services.production.build.env]
+NODE_ENV = "production"
+
+[services.production.run]
+args = ["pnpm", "--filter", "@workspace/peoplehub", "run", "start"]
+
+[services.production.run.env]
+NODE_ENV = "production"
+PORT = "24316"
+
+[services.production.health.startup]
+path = "/"
+
+[services.env]
+PORT = "24316"
+BASE_PATH = "/"

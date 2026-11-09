@@ -1,36 +1,432 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
-  version: 0.1.0
-  description: API specification
+  version: 1.0.0
 servers:
   - url: /api
-    description: Base API path
-tags:
-  - name: health
-    description: Health operations
 paths:
   /healthz:
     get:
       operationId: healthCheck
-      tags: [health]
-      summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/HealthStatus"
+              schema: { $ref: "#/components/schemas/HealthStatus" }
+  /v1/content:
+    get:
+      operationId: getContent
+      responses:
+        "200":
+          description: CMS content
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/content/{key}:
+    parameters:
+      - { name: key, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: saveContent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/content/{key}/reset:
+    parameters:
+      - { name: key, in: path, required: true, schema: { type: string } }
+    post:
+      operationId: resetContent
+      responses:
+        "200":
+          description: Reset
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/content/{key}/history:
+    parameters:
+      - { name: key, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: getContentHistory
+      responses:
+        "200":
+          description: Versions
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Document" } }
+  /v1/auth/register-organisation:
+    post:
+      operationId: registerOrganisation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RegistrationInput" }
+      responses:
+        "201":
+          description: Created and signed in with HttpOnly cookie
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Account" }
+  /v1/auth/login:
+    post:
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LoginInput" }
+      responses:
+        "200":
+          description: Signed in
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Account" }
+  /v1/auth/logout:
+    post:
+      operationId: logout
+      responses:
+        "200":
+          description: Signed out
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/auth/me:
+    get:
+      operationId: getMe
+      responses:
+        "200":
+          description: Account
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Account" }
+  /v1/billing/subscribe:
+    post:
+      operationId: changeSubscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "200":
+          description: Pending payment, never simulated success
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/leads:
+    post:
+      operationId: createLead
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LeadInput" }
+      responses:
+        "201":
+          description: Submitted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/pages:
+    get:
+      operationId: getPages
+      responses:
+        "200":
+          description: Published pages
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Document" } }
+  /v1/posts:
+    get:
+      operationId: getPosts
+      responses:
+        "200":
+          description: Published posts
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Document" } }
+  /v1/admin/summary:
+    get:
+      operationId: getAdminSummary
+      responses:
+        "200":
+          description: Real totals and recent activity
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/admin/{entity}:
+    parameters:
+      - { name: entity, in: path, required: true, schema: { type: string, enum: [pages, posts, organisations, leads] } }
+    get:
+      operationId: getAdminRecords
+      responses:
+        "200":
+          description: Records
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Document" } }
+    post:
+      operationId: createAdminRecord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/admin/{entity}/{id}:
+    parameters:
+      - { name: entity, in: path, required: true, schema: { type: string } }
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: updateAdminRecord
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+    delete:
+      operationId: deleteAdminRecord
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/seo/settings:
+    get:
+      operationId: getSeoSettings
+      responses:
+        "200":
+          description: Settings
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+    put:
+      operationId: saveSeoSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/seo/resolve:
+    get:
+      operationId: resolveSeo
+      parameters:
+        - { name: path, in: query, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: Merged SEO and rendering data
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/seo/pages:
+    get:
+      operationId: getSeoPages
+      parameters:
+        - { name: search, in: query, schema: { type: string } }
+        - { name: type, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string } }
+        - { name: issue, in: query, schema: { type: string } }
+        - { name: page, in: query, schema: { type: integer } }
+      responses:
+        "200":
+          description: Discovered pages
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/seo/pages/bulk:
+    post:
+      operationId: bulkSeoPages
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/seo/pages/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: getSeoPage
+      responses:
+        "200":
+          description: SEO record
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+    put:
+      operationId: saveSeoPage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/seo/pages/{id}/history:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    get:
+      operationId: getSeoHistory
+      responses:
+        "200":
+          description: Versions
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Document" } }
+  /v1/seo/pages/{id}/restore:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    post:
+      operationId: restoreSeoPage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "200":
+          description: Restored
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/seo/redirects:
+    get:
+      operationId: getRedirects
+      responses:
+        "200":
+          description: Redirect records
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Document" } }
+    post:
+      operationId: createRedirect
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/seo/redirects/{id}:
+    parameters:
+      - { name: id, in: path, required: true, schema: { type: string } }
+    put:
+      operationId: updateRedirect
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/Document" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+    delete:
+      operationId: deleteRedirect
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Document" }
+  /v1/seo/not-found:
+    get:
+      operationId: getNotFoundLog
+      responses:
+        "200":
+          description: Unknown URL requests
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/Document" } }
 components:
   schemas:
     HealthStatus:
       type: object
+      required: [status]
       properties:
-        status:
-          type: string
-      required:
-        - status
-
+        status: { type: string }
+    Document:
+      type: object
+      additionalProperties: true
+    Account:
+      type: object
+      required: [user, modules]
+      properties:
+        user: { $ref: "#/components/schemas/Document" }
+        organisation: { $ref: "#/components/schemas/Document" }
+        subscription: { $ref: "#/components/schemas/Document" }
+        modules: { type: array, items: { $ref: "#/components/schemas/Document" } }
+    LoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 1, maxLength: 128 }
+    RegistrationInput:
+      type: object
+      required: [organisation_name, industry, size_band, employee_count, phone, name, email, password, confirm_password, plan_key, mode, terms]
+      properties:
+        organisation_name: { type: string, minLength: 2, maxLength: 200 }
+        industry: { type: string, minLength: 1, maxLength: 100 }
+        size_band: { type: string, minLength: 1, maxLength: 50 }
+        employee_count: { type: integer, minimum: 1, maximum: 1000000 }
+        phone: { type: string, minLength: 8, maxLength: 20 }
+        gst_number: { type: string, maxLength: 15 }
+        name: { type: string, minLength: 2, maxLength: 100 }
+        email: { type: string, format: email, maxLength: 254 }
+        password: { type: string, minLength: 10, maxLength: 128 }
+        confirm_password: { type: string }
+        plan_key: { type: string }
+        mode: { type: string, enum: [trial, subscribe] }
+        billing_cycle: { type: string, enum: [monthly, annual] }
+        terms: { type: boolean }
+    LeadInput:
+      type: object
+      required: [name, email, message]
+      properties:
+        name: { type: string, minLength: 2, maxLength: 100 }
+        email: { type: string, format: email, maxLength: 254 }
+        phone: { type: string, maxLength: 20 }
+        organisation: { type: string, maxLength: 200 }
+        message: { type: string, minLength: 5, maxLength: 5000 }

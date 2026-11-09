@@ -1,0 +1,160 @@
+import { Router } from "express";
+import { CreateLeadBody, SaveContentBody } from "@workspace/api-zod";
+import { z } from "zod";
+import { pool,transaction,getContent,publicData,syncModules,fail,audit,expireTrials, type Doc } from "./store";
+import { defaults } from "./defaults";
+import { requireAuth,requireAdmin } from "./auth";
+import { invalidateSeo,discoverPages,cleanPath } from "./seo";
+import { paymentProvider } from "./payments/provider";
+import { rateLimit } from "express-rate-limit";
+
+const uuid=z.string().uuid();
+function validateContent(key:string,value:Doc) {
+  if(!value || typeof value!=="object" || Array.isArray(value))fail("A section must be a JSON object");
+  if(JSON.stringify(value).length>500000)fail("Section is too large");
+  if(["suites","services"].includes(key)){
+    if(!Array.isArray(value.items)||!value.items.length)fail("At least one item is required");
+    const keys=new Set<string>(),slugs=new Set<string>();
+    for(const item of value.items){
+      if(typeof item.key!=="string"||!item.key||keys.has(item.key))fail("Item keys must be non-empty and unique");
+      if(typeof item.slug!=="string"||!/^[a-z0-9-]+$/.test(item.slug)||slugs.has(item.slug))fail("Item slugs must be unique lower-case URL slugs");
+      if(!item.title||!Array.isArray(item.modules))fail("Each item needs a title and module list");
+      keys.add(item.key);slugs.add(item.slug);
+    }
+  }
+  if(key==="pricing"){
+    if(!Number.isInteger(value.trialDays)||value.trialDays<1||value.trialDays>365)fail("Trial days must be between 1 and 365");
+    if(!Array.isArray(value.plans)||!value.plans.length)fail("Plans are required");
+    const keys=new Set();
+    for(const plan of value.plans){
+      if(!plan.key||!plan.name||keys.has(plan.key)||!Array.isArray(plan.modules))fail("Plans need unique keys, names and module lists");
+      keys.add(plan.key);
+      for(const cycle of ["monthly","annual"])if(plan[cycle]!=null&&(!Number.isFinite(plan[cycle])||plan[cycle]<0))fail("Prices must be positive numbers or null");
+    }
+  }
+  if(key==="theme")for(const color of Object.values(value))if(typeof color!=="string"||!/^#[a-f0-9]{3,8}$/i.test(color))fail("Theme colours must be hex colours");
+}
+export const contentRouter=Router();
+contentRouter.get("/content",async(_req,res)=>{res.set("Cache-Control","no-store").json(await getContent());});
+async function saveSection(key:string,value:Doc,actor:string){
+  validateContent(key,value);
+  const before=(await pool.query("SELECT value FROM site_content WHERE key=$1",[key])).rows[0]?.value??defaults[key];
+  await transaction(async client=>{
+    await client.query("INSERT INTO site_content_history(key,value,updated_by) VALUES($1,$2,$3)",[key,JSON.stringify(before),actor]);
+    await client.query("INSERT INTO site_content(key,value,updated_by) VALUES($1,$2,$3) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_by=excluded.updated_by,updated_at=now()",[key,JSON.stringify(value),actor]);
+    if(key==="pricing"||key==="suites"){
+      const cms={...await getContent(),[key]:value};
+      const current=(await client.query("SELECT organisation_id,plan_key FROM subscriptions")).rows;
+      for(const sub of current)await syncModules(client,sub.organisation_id,sub.plan_key,cms);
+    }
+    await audit(client,actor,"content.update",key,before,value);
+  });
+  invalidateSeo();await discoverPages();return value;
+}
+contentRouter.put("/content/:key",requireAuth,requireAdmin,async(req,res)=>{
+  const key=String(req.params.key);if(!(key in defaults))fail("Unknown content section",404);
+  const p=SaveContentBody.safeParse(req.body);if(!p.success)fail("Invalid section");
+  res.json(await saveSection(key,p.data,(req as any).user.id));
+});
+contentRouter.post("/content/:key/reset",requireAuth,requireAdmin,async(req,res)=>{
+  const key=String(req.params.key);if(!(key in defaults))fail("Unknown content section",404);
+  res.json(await saveSection(key,defaults[key],(req as any).user.id));
+});
+contentRouter.get("/content/:key/history",requireAuth,requireAdmin,async(req,res)=>{
+  res.json((await pool.query("SELECT * FROM site_content_history WHERE key=$1 ORDER BY updated_at DESC LIMIT 100",[req.params.key])).rows);
+});
+const leadLimiter=rateLimit({windowMs:60*60*1000,limit:20,message:{error:"Too many enquiries. Please try again later."},standardHeaders:true,legacyHeaders:false});
+contentRouter.post("/leads",leadLimiter,async(req,res)=>{
+  const p=CreateLeadBody.safeParse(req.body);if(!p.success)fail("Please provide a name, valid email and message of at least 5 characters");
+  const b=p.data;
+  const row=(await pool.query("INSERT INTO leads(name,email,phone,organisation,message) VALUES($1,$2,$3,$4,$5) RETURNING id",[b.name,b.email,b.phone??null,b.organisation??null,b.message])).rows[0];
+  res.status(201).json({id:row.id,message:"Thank you. Your message has been received."});
+});
+contentRouter.get("/pages",async(_req,res)=>{res.json((await publicData()).pages);});
+contentRouter.get("/posts",async(_req,res)=>{res.json((await publicData()).posts);});
+contentRouter.post("/billing/subscribe",requireAuth,async(req,res)=>{
+  const user=(req as any).user;
+  if(user.role!=="org_admin"||!user.organisation_id)fail("Organisation administrator access required",403);
+  const cms=await getContent();
+  if(!cms.pricing.plans.some((p:Doc)=>p.key===req.body.plan_key))fail("Choose a valid plan");
+  const cycle=req.body.billing_cycle??"monthly";if(!["monthly","annual"].includes(cycle))fail("Choose a billing cycle");
+  const current=(await pool.query("SELECT * FROM subscriptions WHERE organisation_id=$1",[user.organisation_id])).rows[0];
+  if(current?.status==="active")fail("Contact the PeopleHub team to change an active subscription",409);
+  await transaction(async client=>{
+    await client.query("UPDATE subscriptions SET plan_key=$1,billing_cycle=$2,status='pending_payment',payment_provider='stub' WHERE organisation_id=$3",[req.body.plan_key,cycle,user.organisation_id]);
+    await syncModules(client,user.organisation_id,req.body.plan_key,cms);
+    await audit(client,user.id,"subscription.request",user.organisation_id,current,{plan_key:req.body.plan_key,billing_cycle:cycle,status:"pending_payment"});
+  });
+  res.json(await paymentProvider.createOrder({organisation_id:user.organisation_id,plan_key:req.body.plan_key,billing_cycle:cycle}));
+});
+const pageInput=z.object({slug:z.string().min(1).max(250),title:z.string().min(1).max(200),content:z.record(z.string(),z.unknown()).default({}),status:z.enum(["draft","published"]).default("draft")});
+const postInput=z.object({slug:z.string().regex(/^[a-z0-9-]+$/),title:z.string().min(1).max(200),excerpt:z.string().max(5000).default(""),body_md:z.string().max(100000).default(""),cover_image_url:z.string().max(2000).default(""),cover_image_alt:z.string().max(500).default(""),author:z.string().max(100).default(""),tags:z.array(z.string().max(100)).default([]),status:z.enum(["draft","published"]).default("draft"),published_at:z.string().nullable().optional()});
+export const adminRouter=Router();
+adminRouter.use(requireAuth,requireAdmin);
+adminRouter.get("/summary",async(_req,res)=>{
+  await expireTrials();
+  const counts=await pool.query("SELECT (SELECT count(*)::int FROM organisations) organisations,(SELECT count(*)::int FROM leads) leads,(SELECT count(*)::int FROM pages WHERE status='published') published_pages,(SELECT count(*)::int FROM posts WHERE status='published') published_posts,(SELECT count(*)::int FROM subscriptions WHERE status='trial') active_trials");
+  const recent=(await pool.query("SELECT action,entity,at FROM audit_log ORDER BY at DESC LIMIT 10")).rows;
+  res.json({...counts.rows[0],recent_activity:recent});
+});
+adminRouter.get("/:entity",async(req,res)=>{
+  const entity=String(req.params.entity);
+  if(entity==="organisations"){
+    await expireTrials();res.json((await pool.query("SELECT o.*,s.plan_key,s.billing_cycle,s.status,s.employee_count,s.trial_ends_at,s.current_period_end FROM organisations o LEFT JOIN subscriptions s ON s.organisation_id=o.id ORDER BY o.created_at DESC LIMIT 1000")).rows);return;
+  }
+  if(!["pages","posts","leads"].includes(entity))fail("Unknown collection",404);
+  res.json((await pool.query(`SELECT * FROM ${entity} ORDER BY ${entity==="leads"?"created_at":"updated_at"} DESC LIMIT 1000`)).rows);
+});
+async function writeRecord(entity:string,id:string|null,input:Doc,actor:string){
+  if(!["pages","posts"].includes(entity))fail("This collection does not support this operation",405);
+  if(id&&!uuid.safeParse(id).success)fail("Invalid record ID");
+  const parser=entity==="pages"?pageInput:postInput;
+  const p=parser.safeParse(input);if(!p.success)fail(p.error.issues.map(i=>`${i.path.join(".")}: ${i.message}`).join("; "));
+  const b=p.data as Doc;
+  if(entity==="pages"){
+    b.slug=cleanPath("/"+b.slug.replace(/^\/+/,"")).slice(1);
+    if(/^(api|admin|dashboard|login|register|features|services|pricing|about|contact|faq|blog|privacy-policy|terms|refund-policy)(\/|$)/.test(b.slug))fail("This path is reserved for a built-in page");
+  }
+  if(entity==="posts"){
+    if(b.cover_image_url&&!/^https?:\/\//.test(b.cover_image_url)&&!b.cover_image_url.startsWith("/"))fail("Invalid cover image URL");
+    if(b.published_at && Number.isNaN(Date.parse(b.published_at)))fail("Invalid publication date");
+    if(b.status==="published"&&!b.published_at)b.published_at=new Date().toISOString();
+  }
+  const before=id?(await pool.query(`SELECT * FROM ${entity} WHERE id=$1`,[id])).rows[0]:null;
+  if(id&&!before)fail("Record not found",404);
+  const keys=Object.keys(b);
+  const values=keys.map(k=>k==="content"?JSON.stringify(b[k]):b[k]);
+  const row=await transaction(async client=>{
+    const out=id?(await client.query(`UPDATE ${entity} SET ${keys.map((k,i)=>`${k}=$${i+1}`).join(",")},updated_at=now() WHERE id=$${values.length+1} RETURNING *`,[...values,id])).rows[0]:(await client.query(`INSERT INTO ${entity}(${keys.join(",")}) VALUES(${values.map((_,i)=>`$${i+1}`).join(",")}) RETURNING *`,values)).rows[0];
+    await audit(client,actor,id?`${entity}.update`:`${entity}.create`,out.id,before,out);return out;
+  });
+  invalidateSeo();await discoverPages();return row;
+}
+adminRouter.post("/:entity",async(req,res)=>{res.status(201).json(await writeRecord(String(req.params.entity),null,req.body,(req as any).user.id));});
+adminRouter.put("/:entity/:id",async(req,res)=>{
+  const entity=String(req.params.entity),id=String(req.params.id);
+  if(entity!=="organisations"){res.json(await writeRecord(entity,id,req.body,(req as any).user.id));return;}
+  if(!uuid.safeParse(id).success)fail("Invalid organisation ID");
+  const parser=z.object({plan_key:z.string().optional(),status:z.enum(["trial","pending_payment","active","past_due","cancelled","expired"]).optional(),trial_ends_at:z.string().nullable().optional()});
+  const p=parser.safeParse(req.body);if(!p.success)fail("Invalid subscription details");
+  const before=(await pool.query("SELECT * FROM subscriptions WHERE organisation_id=$1",[id])).rows[0];if(!before)fail("Organisation not found",404);
+  const next={...before,...p.data};
+  if(next.trial_ends_at && Number.isNaN(Date.parse(next.trial_ends_at)))fail("Invalid trial end date");
+  const cms=await getContent();if(!cms.pricing.plans.some((p:Doc)=>p.key===next.plan_key))fail("Unknown plan");
+  const result=await transaction(async client=>{
+    const row=(await client.query("UPDATE subscriptions SET plan_key=$1,status=$2,trial_ends_at=$3 WHERE organisation_id=$4 RETURNING *",[next.plan_key,next.status,next.trial_ends_at,id])).rows[0];
+    await syncModules(client,id,next.plan_key,cms);
+    await audit(client,(req as any).user.id,"subscription.update",id,before,row);return row;
+  });
+  res.json(result);
+});
+adminRouter.delete("/:entity/:id",async(req,res)=>{
+  const entity=String(req.params.entity),id=String(req.params.id);
+  if(!["pages","posts","leads"].includes(entity))fail("Deletion is not supported for this collection",405);
+  if(!uuid.safeParse(id).success)fail("Invalid ID");
+  await transaction(async client=>{
+    const old=(await client.query(`DELETE FROM ${entity} WHERE id=$1 RETURNING *`,[id])).rows[0];if(!old)fail("Record not found",404);
+    await audit(client,(req as any).user.id,`${entity}.delete`,id,old,null);
+  });
+  invalidateSeo();await discoverPages();res.json({ok:true});
+});

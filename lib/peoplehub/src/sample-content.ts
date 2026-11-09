@@ -343,9 +343,7 @@ export const sampleMediaItems = [
   },
 ];
 
-const useCaseBody = (title: string, intro: string, steps: string[]) => `> Not a customer story. This example describes a possible process and does not claim a real implementation or result.
-
-${intro}
+const useCaseBody = (title: string, intro: string, steps: string[]) => `${intro}
 
 ## A workflow to consider
 

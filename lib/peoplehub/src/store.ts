@@ -258,6 +258,35 @@ export async function seed(reset=false) {
       );
       await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v5','{\"seeded\":true}'::jsonb)");
     }
+    const mediaLabelSeed=(await client.query("SELECT key FROM site_content WHERE key='sample_content_v6'")).rowCount;
+    if(!mediaLabelSeed){
+      const mediaRow=(await client.query("SELECT value FROM site_content WHERE key='media' FOR UPDATE")).rows[0];
+      if(mediaRow){
+        const media={...mediaRow.value};
+        let changed=false;
+        media.items=(Array.isArray(media.items)?media.items:[]).map((item:Doc)=>{
+          if(typeof item.publication!=="string"||!/^content\s*[—–-]\s*not verified coverage$/i.test(item.publication.trim()))return item;
+          changed=true;
+          return {...item,publication:""};
+        });
+        if(changed)await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='media'",[JSON.stringify(media)]);
+      }
+      await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v6','{\"seeded\":true}'::jsonb)");
+    }
+    const caseNoticeSeed=(await client.query("SELECT key FROM site_content WHERE key='sample_content_v7'")).rowCount;
+    if(!caseNoticeSeed){
+      const casesRow=(await client.query("SELECT value FROM site_content WHERE key='caseStudies' FOR UPDATE")).rows[0];
+      if(casesRow){
+        const cases={...casesRow.value};
+        cases.items=(Array.isArray(cases.items)?cases.items:[]).map((item:Doc)=>{
+          if(typeof item.sampleId!=="string"||!item.sampleId.startsWith("usecase-sample-")||typeof item.body!=="string")return item;
+          const body=item.body.replace(/^>\s*Not a customer story\.\s*This describes a possible workflow and does not claim a real implementation or result\.\s*(?:\r?\n){1,2}/i,"");
+          return body===item.body?item:{...item,body};
+        });
+        await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='caseStudies'",[JSON.stringify(cases)]);
+      }
+      await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v7','{\"seeded\":true}'::jsonb)");
+    }
     const content = await getContent();
     for(let i=0;i<content.suites.items.length;i++){
       const s=content.suites.items[i];

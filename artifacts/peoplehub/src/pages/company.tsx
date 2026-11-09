@@ -78,7 +78,6 @@ export function MediaPage() {
                       {it.date ? <div className="mt-1 font-mono text-[11px] text-muted-foreground">{fmtDate(it.date) || str(it.date)}</div> : null}
                     </div>
                     <div>
-                      {it.sample ? <span className="inline-flex rounded-full border border-amber-300/30 bg-amber-300/[0.06] px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-amber-200">Not verified coverage</span> : null}
                       <h2 className="font-display text-2xl font-bold leading-tight text-foreground group-hover:text-[color:var(--ph-cyan)]">{str(it.title)}</h2>
                       {it.description ? <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{str(it.description)}</p> : null}
                     </div>
@@ -141,7 +140,6 @@ export function CaseStudyDetailPage() {
     <article>
       <PageHero crumbs={[{ label: 'Home', href: '/' }, { label: 'Use cases', href: '/case-studies' }, { label: str(c.title) }]} eyebrow={str(c.industry)} title={str(c.title)} description={str(c.summary)} />
       <Container className="max-w-3xl">
-        {c.sample ? <p className="mb-5 rounded-xl border border-amber-300/30 bg-amber-300/[0.06] px-4 py-3 text-sm text-amber-100" role="note">This is not a customer story and does not describe a verified implementation or result.</p> : null}
         <div className="glass rounded-3xl p-7 sm:p-10"><Markdown source={str(c.body)} /></div>
         <Link href="/case-studies" className="mt-10 inline-flex items-center gap-2 text-sm text-[color:var(--ph-cyan)]" data-testid="link-back-cases"><ArrowLeft className="h-4 w-4" />{str(cs.backLabel, 'All use cases')}</Link>
       </Container>

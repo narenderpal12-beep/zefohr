@@ -38,7 +38,7 @@ test("built-in blog, media and use-case copy has no sample label", () => {
   assert.ok(sampleMediaItems.every((item) => item.sample && item.publication === "" && item.imageUrl && item.imageAlt));
   assert.ok(sampleMediaItems.every((item) => !/\bsample\b/i.test([item.publication, item.title, item.description].join(" "))));
   assert.equal(sampleUseCases.length, 6);
-  assert.ok(sampleUseCases.every((item) => item.sample && !/\bsample\b/i.test([item.title, item.summary, item.body].join(" ")) && item.body.toLowerCase().includes("not a customer story")));
+  assert.ok(sampleUseCases.every((item) => item.sample && !/\bsample\b/i.test([item.title, item.summary, item.body].join(" ")) && !/not a customer story|does not claim a real implementation or result/i.test(item.body)));
   assert.ok(samplePosts.every((post) => !!post.cover_image_url && !!post.cover_image_alt));
   assert.ok(samplePosts.every((post) => !/\bsample\b/i.test([...post.tags, post.title, post.excerpt, post.body_md].join(" "))));
   assert.ok(samplePosts.every((post) => post.body_md.split(/\s+/).length > 100));

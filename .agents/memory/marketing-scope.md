@@ -19,4 +19,10 @@ For blog, use-case and media-coverage copy, remove the word “sample” without
 
 **Why:** The user explicitly requested removing that word without replacing it.
 
-**How to apply:** Remove the word from existing and future copy in these sections while preserving unrelated text and factual disclaimers.
+**How to apply:** Remove the word without inserting a substitute label; preserve other copy unless the user asks otherwise.
+
+The user explicitly removed the two use-case story disclaimers about customer stories and verified implementations; do not reintroduce them.
+
+**Why:** The user requested deleting those exact statements.
+
+**How to apply:** Keep other compliance and accuracy copy intact unless the user requests a change.

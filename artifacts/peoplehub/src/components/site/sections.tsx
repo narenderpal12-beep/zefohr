@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, type ComponentType, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useState, type ComponentType, type CSSProperties, type ReactNode } from 'react';
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
@@ -81,6 +81,18 @@ export function Hero() {
   const p = cta(hero.primaryCta, '/register?mode=trial');
   const s = cta(hero.secondaryCta, '/pricing');
   const badges = arr<string>(hero.badges);
+  const color = (value: unknown) => typeof value === 'string' && /^#[\da-f]{6}$/i.test(value) ? value : undefined;
+  const titleColor = color(hero.titleColor);
+  const descriptionColor = color(hero.descriptionColor);
+  const buttonColor = color(hero.buttonColor);
+  const buttonTextColor = color(hero.buttonTextColor);
+  const contrastColor = (background: string) => {
+    const rgb = background.slice(1).match(/.{2}/g)!.map((part) => parseInt(part, 16) / 255).map((channel) => channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4);
+    return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2] > 0.179 ? '#0b1020' : '#ffffff';
+  };
+  const ctaStyle = (): CSSProperties | undefined => buttonColor || buttonTextColor
+    ? { ...(buttonColor ? { background: buttonColor } : {}), ...(buttonTextColor ? { color: buttonTextColor } : buttonColor ? { color: contrastColor(buttonColor) } : {}) }
+    : undefined;
   return (
     <section className="relative overflow-hidden pb-20 pt-32 sm:pt-40 lg:pb-28">
       <Aurora intense />
@@ -88,12 +100,12 @@ export function Hero() {
         <div>
           {hero.eyebrow ? <Eyebrow>{str(hero.eyebrow)}</Eyebrow> : null}
           <h1 className="font-display mt-6 text-balance text-[2.6rem] font-extrabold leading-[0.98] sm:text-6xl lg:text-[4.4rem]" data-testid="text-hero-title">
-            <span className="text-gradient">{str(hero.title)}</span>
+            <span className={titleColor ? '' : 'text-gradient'} style={titleColor ? { color: titleColor, WebkitTextFillColor: titleColor, background: 'none' } : undefined}>{str(hero.title)}</span>
           </h1>
-          <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground">{str(hero.description)}</p>
+          <p className="mt-6 max-w-xl text-pretty text-lg leading-relaxed text-muted-foreground" style={descriptionColor ? { color: descriptionColor } : undefined}>{str(hero.description)}</p>
           <div className="mt-9 flex flex-wrap gap-3">
-            {p.label ? <CtaLink href={p.href} testId="link-hero-primary">{p.label} <ArrowRight className="h-4 w-4" /></CtaLink> : null}
-            {s.label ? <CtaLink href={s.href} variant="ghost" testId="link-hero-secondary">{s.label}</CtaLink> : null}
+            {p.label ? <CtaLink href={p.href} style={ctaStyle()} testId="link-hero-primary">{p.label} <ArrowRight className="h-4 w-4" /></CtaLink> : null}
+            {s.label ? <CtaLink href={s.href} variant="ghost" style={ctaStyle()} testId="link-hero-secondary">{s.label}</CtaLink> : null}
           </div>
           {badges.length ? (
             <ul className="mt-10 flex flex-wrap gap-2">

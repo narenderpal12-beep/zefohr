@@ -536,6 +536,7 @@ body { background: var(--ph-bg); }
 .light .grid-lines { background-image: none; }
 .light .border-gradient::after { display: none; }
 .light .text-gradient { background: none; -webkit-background-clip: initial; background-clip: initial; color: hsl(var(--foreground)); }
+.light [data-testid="text-hero-title"] .text-gradient { color: color-mix(in oklab, var(--ph-indigo) 72%, #111827 28%); }
 .light .bg-brand { background: linear-gradient(110deg, var(--ph-indigo), color-mix(in oklab, var(--ph-indigo) 65%, var(--ph-pink)) 55%, var(--ph-pink)); }
 .light .brand-wordmark {
   background: linear-gradient(105deg, var(--ph-indigo), var(--ph-pink));

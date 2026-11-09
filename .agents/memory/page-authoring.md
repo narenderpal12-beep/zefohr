@@ -14,3 +14,9 @@ Page editing must offer section ordering, reset to defaults and an editable hero
 **Why:** The user requested up/down controls, default resets and a hero slider with two or three options.
 
 **How to apply:** Confirm content-discarding resets. A page-only section reset must not reset shared website content; relink a shared block instead. Keep the current live page unchanged until its edited layout is saved.
+
+The hero title, description and button colors should remain editable in the admin. Unset colors use bright, theme-aware text and the bright brand-gradient buttons.
+
+**Why:** The user asked for hero text and button color controls with bright defaults.
+
+**How to apply:** Keep the default colors legible in both light and dark modes. For a custom button fill, provide contrasting button text unless the admin explicitly chooses a text color.

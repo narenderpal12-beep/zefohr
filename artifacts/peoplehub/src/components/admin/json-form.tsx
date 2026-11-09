@@ -44,7 +44,28 @@ export function templateFor(path: string, sample?: any): any {
 
 const IMAGE_PATH = /^((block-)?(suites|services)-items-\d+-imageUrl|block-[A-Za-z]+(-\w+)*-imageUrl)$/;
 const HREF_PATH = /^(nav-megaMenu|nav-links|footer-columns|footer-links|block-[A-Za-z]+)(-\w+)*-(href|ctaHref)$/;
+const HERO_COLOR_PATH = /^hero-(titleColor|descriptionColor|buttonColor|buttonTextColor)$/;
+const HEX_COLOR = /^#[\da-f]{6}$/i;
 const BusyCtx = createContext<(delta: number) => void>(() => undefined);
+
+function HeroColorField({ value, onChange, path }: { value: string; onChange: (v: string) => void; path: string }) {
+  const swatches: Record<string, string> = { titleColor: '#5751b9', descriptionColor: '#8a91a5', buttonColor: '#e84ba8', buttonTextColor: '#ffffff' };
+  const notes: Record<string, string> = {
+    titleColor: 'Default: a bright theme-matched heading color.',
+    descriptionColor: 'Default: the site’s readable secondary text color.',
+    buttonColor: 'Default: the bright brand-gradient buttons.',
+    buttonTextColor: 'Default: automatic high-contrast text.',
+  };
+  const color = HEX_COLOR.test(value) ? value : swatches[path.split('-').at(-1)!] ?? '#5751b9';
+  const useDefault = () => onChange('');
+  return (
+    <div className="flex flex-wrap items-center gap-3" data-testid={`hero-color-${path}`}>
+      <input type="color" className="h-10 w-14 cursor-pointer rounded-lg border border-white/15 bg-transparent p-1" value={color} onChange={(e) => onChange(e.target.value)} aria-label={`Choose ${humanize(path.split('-').at(-1) ?? 'hero color')}`} data-testid={`input-${path}`} />
+      <span className="font-mono text-xs text-muted-foreground">{HEX_COLOR.test(value) ? value.toUpperCase() : notes[path.split('-').at(-1)!]}</span>
+      {value ? <button type="button" className={aBtn} onClick={useDefault} data-testid={`button-reset-${path}`}>Use default</button> : null}
+    </div>
+  );
+}
 
 /** Browse + preview + remove for suite/service photos. Whole form is locked while encoding, so the result cannot land on a stale draft or a moved item. */
 function ImageField({ value, onChange, path }: { value: string; onChange: (v: string) => void; path: string }) {
@@ -106,6 +127,7 @@ function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; o
   if (typeof value === 'number') {
     return <input type="number" className={aInput} value={value} onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))} data-testid={`input-${path}`} />;
   }
+  if (HERO_COLOR_PATH.test(path) && typeof value === 'string') return <HeroColorField value={value} onChange={onChange} path={path} />;
   if (HREF_PATH.test(path) && (typeof value === 'string' || value == null)) return <LinkPicker value={value ?? ''} onChange={onChange} testId={`input-${path}`} />;
   if (typeof value === 'string') {
     const long = value.length > 70 || value.includes('\n');

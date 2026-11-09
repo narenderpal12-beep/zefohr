@@ -124,10 +124,10 @@ export const btnPrimary =
 export const btnGhost =
   'inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-foreground backdrop-blur transition-colors hover:bg-white/[0.09] disabled:opacity-60';
 
-export function CtaLink({ href, children, variant = 'primary', className, testId }: { href: string; children: ReactNode; variant?: 'primary' | 'ghost'; className?: string; testId?: string }) {
+export function CtaLink({ href, children, variant = 'primary', className, style, testId }: { href: string; children: ReactNode; variant?: 'primary' | 'ghost'; className?: string; style?: CSSProperties; testId?: string }) {
   const cls = cn(variant === 'primary' ? btnPrimary : btnGhost, className);
-  if (/^(https?:|mailto:|tel:)/.test(href)) return <a href={href} className={cls} data-testid={testId}>{children}</a>;
-  return <Link href={href} className={cls} data-testid={testId}>{children}</Link>;
+  if (/^(https?:|mailto:|tel:)/.test(href)) return <a href={href} className={cls} style={style} data-testid={testId}>{children}</a>;
+  return <Link href={href} className={cls} style={style} data-testid={testId}>{children}</Link>;
 }
 
 export function Aurora({ className, intense }: { className?: string; intense?: boolean }) {

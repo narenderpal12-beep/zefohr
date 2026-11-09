@@ -55,7 +55,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       links:[{label:"Privacy policy",href:"/privacy-policy"},{label:"Terms of service",href:"/terms"},{label:"Refund policy",href:"/refund-policy"},{label:"Contact",href:"/contact"}],
     },
     whatsapp:{
-      enabled:true,phone:"",message:"Hello, I would like to learn more about PeopleHub.",
+      enabled:true,phone:"+919311638356",message:"Hello, I would like to learn more about PeopleHub.",
       label:"Chat on WhatsApp",unconfiguredLabel:"Contact our team",fallbackHref:"/contact",
     },
     media:{

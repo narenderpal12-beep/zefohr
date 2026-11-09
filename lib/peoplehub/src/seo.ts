@@ -14,6 +14,7 @@ for(const [path,type,title] of [
   ["/faq","static","PeopleHub frequently asked questions"],["/blog","static","HR insights and resources"],
   ["/register","app_public","Create your organisation"],["/login","app_public","Sign in"],
   ["/dashboard","app_public","Organisation dashboard"],["/admin","app_public","Site administration"],["/admin/seo","app_public","SEO Manager"],
+  ["/admin/clients","app_public","Client management"],
   ["/features/:slug","suite","%title%"],["/services/:slug","service","%title%"],["/blog/:slug","blog","%title%"],["/case-studies/:slug","case_study","%title%"],
 ]) registerSeoRoute({path,type,titleFrom:title});
 export const appPath = (path:string)=>/^\/(admin|dashboard|login|register)(\/|$)/.test(path);

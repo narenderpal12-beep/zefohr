@@ -536,7 +536,15 @@ body { background: var(--ph-bg); }
 .light .grid-lines { background-image: none; }
 .light .border-gradient::after { display: none; }
 .light .text-gradient { background: none; -webkit-background-clip: initial; background-clip: initial; color: hsl(var(--foreground)); }
-.light .bg-brand { background: var(--ph-indigo); }
+.light .bg-brand { background: linear-gradient(110deg, var(--ph-indigo), color-mix(in oklab, var(--ph-indigo) 65%, var(--ph-pink)) 55%, var(--ph-pink)); }
+.light .brand-wordmark {
+  background: linear-gradient(105deg, var(--ph-indigo), var(--ph-pink));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.light .lucide { stroke: url(#peoplehub-icon-gradient); }
+.light .bg-brand .lucide { stroke: var(--ph-on-brand); }
+.light [role="alert"] .lucide { stroke: currentColor; }
+.light .whatsapp-float { background: linear-gradient(135deg, #15803d, #087f70); }
 .light .text-red-300, .light .text-red-200 { color: hsl(352 70% 40%); }
 .light .text-emerald-300, .light .text-emerald-200 { color: hsl(158 70% 26%); }
 .light .text-amber-300, .light .text-amber-200, .light .text-amber-100 { color: hsl(30 85% 32%); }

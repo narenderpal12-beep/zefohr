@@ -125,3 +125,9 @@ Email verification and password reset; SSO; WhatsApp Business API; Razorpay bill
 - The footer has product/service/company/resource columns and editable Instagram, LinkedIn, Facebook and X/Twitter options. Unconfigured social links do not pretend to point to an official account.
 - Configure `whatsapp.phone` with your actual number including country code to enable direct WhatsApp chat. Until configured, the floating contact control links to the contact page.
 - New collections and pages can be edited through Content and Pages. Existing edits are preserved during normal seeds.
+
+### Client list
+
+The homepage client section is managed under **Admin → Clients**. Administrators can add, edit, hide, reorder or remove clients and change the section heading and description. The seven initial logos are the images supplied by the site owner; two unidentified marks use editable placeholder names rather than invented company identities.
+
+Logo uploads accept PNG, JPEG and WebP, with browser resizing for small logo files. Uploaded logos are bounded data images saved in the existing durable CMS record, not temporary server files, so they remain available after restarts and across the API/SSR services. Local image paths and HTTPS image URLs are also supported. Limits are 150 KB decoded per uploaded logo, 60 clients and 1.5 MB per client section. Website links are optional. Client management requires super-administrator access and uses the existing CMS history and audit trail.

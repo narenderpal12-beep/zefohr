@@ -19,6 +19,7 @@ function blankLike(sample: any): any {
 
 /** Typed templates so empty collections get proper item shapes. Matched against the editor path. */
 const TEMPLATES: [RegExp, () => any][] = [
+  [/^clients-items$/, () => ({ id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `c-${Date.now()}`, name: '', alt: '', logoUrl: '', website: '', visible: true })],
   [/^media-items$/, () => ({ title: '', publication: '', date: '', url: '', description: '' })],
   [/^caseStudies-items$/, () => ({ title: '', industry: '', summary: '', body: '', slug: '' })],
   [/^careers-items$/, () => ({ title: '', department: '', location: '', employmentType: '', description: '', applyEmail: '' })],

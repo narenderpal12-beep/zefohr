@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowUpRight, ChevronDown, Menu, X, LayoutDashboard, Moon, Sun, Instagram, Linkedin, Facebook, Twitter, MessageCircle, Share2 } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Menu, X, LayoutDashboard, Moon, Sun, Instagram, Linkedin, Facebook, Twitter, Share2 } from 'lucide-react';
 import { useGetMe, getGetMeQueryKey } from '@workspace/api-client-react';
 import { arr, iconFor, str, useSection, useThemeMode, type AnyObj } from '@/lib/content';
 import { btnPrimary } from './primitives';
 import { cn } from '@/lib/utils';
+import { FaWhatsapp } from 'react-icons/fa';
 
 /** Brand from CMS: brand section first, nav.brand for older content. */
 export function useBrand() {
@@ -40,7 +41,7 @@ export function BrandMark({ name, className, logoUrl, logoAlt, showWordmark = tr
           </svg>
         </span>
       )}
-      {word || !logo ? <span className="font-display text-xl font-bold tracking-tight text-foreground">{n}</span> : <span className="sr-only">{n}</span>}
+      {word || !logo ? <span className="brand-wordmark font-display text-xl font-bold tracking-tight text-foreground">{n}</span> : <span className="sr-only">{n}</span>}
     </span>
   );
 }
@@ -362,10 +363,10 @@ export function WhatsAppButton() {
   const digits = str(w.phone).replace(/[^\d]/g, '');
   const valid = digits.length >= 10 && digits.length <= 15;
   const label = valid ? str(w.label, 'Chat on WhatsApp') : str(w.unconfiguredLabel, 'Contact our team');
-  const cls = 'group fixed bottom-5 right-5 z-[55] flex items-center gap-2 rounded-full bg-[#1f9d55] py-3 pl-3 pr-4 text-sm font-semibold text-on-brand shadow-[0_16px_40px_-12px_rgba(16,90,50,.7)] transition hover:-translate-y-0.5 sm:bottom-7 sm:right-7';
+  const cls = 'whatsapp-float group fixed bottom-5 right-5 z-[55] flex items-center gap-2 rounded-full bg-[#1f9d55] py-3 pl-3 pr-4 text-sm font-semibold text-on-brand shadow-[0_16px_40px_-12px_rgba(16,90,50,.7)] transition hover:-translate-y-0.5 sm:bottom-7 sm:right-7';
   const inner = (
     <>
-      <span className="relative grid h-8 w-8 place-items-center rounded-full bg-white/15"><span className="wa-pulse absolute inset-0 rounded-full bg-white/30" /><MessageCircle className="relative h-4 w-4" /></span>
+      <span className="relative grid h-8 w-8 place-items-center rounded-full bg-white/15"><span className="wa-pulse absolute inset-0 rounded-full bg-white/30" /><FaWhatsapp className="relative h-5 w-5" aria-hidden="true" /></span>
       <span className="hidden sm:inline">{label}</span>
     </>
   );

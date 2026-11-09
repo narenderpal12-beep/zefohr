@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  Building2, FileText, Gauge, History, Inbox, LayoutGrid, LogOut, Newspaper, Pencil, Plus, RotateCcw, Route as RouteIcon, Save, Search, Trash2, X, Palette, Sparkles,
+  Building2, FileText, Gauge, History, Inbox, LayoutGrid, LogOut, Newspaper, Pencil, Plus, RotateCcw, Route as RouteIcon, Save, Search, Trash2, X, Palette, Sparkles, Handshake,
 } from 'lucide-react';
 import {
   useGetAdminSummary, useGetAdminRecords, useCreateAdminRecord, useUpdateAdminRecord, useDeleteAdminRecord,
@@ -16,6 +16,7 @@ import { BrandMark, ModeToggle, useMe } from '@/components/site/layout';
 import { SkeletonBlock } from '@/components/site/primitives';
 import { JsonForm, RawJson, aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
 import { AppearanceAdmin, BrandingAdmin } from './admin-appearance';
+import { ClientsAdmin } from './admin-clients';
 import { SeoManager, RedirectsPanel } from './admin-seo';
 import { SignedOutPanel, StatusPill, useSignOut } from './dashboard';
 import { fmtDate } from './public';
@@ -26,6 +27,7 @@ const TABS = [
   { key: 'appearance', label: 'Appearance', icon: Palette },
   { key: 'branding', label: 'Branding', icon: Sparkles },
   { key: 'content', label: 'Content', icon: LayoutGrid },
+  { key: 'clients', label: 'Clients', icon: Handshake },
   { key: 'pages', label: 'Pages', icon: FileText },
   { key: 'posts', label: 'Blog posts', icon: Newspaper },
   { key: 'seo', label: 'SEO Manager', icon: Search },
@@ -97,6 +99,7 @@ export function AdminPage() {
         {tab === 'appearance' && <AppearanceAdmin />}
         {tab === 'branding' && <BrandingAdmin />}
         {tab === 'content' && <ContentEditor />}
+        {tab === 'clients' && <ClientsAdmin />}
         {tab === 'pages' && <PagesAdmin />}
         {tab === 'posts' && <PostsAdmin />}
         {tab === 'seo' && <SeoManager />}

@@ -56,7 +56,18 @@ function SeoSync() {
 function ThemeRoot({ children }: { children: ReactNode }) {
   return (
     <ModeProvider>
-      {(mode, style) => <div className={`${mode} grain min-h-[100dvh] bg-[color:var(--ph-bg)] text-foreground`} data-theme-mode={mode} style={style}>{children}</div>}
+      {(mode, style) => <div className={`${mode} grain min-h-[100dvh] bg-[color:var(--ph-bg)] text-foreground`} data-theme-mode={mode} style={style}>
+        <svg width="0" height="0" aria-hidden="true" focusable="false" className="pointer-events-none absolute overflow-hidden">
+          <defs>
+            <linearGradient id="peoplehub-icon-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="24">
+              <stop offset="0%" stopColor="var(--ph-indigo)" />
+              <stop offset="50%" stopColor="var(--ph-cyan)" />
+              <stop offset="100%" stopColor="var(--ph-pink)" />
+            </linearGradient>
+          </defs>
+        </svg>
+        {children}
+      </div>}
     </ModeProvider>
   );
 }

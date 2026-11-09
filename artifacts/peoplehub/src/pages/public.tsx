@@ -6,6 +6,7 @@ import { Aurora, Container, CtaLink, FaqList, GlassCard, PageHero, Reveal, Secti
 import {
   AiSection, ContactSection, CtaBand, FaqSection, Hero, Integrations, PricingTable, ServiceGrid, Stats, SuitesTabs, WhyUs, priorityTone,
 } from '@/components/site/sections';
+import { ClientsSection } from '@/components/site/clients';
 import { cn } from '@/lib/utils';
 
 export function HomePage() {
@@ -13,6 +14,7 @@ export function HomePage() {
     <>
       <Hero />
       <Stats />
+      <ClientsSection />
       <SuitesTabs />
       <ServiceGrid />
       <AiSection />

@@ -7,11 +7,16 @@ import { requireAuth,requireAdmin } from "./auth";
 import { invalidateSeo,discoverPages,cleanPath } from "./seo";
 import { paymentProvider } from "./payments/provider";
 import { rateLimit } from "express-rate-limit";
+import { clientsSchema } from "./clients";
 
 const uuid=z.string().uuid();
 function validateContent(key:string,value:Doc) {
   if(!value || typeof value!=="object" || Array.isArray(value))fail("A section must be a JSON object");
-  if(JSON.stringify(value).length>500000)fail("Section is too large");
+  if(JSON.stringify(value).length>(key==="clients"?1500000:500000))fail(key==="clients"?"Client collection is too large. Use smaller logo images.":"Section is too large");
+  if(key==="clients"){
+    const result=clientsSchema.safeParse(value);
+    if(!result.success)fail(result.error.issues[0]?.message??"Invalid client details");
+  }
   if(["suites","services"].includes(key)){
     if(!Array.isArray(value.items)||!value.items.length)fail("At least one item is required");
     const keys=new Set<string>(),slugs=new Set<string>();

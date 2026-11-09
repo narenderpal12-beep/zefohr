@@ -1,5 +1,6 @@
 export const complianceNote = "The platform automates documentation and tracking. EOR, POSH, FRRO and labour-law compliance are supported by appropriate legal, statutory and operational expertise; software alone does not fulfil every statutory obligation.";
 import {marketingDefaults,additionalMarketingPages} from "./marketing-defaults";
+import {clientDefaults} from "./client-defaults";
 const suiteData = [
   ["core_hrms", "core-hrms", "Core HRMS", "Users", "employee database, organisation structure, employee lifecycle, onboarding, confirmation, transfer, promotion, separation, document management, ESS, mobile app, HR policies"],
   ["time_workforce", "time-and-workforce-management", "Time & Workforce Management", "Clock", "attendance, biometric, face recognition, GPS, geo-fencing, shift, roster, leave, overtime, comp-off, timesheets, field-force tracking"],
@@ -77,6 +78,7 @@ export const defaults: Record<string, any> = {
   preview:{label:"Illustrative product preview · HRMS modules coming in Phase 2",payrollLabel:"Payroll run",payrollPeriod:"Mar 26",payrollDetail:"248 payslips",statutoryLabel:"Statutory",statutoryTitle:"PF ECR filed",statutoryDetail:"ESI 12 / PT 4 states",approvalLabel:"WhatsApp approval",approvalTitle:"Leave request",approvalStatus:"Approved",approvalDetail:"2 days",attendanceLabel:"Attendance",attendanceValue:"96.4%",attendanceDetail:"Example workplace"},
 };
 Object.assign(defaults,marketingDefaults(suites,services,complianceNote));
+defaults.clients=clientDefaults;
 export const defaultPages = [
   ...additionalMarketingPages,
   {slug:"solutions/payroll-software-india",title:"Payroll software for Indian businesses",content:{intro:"Bring salary processing, statutory tracking and employee records into one connected platform.",body:"Simplify PF, ESI, PT, TDS and payroll administration with PeopleHub. Our payroll and compliance suite connects salary processing with your employee and attendance records.",benefits:["India-ready payroll workflows","Connected employee records","Statutory calendar and documentation"],faq:defaults.faq.items.slice(0,3)}},

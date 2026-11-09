@@ -37,7 +37,7 @@ function HeroVisual({ lottieUrl }: { lottieUrl?: string }) {
     <div className="relative mx-auto aspect-square w-full max-w-[520px]" aria-hidden>
       <div className="absolute inset-[6%] rounded-full border border-white/[0.07]" />
       <div className="absolute inset-[20%] rounded-full border border-dashed border-white/[0.09] orbit-spin-rev" />
-      <div className="absolute inset-[34%] rounded-full bg-[radial-gradient(circle,rgba(109,108,246,.55),transparent_70%)] blur-2xl" />
+      <div className="ambient-glow absolute inset-[34%] rounded-full bg-[radial-gradient(circle,rgba(109,108,246,.55),transparent_70%)] blur-2xl" />
       <div className="orbit-spin absolute inset-[6%]">
         {['var(--ph-indigo)', 'var(--ph-cyan)', 'var(--ph-pink)', '#fbbf24'].map((c, i) => (
           <span key={i} className="absolute h-3 w-3 rounded-full" style={{ background: c, boxShadow: `0 0 18px ${c}`, left: `${50 + 50 * Math.cos((i * Math.PI) / 2)}%`, top: `${50 + 50 * Math.sin((i * Math.PI) / 2)}%`, transform: 'translate(-50%,-50%)' }} />
@@ -223,7 +223,7 @@ export function AiSection() {
   const items = arr<AnyObj>(ai.items);
   return (
     <section className="relative overflow-hidden py-24 sm:py-32">
-      <div aria-hidden className="pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse,color-mix(in_oklab,var(--ph-pink)_22%,transparent),transparent_65%)] blur-2xl" />
+      <div aria-hidden className="ambient-glow pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[900px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse,color-mix(in_oklab,var(--ph-pink)_22%,transparent),transparent_65%)] blur-2xl" />
       <Container>
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.3fr]">
           <div className="lg:sticky lg:top-32 lg:self-start">
@@ -267,7 +267,7 @@ export function WhyUs() {
     <section className="relative py-24">
       <Container>
         <div className="glass border-gradient relative overflow-hidden rounded-[2rem] p-6 sm:p-12">
-          <div aria-hidden className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[color:var(--ph-indigo)] opacity-30 blur-3xl" />
+          <div aria-hidden className="ambient-glow absolute -right-24 -top-24 h-72 w-72 rounded-full bg-[color:var(--ph-indigo)] opacity-30 blur-3xl" />
           <h2 className="font-display relative max-w-2xl text-3xl font-bold sm:text-5xl"><span className="text-gradient">{str(why.title)}</span></h2>
           <ul className="relative mt-10 grid gap-x-10 gap-y-5 md:grid-cols-2">
             {items.map((t, i) => (

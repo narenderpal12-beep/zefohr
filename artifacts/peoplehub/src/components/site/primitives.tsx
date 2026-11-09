@@ -132,7 +132,7 @@ export function CtaLink({ href, children, variant = 'primary', className, testId
 
 export function Aurora({ className, intense }: { className?: string; intense?: boolean }) {
   return (
-    <div aria-hidden className={cn('pointer-events-none absolute inset-0 overflow-hidden', className)}>
+    <div aria-hidden className={cn('aurora-backdrop pointer-events-none absolute inset-0 overflow-hidden', className)}>
       <div className="aurora-blob anim-a" style={{ width: '46vw', height: '46vw', left: '-8vw', top: '-14vw', background: 'var(--ph-indigo)', opacity: intense ? 0.6 : 0.4 }} />
       <div className="aurora-blob anim-b" style={{ width: '38vw', height: '38vw', right: '-6vw', top: '-4vw', background: 'var(--ph-cyan)', opacity: intense ? 0.38 : 0.25 }} />
       <div className="aurora-blob anim-c" style={{ width: '34vw', height: '34vw', left: '34vw', top: '14vw', background: 'var(--ph-pink)', opacity: intense ? 0.4 : 0.22 }} />

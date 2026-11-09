@@ -52,6 +52,8 @@ function hexToHsl(hex: string): string | null {
 export function resolveSwatch(theme: Record<string, unknown> | undefined, mode: Mode): Swatch {
   const p = presetById(theme?.preset);
   const base = { ...p[mode] };
+  // Light palettes share a clean white canvas; only their accent colours vary.
+  if (mode === 'light') base.bg = '#ffffff';
   if (theme?.customColors) {
     const ok = (v: unknown) => typeof v === 'string' && /^#[0-9a-f]{6}$/i.test(v);
     if (ok(theme.primary)) base.primary = String(theme.primary);
@@ -91,15 +93,15 @@ export function themeVars(theme: Record<string, unknown> | undefined, mode: Mode
     });
   } else {
     Object.assign(v, {
-      '--ph-ink': `hsl(${h} 40% 14%)`, '--ph-strong': `hsl(${h} 40% 99% / .9)`,
-      '--background': bgH ?? `${h} 40% 97%`, '--foreground': `${h} 42% 11%`,
-      '--card': `${h} 45% 99%`, '--card-foreground': `${h} 42% 11%`, '--card-border': `${h} 22% 86%`,
-      '--popover': `${h} 45% 99%`, '--popover-foreground': `${h} 42% 11%`, '--popover-border': `${h} 22% 84%`,
-      '--secondary': `${h} 28% 92%`, '--secondary-foreground': `${h} 42% 14%`,
-      '--muted': `${h} 26% 93%`, '--muted-foreground': `${h} 14% 36%`, '--accent-foreground': '0 0% 99%',
-      '--border': `${h} 22% 86%`, '--input': `${h} 20% 78%`,
-      '--sidebar': `${h} 35% 96%`, '--sidebar-foreground': `${h} 40% 16%`, '--sidebar-border': `${h} 22% 86%`,
-      '--sidebar-accent': `${h} 28% 91%`, '--sidebar-accent-foreground': `${h} 42% 11%`,
+      '--ph-ink': '#111827', '--ph-strong': '#ffffff',
+      '--background': bgH ?? '0 0% 100%', '--foreground': '222 47% 11%',
+      '--card': '0 0% 100%', '--card-foreground': '222 47% 11%', '--card-border': '220 13% 91%',
+      '--popover': '0 0% 100%', '--popover-foreground': '222 47% 11%', '--popover-border': '220 13% 88%',
+      '--secondary': '220 14% 97%', '--secondary-foreground': '222 47% 14%',
+      '--muted': '220 14% 97%', '--muted-foreground': '215 16% 37%', '--accent-foreground': '0 0% 99%',
+      '--border': '220 13% 91%', '--input': '220 13% 80%',
+      '--sidebar': '0 0% 100%', '--sidebar-foreground': '222 47% 16%', '--sidebar-border': '220 13% 91%',
+      '--sidebar-accent': '220 14% 97%', '--sidebar-accent-foreground': '222 47% 11%',
     });
   }
   return v;

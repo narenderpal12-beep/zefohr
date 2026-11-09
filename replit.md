@@ -26,6 +26,8 @@ The user requested Phase 1 only. HRMS operational modules are future scope. Paym
 
 The user requires light/dark mode by default, at least ten admin-selected site-wide themes, editable brand/content, product/service mega menus and broad social/footer navigation. All website profile details, including shared address, mobile, email, map link and office hours, must stay editable through admin. Do not hardcode profile details in UI components or replace themes with a single dark palette.
 
+Light mode must use a neat, pure-white canvas and solid white surfaces, without dim off-white tints, ambient gradients or grain. Preserve the existing dark-mode styling.
+
 ## Key files
 
 - `lib/peoplehub/src/defaults.ts` — CMS defaults and initial suites/services/plans.

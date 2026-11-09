@@ -14,7 +14,7 @@ import { SkeletonBlock } from '@/components/site/primitives';
 import { CustomBlock } from '@/components/site/page-blocks';
 import { JsonForm, RawJson, aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
 import {
-  ORIGINAL, SECTION_TYPES, expandOriginal, TYPE_META, ROUTE_KEYS, buildCatalogue, cleanSlug, confirmLeave, customTemplate, fmtSize, getIn, isNativePath, makeBlock, newBlockId,
+  ORIGINAL, SECTION_TYPES, expandOriginal, homeNativeBlocks, TYPE_META, ROUTE_KEYS, buildCatalogue, cleanSlug, confirmLeave, customTemplate, fmtSize, getIn, isNativePath, makeBlock, newBlockId,
   pagesUsingKey, setIn, sizeOf, slugify, useUnsavedGuard, validateSections, validateSlug, type Block, type PageEntry,
 } from '@/lib/site-pages';
 import { cn } from '@/lib/utils';
@@ -151,9 +151,9 @@ export function SectionsEditor({ value, onChange, allowOriginal, onBusyChange, c
                 {b.enabled === false ? <Badge>Hidden</Badge> : null}
                 <span className="hidden truncate font-mono text-[10px] text-muted-foreground md:inline">#{b.id}</span>
               </button>
-              <div className="flex flex-wrap gap-1">
-                <button type="button" className={aBtn} onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up" data-testid={`button-block-up-${b.id}`}><ArrowUp className="h-3 w-3" />Move up</button>
-                <button type="button" className={aBtn} onClick={() => move(i, 1)} disabled={i === value.length - 1} aria-label="Move down" data-testid={`button-block-down-${b.id}`}><ArrowDown className="h-3 w-3" />Move down</button>
+              <div className="flex flex-wrap gap-1.5" role="group" aria-label={`Reorder ${meta.label}`}>
+                <button type="button" className={cn(aBtn, 'min-h-9 min-w-[82px] justify-center whitespace-nowrap border-white/20 bg-white/[0.06] font-semibold text-foreground')} onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Move ${meta.label} up`} data-testid={`button-block-up-${b.id}`}><ArrowUp className="h-3.5 w-3.5" />Move up</button>
+                <button type="button" className={cn(aBtn, 'min-h-9 min-w-[82px] justify-center whitespace-nowrap border-white/20 bg-white/[0.06] font-semibold text-foreground')} onClick={() => move(i, 1)} disabled={i === value.length - 1} aria-label={`Move ${meta.label} down`} data-testid={`button-block-down-${b.id}`}><ArrowDown className="h-3.5 w-3.5" />Move down</button>
                 <button type="button" className={aBtn} onClick={() => set(i, { ...b, enabled: b.enabled === false })} aria-label={b.enabled === false ? 'Show' : 'Hide'} data-testid={`button-block-visibility-${b.id}`}>{b.enabled === false ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}</button>
                 {b.type !== 'original' ? <>
                   <button type="button" className={aBtn} onClick={() => {
@@ -255,7 +255,7 @@ function NativeWorkspace({ entry, content, onEditRecord }: { entry: PageEntry; c
   const save = useSaveContent();
   const routes = ((content.pageLayouts as AnyObj | undefined)?.routes ?? {}) as AnyObj;
   const saved = routes[entry.path]?.sections as Block[] | undefined;
-  const baseline = saved ?? [ORIGINAL];
+  const baseline = useMemo<Block[]>(() => saved ?? (entry.path === '/' ? homeNativeBlocks() : [ORIGINAL]), [entry.path, saved]);
   const [draft, setDraft] = useState<Block[]>(() => clone(baseline));
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ k: 'ok' | 'err'; t: string } | null>(null);
@@ -302,7 +302,7 @@ function NativeWorkspace({ entry, content, onEditRecord }: { entry: PageEntry; c
       </Card>
       <div>
         <h3 className="mb-1 flex items-center gap-2 font-display text-lg font-bold"><Link2 className="h-4 w-4 text-[color:var(--ph-cyan)]" />Linked sections</h3>
-        <p className="mb-3 text-xs text-muted-foreground">Content shown by the original block. These are shared: saving here updates every page listed on each card.</p>
+        <p className="mb-3 text-xs text-muted-foreground">{entry.path === '/' ? 'Each homepage section reads shared site content. Saving here changes every page that uses those same shared sections.' : 'Content shown by the original block. These are shared: saving here updates every page listed on each card.'}</p>
         <div className="space-y-3">
           {entry.kind === 'feature' ? <SharedSectionEditor contentKey="suites" sub={['items', entry.index ?? 0]} title={`${entry.label} (feature)`} scopeNote="Only this feature item. Also appears in the Features page, Home and Pricing." /> : null}
           {entry.kind === 'service' ? <SharedSectionEditor contentKey="services" sub={['items', entry.index ?? 0]} title={`${entry.label} (service)`} scopeNote="Only this service item. Also appears in the Services page and Home." /> : null}

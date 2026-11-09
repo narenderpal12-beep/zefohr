@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { appendMissingSamples, renameLegacyCaseStudyLinks, withoutRefundPolicyLinks } from "./content-normalizers";
-import { sampleMediaItems, samplePosts, sampleUseCases } from "./sample-content";
+import { privacyDraft, sampleMediaItems, samplePosts, sampleUseCases, termsDraft } from "./sample-content";
 
 test("removes refund-policy links from nested footer groups and keeps other links unchanged", () => {
   const source = {
@@ -38,6 +38,16 @@ test("sample collection sizes and coverage labels are explicit", () => {
   assert.ok(sampleMediaItems.every((item) => item.sample && item.publication.includes("not verified")));
   assert.equal(sampleUseCases.length, 6);
   assert.ok(sampleUseCases.every((item) => item.sample && item.body.includes("not a customer story")));
+  assert.ok(samplePosts.every((post) => post.body_md.split(/\s+/).length > 100));
+});
+
+test("legal drafts include review notices and operator-specific placeholders", () => {
+  assert.ok(privacyDraft.reviewNotice.includes("not legal advice"));
+  assert.ok(privacyDraft.body.includes("[Insert full legal entity name"));
+  assert.ok(privacyDraft.body.includes("[Insert monitored privacy email"));
+  assert.ok(termsDraft.reviewNotice.includes("not legal advice"));
+  assert.ok(termsDraft.body.includes("[Insert jurisdiction after legal review]"));
+  assert.ok(termsDraft.body.includes("[Insert monitored legal contact]"));
 });
 
 test("renames only the old built-in case-study link", () => {

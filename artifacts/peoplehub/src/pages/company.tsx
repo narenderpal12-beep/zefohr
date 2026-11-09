@@ -101,7 +101,7 @@ export function CaseStudiesPage() {
   if (!content) return <PageSkeleton />;
   return (
     <>
-      <Hero section={cs} page={page} crumb="Case studies" />
+      <Hero section={cs} page={page} crumb="Use cases" />
       <PageBody page={page} />
       <Container>
         {!items.length ? <Empty icon={FolderOpen} text={str(cs.emptyMessage, 'Use cases will appear here when published.')} /> : (

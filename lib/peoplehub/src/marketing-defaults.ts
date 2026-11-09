@@ -7,7 +7,7 @@ const companyLinks=[
 ];
 const resourceLinks=[
   {label:"Blog",href:"/blog"},{label:"Media coverage",href:"/media-coverage"},
-  {label:"Case studies",href:"/case-studies"},{label:"FAQs",href:"/faq"},
+  {label:"Use cases",href:"/case-studies"},{label:"FAQs",href:"/faq"},
 ];
 export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:string):Doc{
   const suiteLink=(s:Doc)=>({label:s.title,href:`/features/${s.slug}`,description:s.description,icon:s.icon});

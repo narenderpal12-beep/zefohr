@@ -81,6 +81,7 @@ export const defaults: Record<string, any> = {
   preview:{label:"HRMS preview · People, payroll and attendance in one place.",payrollLabel:"Payroll run",payrollPeriod:"Mar 26",payrollDetail:"248 payslips",statutoryLabel:"Statutory",statutoryTitle:"PF ECR filed",statutoryDetail:"ESI 12 / PT 4 states",approvalLabel:"WhatsApp approval",approvalTitle:"Leave request",approvalStatus:"Approved",approvalDetail:"2 days",attendanceLabel:"Attendance",attendanceValue:"96.4%",attendanceDetail:"Example workplace"},
 };
 Object.assign(defaults,marketingDefaults(suites,services,complianceNote));
+defaults.pageLayouts={routes:{}};
 defaults.clients=clientDefaults;
 export const defaultPages = [
   ...additionalMarketingPages,

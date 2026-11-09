@@ -1,0 +1,16 @@
+---
+name: Page-wise website authoring
+description: Standing requirements for editable pages, reusable sections and navigation.
+---
+
+Existing website pages must remain available. Admin Content should be organised by a page dropdown, showing the sections linked to that page and allowing multiple additional sections. Admins can create dynamic pages and select them inside navigation menus, including mega-menu submenus.
+
+**Why:** The user requested page-wise editing and clarified that new dynamic pages belong “inside menus,” while existing pages remain.
+
+**How to apply:** Keep existing routes and content compatible when extending the page builder. New pages and sections inherit the website’s selected theme. Clearly distinguish shared content changes from page-only changes.
+
+Page editing must offer section ordering, reset to defaults and an editable hero slider with multiple layout choices.
+
+**Why:** The user requested up/down controls, default resets and a hero slider with two or three options.
+
+**How to apply:** Confirm content-discarding resets. A page-only section reset must not reset shared website content; relink a shared block instead. Keep the current live page unchanged until its edited layout is saved.

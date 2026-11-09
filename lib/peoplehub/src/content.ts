@@ -8,15 +8,31 @@ import { invalidateSeo,discoverPages,cleanPath } from "./seo";
 import { paymentProvider } from "./payments/provider";
 import { rateLimit } from "express-rate-limit";
 import { clientsSchema, safeLogo } from "./clients";
+import { pageLayoutsSchema, pageSectionsSchema, reservedPageSlug, retargetPageLinks } from "./page-builder";
 
 const uuid=z.string().uuid();
+function validateSectionLinks(value:unknown):void{
+  if(Array.isArray(value)){for(const item of value)validateSectionLinks(item);return;}
+  if(!value||typeof value!=="object")return;
+  for(const [key,item] of Object.entries(value)){
+    if(typeof item==="string"&&item){
+      if(/^(imageUrl|logoUrl|imageSrc)$/i.test(key)&&(!safeLogo(item)||item.length>200000))fail("Section images must be local images, HTTPS images or PNG/JPEG/WebP uploads up to 150KB");
+      else if(/(?:href|url)$/i.test(key)&&! /^(?:\/(?!\/)|#|\?|https?:\/\/|mailto:|tel:)/i.test(item)&&!/^data:image\/(?:png|jpeg|webp);base64,/.test(item))fail("Use a local page, HTTPS link, email or telephone link");
+    }else if(item&&typeof item==="object")validateSectionLinks(item);
+  }
+}
 function validateContent(key:string,value:Doc) {
   if(!value || typeof value!=="object" || Array.isArray(value))fail("A section must be a JSON object");
-  const sectionLimit=["suites","services"].includes(key)?2100000:key==="clients"?1500000:500000;
+  const sectionLimit=["suites","services","pageLayouts"].includes(key)?2100000:key==="clients"?1500000:500000;
   if(JSON.stringify(value).length>sectionLimit)fail(["clients","suites","services"].includes(key)?"Image collection is too large. Use smaller images or fewer uploads.":"Section is too large");
   if(key==="clients"){
     const result=clientsSchema.safeParse(value);
     if(!result.success)fail(result.error.issues[0]?.message??"Invalid client details");
+  }
+  if(key==="pageLayouts"){
+    const result=pageLayoutsSchema.safeParse(value);
+    if(!result.success)fail(result.error.issues.map(i=>`${i.path.join(".")}: ${i.message}`).join("; "));
+    for(const layout of Object.values(result.data.routes))validateSectionLinks(layout.sections);
   }
   if(["suites","services"].includes(key)){
     if(!Array.isArray(value.items)||!value.items.length)fail("At least one item is required");
@@ -165,27 +181,50 @@ adminRouter.get("/:entity",async(req,res)=>{
   if(!["pages","posts","leads"].includes(entity))fail("Unknown collection",404);
   res.json((await pool.query(`SELECT * FROM ${entity} ORDER BY ${entity==="leads"?"created_at":"updated_at"} DESC LIMIT 1000`)).rows);
 });
+async function syncPageMenus(client:any,actor:string,oldSlug:string,newSlug:string|null){
+  for(const key of ["nav","footer"]){
+    const stored=(await client.query("SELECT value FROM site_content WHERE key=$1 FOR UPDATE",[key])).rows[0];
+    const before=stored?.value ?? defaults[key];
+    const after=retargetPageLinks(before,`/${oldSlug}`,newSlug?`/${newSlug}`:null);
+    if(JSON.stringify(before)===JSON.stringify(after))continue;
+    await client.query("INSERT INTO site_content_history(key,value,updated_by) VALUES($1,$2,$3)",[key,JSON.stringify(before),actor]);
+    await client.query("INSERT INTO site_content(key,value,updated_by) VALUES($1,$2,$3) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_by=excluded.updated_by,updated_at=now()",[key,JSON.stringify(after),actor]);
+    await audit(client,actor,"content.page-links",key,before,after);
+  }
+}
 async function writeRecord(entity:string,id:string|null,input:Doc,actor:string){
   if(!["pages","posts"].includes(entity))fail("This collection does not support this operation",405);
   if(id&&!uuid.safeParse(id).success)fail("Invalid record ID");
   const parser=entity==="pages"?pageInput:postInput;
   const p=parser.safeParse(input);if(!p.success)fail(p.error.issues.map(i=>`${i.path.join(".")}: ${i.message}`).join("; "));
   const b=p.data as Doc;
+  const before=id?(await pool.query(`SELECT * FROM ${entity} WHERE id=$1`,[id])).rows[0]:null;
+  if(id&&!before)fail("Record not found",404);
   if(entity==="pages"){
     b.slug=cleanPath("/"+b.slug.replace(/^\/+/,"")).slice(1);
-    if(/^(api|admin|dashboard|login|register|features|services|pricing|about|contact|faq|blog|privacy-policy|terms|refund-policy)(\/|$)/.test(b.slug))fail("This path is reserved for a built-in page");
+    if(!/^[a-z0-9]+(?:[-/][a-z0-9]+)*$/.test(b.slug))fail("Use a lower-case page path with words separated by hyphens or slashes");
+    if(reservedPageSlug(b.slug)&&before?.slug!==b.slug)fail("This path is reserved for an existing website page");
+    if(JSON.stringify(b.content).length>1500000)fail("Page content is too large. Use smaller images or fewer sections");
+    if(b.content?.sections!==undefined){
+      const sections=pageSectionsSchema.safeParse(b.content.sections);
+      if(!sections.success)fail(sections.error.issues.map(i=>`${i.path.join(".")}: ${i.message}`).join("; "));
+      if(sections.data.some(s=>s.type==="original"))fail("Original page sections are only available on existing website pages");
+      validateSectionLinks(sections.data);
+      b.content.sections=sections.data;
+    }
   }
   if(entity==="posts"){
     if(b.cover_image_url&&!/^https?:\/\//.test(b.cover_image_url)&&!b.cover_image_url.startsWith("/"))fail("Invalid cover image URL");
     if(b.published_at && Number.isNaN(Date.parse(b.published_at)))fail("Invalid publication date");
     if(b.status==="published"&&!b.published_at)b.published_at=new Date().toISOString();
   }
-  const before=id?(await pool.query(`SELECT * FROM ${entity} WHERE id=$1`,[id])).rows[0]:null;
-  if(id&&!before)fail("Record not found",404);
   const keys=Object.keys(b);
   const values=keys.map(k=>k==="content"?JSON.stringify(b[k]):b[k]);
   const row=await transaction(async client=>{
     const out=id?(await client.query(`UPDATE ${entity} SET ${keys.map((k,i)=>`${k}=$${i+1}`).join(",")},updated_at=now() WHERE id=$${values.length+1} RETURNING *`,[...values,id])).rows[0]:(await client.query(`INSERT INTO ${entity}(${keys.join(",")}) VALUES(${values.map((_,i)=>`$${i+1}`).join(",")}) RETURNING *`,values)).rows[0];
+    if(entity==="pages" && before && !reservedPageSlug(before.slug) && (before.slug!==out.slug || out.status!=="published")){
+      await syncPageMenus(client,actor,before.slug,out.status==="published"?out.slug:null);
+    }
     await audit(client,actor,id?`${entity}.update`:`${entity}.create`,out.id,before,out);return out;
   });
   invalidateSeo();await discoverPages();return row;
@@ -213,7 +252,12 @@ adminRouter.delete("/:entity/:id",async(req,res)=>{
   if(!["pages","posts","leads"].includes(entity))fail("Deletion is not supported for this collection",405);
   if(!uuid.safeParse(id).success)fail("Invalid ID");
   await transaction(async client=>{
+    if(entity==="pages"){
+      const current=(await client.query("SELECT slug FROM pages WHERE id=$1 FOR UPDATE",[id])).rows[0];
+      if(current&&reservedPageSlug(current.slug))fail("Existing website pages cannot be deleted. Edit their sections in Content instead");
+    }
     const old=(await client.query(`DELETE FROM ${entity} WHERE id=$1 RETURNING *`,[id])).rows[0];if(!old)fail("Record not found",404);
+    if(entity==="pages")await syncPageMenus(client,(req as any).user.id,old.slug,null);
     await audit(client,(req as any).user.id,`${entity}.delete`,id,old,null);
   });
   invalidateSeo();await discoverPages();res.json({ok:true});

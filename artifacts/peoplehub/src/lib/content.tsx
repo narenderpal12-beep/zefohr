@@ -56,6 +56,13 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   return <ContentCtx.Provider value={data as AnyObj | undefined}>{children}</ContentCtx.Provider>;
 }
 
+/** Overrides only the given section keys for descendants; every other key still comes from the live content. */
+export function ContentOverrideProvider({ overrides, children }: { overrides: AnyObj; children: ReactNode }) {
+  const parent = useContext(ContentCtx);
+  const value = useMemo(() => ({ ...(parent ?? {}), ...overrides }), [parent, overrides]);
+  return <ContentCtx.Provider value={value}>{children}</ContentCtx.Provider>;
+}
+
 export function useContent(): AnyObj | undefined {
   return useContext(ContentCtx);
 }

@@ -2,7 +2,8 @@ import { lazy, Suspense, useState, useEffect, type ReactElement, type ReactNode 
 import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useResolveSeo, getResolveSeoQueryKey } from '@workspace/api-client-react';
-import { BootstrapProvider, ContentProvider, ModeProvider, str, type AnyObj, type Bootstrap } from '@/lib/content';
+import { BootstrapProvider, ContentProvider, ModeProvider, str, useSection, type AnyObj, type Bootstrap } from '@/lib/content';
+import { PageBlocks } from '@/components/site/page-blocks';
 import { PublicShell } from '@/components/site/layout';
 import {
   AboutPage, BlogPage, BlogPostPage, ContactPage, DynamicPage, FaqPage, FeatureDetailPage, FeaturesPage, HomePage, NotFoundPage,
@@ -72,7 +73,16 @@ function ThemeRoot({ children }: { children: ReactNode }) {
   );
 }
 
-const pub = (C: () => ReactElement | null) => function PublicPage() { return <PublicShell><C /></PublicShell>; };
+/** Applies a saved per-route layout. The original block renders C directly, so there is no recursive wrapping. */
+function RouteLayout({ C }: { C: () => ReactElement | null }) {
+  const [loc] = useLocation();
+  const layouts = useSection('pageLayouts') as AnyObj;
+  const path = `/${loc.split('?')[0].replace(/^\/+|\/+$/g, '')}`;
+  const sections = (layouts?.routes as AnyObj | undefined)?.[path]?.sections;
+  if (!Array.isArray(sections)) return <C />;
+  return <PageBlocks sections={sections} original={<C />} />;
+}
+const pub = (C: () => ReactElement | null) => function PublicPage() { return <PublicShell><RouteLayout C={C} /></PublicShell>; };
 const P = {
   home: pub(HomePage), features: pub(FeaturesPage), feature: pub(FeatureDetailPage), services: pub(ServicesPage), service: pub(ServiceDetailPage),
   solution: pub(SolutionPage), pricing: pub(PricingPage), about: pub(AboutPage), contact: pub(ContactPage), faq: pub(FaqPage), blog: pub(BlogPage),
@@ -113,7 +123,7 @@ export function PublicRoutes() {
         <Route path="/dashboard">{()=> <PrivateRoute/>}</Route>
         <Route path="/admin">{()=> <PrivateRoute admin/>}</Route>
         <Route path="/admin/:tab">{()=> <PrivateRoute admin/>}</Route>
-        <Route path="/:slug*" component={P.dynamic} />
+        <Route path="/*" component={P.dynamic} />
         <Route component={P.notFound} />
       </Switch>
     </ThemeRoot>

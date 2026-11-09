@@ -15,6 +15,8 @@ for(const [path,type,title] of [
   ["/register","app_public","Create your organisation"],["/login","app_public","Sign in"],
   ["/dashboard","app_public","Organisation dashboard"],["/admin","app_public","Site administration"],["/admin/seo","app_public","SEO Manager"],
   ["/admin/clients","app_public","Client management"],
+  ["/admin/content","app_public","Page content"],["/admin/pages","app_public","Dynamic pages"],["/admin/menus","app_public","Navigation menus"],
+  ["/admin/branding","app_public","Branding"],["/admin/appearance","app_public","Website appearance"],
   ["/features/:slug","suite","%title%"],["/services/:slug","service","%title%"],["/blog/:slug","blog","%title%"],["/case-studies/:slug","case_study","%title%"],
 ]) registerSeoRoute({path,type,titleFrom:title});
 export const appPath = (path:string)=>/^\/(admin|dashboard|login|register)(\/|$)/.test(path);

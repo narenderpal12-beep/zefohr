@@ -1,22 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  Building2, FileText, Gauge, History, Inbox, LayoutGrid, LogOut, Newspaper, Pencil, Plus, RotateCcw, Route as RouteIcon, Save, Search, Trash2, X, Palette, Sparkles, Handshake,
+  Building2, FileText, Gauge, Inbox, LayoutGrid, ListTree, LogOut, Newspaper, Pencil, Plus, Route as RouteIcon, Save, Search, Trash2, X, Palette, Sparkles, Handshake,
 } from 'lucide-react';
 import {
   useGetAdminSummary, useGetAdminRecords, useCreateAdminRecord, useUpdateAdminRecord, useDeleteAdminRecord,
-  useGetContent, useGetContentHistory, useSaveContent, useResetContent,
-  getGetAdminSummaryQueryKey, getGetAdminRecordsQueryKey, getGetContentQueryKey, getGetContentHistoryQueryKey,
+  getGetAdminSummaryQueryKey, getGetAdminRecordsQueryKey,
   getGetPagesQueryKey, getGetPostsQueryKey,
 } from '@workspace/api-client-react';
 import { arr, errMsg, str, useSection, type AnyObj } from '@/lib/content';
 import { BrandMark, ModeToggle, useMe } from '@/components/site/layout';
 import { SkeletonBlock } from '@/components/site/primitives';
-import { JsonForm, RawJson, aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
+import { aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
 import { AppearanceAdmin, BrandingAdmin } from './admin-appearance';
 import { ClientsAdmin } from './admin-clients';
+import { ContentAdmin, PagesAdmin } from './admin-content';
+import { MenusAdmin } from './admin-menus';
+import { confirmLeave } from '@/lib/site-pages';
 import { SeoManager, RedirectsPanel } from './admin-seo';
 import { SignedOutPanel, StatusPill, useSignOut } from './dashboard';
 import { fmtDate } from './public';
@@ -29,6 +31,7 @@ const TABS = [
   { key: 'content', label: 'Content', icon: LayoutGrid },
   { key: 'clients', label: 'Clients', icon: Handshake },
   { key: 'pages', label: 'Pages', icon: FileText },
+  { key: 'menus', label: 'Menus', icon: ListTree },
   { key: 'posts', label: 'Blog posts', icon: Newspaper },
   { key: 'seo', label: 'SEO Manager', icon: Search },
   { key: 'organisations', label: 'Organisations', icon: Building2 },
@@ -84,7 +87,7 @@ export function AdminPage() {
         </div>
         <nav className="scrollbar-thin flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:px-3">
           {TABS.map((t) => (
-            <Link key={t.key} href={t.key ? `/admin/${t.key}` : '/admin'} className={cn('flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition', tab === t.key ? 'bg-white/[0.08] text-foreground' : 'text-muted-foreground hover:bg-white/[0.04] hover:text-foreground')} data-testid={`link-admin-${t.key || 'overview'}`}>
+            <Link key={t.key} href={t.key ? `/admin/${t.key}` : '/admin'} onClick={(e) => { if (!confirmLeave()) e.preventDefault(); }} className={cn('flex shrink-0 items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition', tab === t.key ? 'bg-white/[0.08] text-foreground' : 'text-muted-foreground hover:bg-white/[0.04] hover:text-foreground')} data-testid={`link-admin-${t.key || 'overview'}`}>
               <t.icon className="h-4 w-4" />{t.label}
             </Link>
           ))}
@@ -98,9 +101,10 @@ export function AdminPage() {
         {tab === '' && <Overview />}
         {tab === 'appearance' && <AppearanceAdmin />}
         {tab === 'branding' && <BrandingAdmin />}
-        {tab === 'content' && <ContentEditor />}
+        {tab === 'content' && <ContentAdmin />}
         {tab === 'clients' && <ClientsAdmin />}
         {tab === 'pages' && <PagesAdmin />}
+        {tab === 'menus' && <MenusAdmin />}
         {tab === 'posts' && <PostsAdmin />}
         {tab === 'seo' && <SeoManager />}
         {tab === 'organisations' && <OrgsAdmin />}
@@ -146,64 +150,6 @@ function Overview() {
   );
 }
 
-function ContentEditor() {
-  const qc = useQueryClient();
-  const content = useGetContent({ query: { queryKey: getGetContentQueryKey() } });
-  const keys = useMemo(() => Object.keys((content.data ?? {}) as AnyObj), [content.data]);
-  const [key, setKey] = useState('hero');
-  const [draft, setDraft] = useState<any>(null);
-  const [mode, setMode] = useState<'form' | 'raw' | 'history'>('form');
-  const [saved, setSaved] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const loadedFor = useMemo(() => ({ k: '' }), []);
-  useEffect(() => {
-    if (content.data && loadedFor.k !== key) { loadedFor.k = key; setDraft(structuredClone((content.data as AnyObj)[key] ?? {})); setSaved(false); }
-  }, [content.data, key, loadedFor]);
-  const save = useSaveContent();
-  const reset = useResetContent();
-  const history = useGetContentHistory(key, { query: { queryKey: getGetContentHistoryQueryKey(key), enabled: mode === 'history' } });
-  const after = () => { void qc.invalidateQueries({ queryKey: getGetContentQueryKey() }); void qc.invalidateQueries({ queryKey: getGetContentHistoryQueryKey(key) }); };
-  const doSave = () => save.mutate({ key, data: draft }, { onSuccess: () => { setSaved(true); after(); setTimeout(() => setSaved(false), 2500); } });
-  const doReset = () => { if (!window.confirm(`Reset "${key}" to built-in defaults?`)) return; reset.mutate({ key }, { onSuccess: (d) => { const v = (d as AnyObj)?.value ?? d; setDraft(v); loadedFor.k = ''; after(); } }); };
-  if (content.isLoading) return <SkeletonBlock className="h-96" />;
-  return (
-    <div>
-      <h1 className="font-display text-3xl font-bold">Site content</h1>
-      <div className="mt-6 grid gap-4 lg:grid-cols-[200px_1fr]">
-        <div className="scrollbar-thin flex gap-1 overflow-x-auto lg:flex-col">
-          {keys.map((k) => <button key={k} type="button" onClick={() => setKey(k)} disabled={uploading} className={cn('shrink-0 rounded-lg px-3 py-2 text-left font-mono text-xs', k === key ? 'bg-brand text-on-brand' : 'text-muted-foreground hover:bg-white/5')} data-testid={`button-section-${k}`}>{k}</button>)}
-        </div>
-        <Panel
-          title={key}
-          actions={<>
-            {(['form', 'raw', 'history'] as const).map((m) => <button key={m} type="button" className={cn(aBtn, mode === m && 'border-[color:var(--ph-indigo)] text-foreground')} onClick={() => setMode(m)} disabled={uploading} data-testid={`tab-content-${m}`}>{m === 'form' ? 'Form' : m === 'raw' ? 'Raw JSON' : <><History className="h-3 w-3" />History</>}</button>)}
-            <button type="button" className={aBtn} onClick={doReset} disabled={reset.isPending || uploading} data-testid="button-reset-content"><RotateCcw className="h-3 w-3" />Reset to default</button>
-            <button type="button" className={aBtnPrimary} onClick={doSave} disabled={save.isPending || draft === null || uploading} data-testid="button-save-content"><Save className="h-3.5 w-3.5" />{save.isPending ? 'Saving...' : saved ? 'Saved' : 'Save'}</button>
-          </>}
-        >
-          {save.isError ? <p className="mb-3 text-sm text-red-300">{errMsg(save.error)}</p> : null}
-          {key === 'theme' || key === 'brand' ? <p className="mb-3 text-xs text-muted-foreground">Tip: the <Link href={key === 'theme' ? '/admin/appearance' : '/admin/branding'} className="text-[color:var(--ph-cyan)] underline">{key === 'theme' ? 'Appearance' : 'Branding'}</Link> tab offers friendly controls with a preview.</p> : null}
-          {key === 'suites' || key === 'services' ? <p className="mb-3 text-xs text-muted-foreground">Each offering has its own photo. Browse to replace it, preview your image, edit the image description for accessibility, then click Save. Removing an image hides it on the website.</p> : null}
-          {mode === 'form' && draft !== null ? <JsonForm value={draft} onChange={setDraft} path={key} onBusyChange={setUploading} /> : null}
-          {mode === 'raw' ? <RawJson value={draft} onChange={setDraft} /> : null}
-          {mode === 'history' ? (
-            history.isLoading ? <SkeletonBlock className="h-40" /> : arr<AnyObj>(history.data).length ? (
-              <ul className="space-y-2">
-                {arr<AnyObj>(history.data).map((h, i) => (
-                  <li key={i} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/[0.07] p-3 text-sm">
-                    <span className="font-mono text-xs text-muted-foreground">{h.updated_at || h.created_at ? new Date(String(h.updated_at ?? h.created_at)).toLocaleString('en-IN') : `Version ${i + 1}`} {h.updated_by ? `by ${str(h.updated_by)}` : ''}</span>
-                    <button type="button" className={aBtn} onClick={() => { setDraft(structuredClone(h.value ?? h)); setMode('form'); }} data-testid={`button-restore-content-${i}`}>Load into editor</button>
-                  </li>
-                ))}
-              </ul>
-            ) : <p className="text-sm text-muted-foreground">No saved versions yet.</p>
-          ) : null}
-        </Panel>
-      </div>
-    </div>
-  );
-}
-
 function useRecords(entity: 'pages' | 'posts' | 'organisations' | 'leads') {
   const qc = useQueryClient();
   const q = useGetAdminRecords(entity, { query: { queryKey: getGetAdminRecordsQueryKey(entity) } });
@@ -224,58 +170,6 @@ function Table({ head, children, empty }: { head: string[]; children: ReactNode;
         <tbody className="divide-y divide-white/[0.05]">{children}</tbody>
       </table>
       {empty ? <p className="py-10 text-center text-sm text-muted-foreground">Nothing here yet.</p> : null}
-    </div>
-  );
-}
-
-const blankPage = { slug: 'solutions/', title: '', status: 'draft', content: { intro: '', body: '', benefits: [''], faq: [{ question: '', answer: '' }] } };
-
-function PagesAdmin() {
-  const { q, rows, invalidate } = useRecords('pages');
-  const create = useCreateAdminRecord();
-  const update = useUpdateAdminRecord();
-  const del = useDeleteAdminRecord();
-  const [edit, setEdit] = useState<AnyObj | null>(null);
-  const saveIt = () => {
-    if (!edit) return;
-    const data = { slug: edit.slug, title: edit.title, status: edit.status, content: edit.content };
-    const opts = { onSuccess: () => { invalidate(); setEdit(null); } };
-    if (edit.id) update.mutate({ entity: 'pages', id: String(edit.id), data }, opts); else create.mutate({ entity: 'pages', data }, opts);
-  };
-  const err = create.error ?? update.error;
-  return (
-    <div>
-      <h1 className="font-display text-3xl font-bold">Landing pages</h1>
-      <p className="mt-1 text-sm text-muted-foreground">Use slugs like <code className="font-mono">solutions/payroll-software-india</code> or any top-level slug. Published pages are added to SEO and sitemap automatically.</p>
-      <Panel className="mt-6" actions={<button type="button" className={aBtnPrimary} onClick={() => setEdit(structuredClone(blankPage))} data-testid="button-new-page"><Plus className="h-3.5 w-3.5" />New page</button>}>
-        {q.isLoading ? <SkeletonBlock className="h-40" /> : (
-          <Table head={['Title', 'Path', 'Status', '']} empty={!rows.length}>
-            {rows.map((r) => (
-              <tr key={String(r.id)} data-testid={`row-page-${String(r.id)}`}>
-                <td className="px-3 py-2.5">{str(r.title)}</td>
-                <td className="px-3 py-2.5 font-mono text-xs"><a href={`/${str(r.slug)}`} target="_blank" rel="noreferrer" className="text-[color:var(--ph-cyan)]">/{str(r.slug)}</a></td>
-                <td className="px-3 py-2.5"><StatusPill s={str(r.status) === 'published' ? 'active' : 'cancelled'} /></td>
-                <td className="px-3 py-2.5 text-right"><div className="flex justify-end gap-1">
-                  <button className={aBtn} onClick={() => setEdit(structuredClone({ ...blankPage, ...r, content: { ...blankPage.content, ...(r.content ?? {}) } }))} data-testid={`button-edit-page-${String(r.id)}`}><Pencil className="h-3 w-3" /></button>
-                  <button className={cn(aBtn, 'text-red-300')} onClick={() => { if (window.confirm('Delete this page?')) del.mutate({ entity: 'pages', id: String(r.id) }, { onSuccess: invalidate }); }} data-testid={`button-delete-page-${String(r.id)}`}><Trash2 className="h-3 w-3" /></button>
-                </div></td>
-              </tr>
-            ))}
-          </Table>
-        )}
-      </Panel>
-      {edit ? (
-        <Modal title={edit.id ? 'Edit page' : 'New page'} onClose={() => setEdit(null)} wide>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <LField label="Title"><input className={aInput} value={str(edit.title)} onChange={(e) => setEdit({ ...edit, title: e.target.value })} data-testid="input-page-title" /></LField>
-            <LField label="Slug"><input className={cn(aInput, 'font-mono')} value={str(edit.slug)} onChange={(e) => setEdit({ ...edit, slug: e.target.value.replace(/^\/+/, '') })} data-testid="input-page-slug" /></LField>
-            <LField label="Status"><select className={aInput} value={str(edit.status)} onChange={(e) => setEdit({ ...edit, status: e.target.value })} data-testid="select-page-status"><option value="draft">Draft</option><option value="published">Published</option></select></LField>
-          </div>
-          <div className="mt-5"><div className="mb-2 text-xs font-medium text-foreground/80">Content (intro, markdown body, benefits, FAQ)</div><JsonForm value={edit.content} onChange={(c) => setEdit({ ...edit, content: c })} path="page" /></div>
-          {err ? <p className="mt-3 text-sm text-red-300">{errMsg(err)}</p> : null}
-          <div className="mt-6 flex justify-end gap-2"><button className={aBtn} onClick={() => setEdit(null)}>Cancel</button><button className={aBtnPrimary} onClick={saveIt} disabled={create.isPending || update.isPending} data-testid="button-save-page"><Save className="h-3.5 w-3.5" />Save page</button></div>
-        </Modal>
-      ) : null}
     </div>
   );
 }

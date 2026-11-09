@@ -2,3 +2,4 @@
 - [SSR integration pitfalls](ssr-integration.md) — Lottie v3 API differs from v2; keep client/server provider trees identical.
 - [Brand image input](brand-input.md) — Brand logos use image browsing and preview, not a URL field.
 - [Product and service imagery](product-imagery.md) — Real workplace photography replaces rejected clay-like graphics; retain custom uploads and removals.
+- [Page-wise authoring](page-authoring.md) — Preserve existing pages; admins add sections and dynamic pages and select them inside mega-menu submenus.

@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, Trash2 } from 'lucide-react';
 import { encodeLogo } from '@/lib/logo-upload';
 import { cn } from '@/lib/utils';
+import { LinkPicker } from './link-picker';
 
 export const aInput = 'w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--ph-indigo)] focus:ring-2 focus:ring-[color:var(--ph-indigo)]/20';
 export const aBtn = 'inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white/[0.08] disabled:opacity-50';
@@ -31,16 +32,18 @@ const TEMPLATES: [RegExp, () => any][] = [
   [/^footer-columns$/, () => ({ title: '', links: [{ label: '', href: '' }] })],
   [/^footer-columns-\d+-links$/, () => ({ label: '', href: '' })],
   [/^footer-socials$/, () => ({ platform: 'instagram', label: '', url: '', enabled: true })],
-  [/^nav-links$/, () => ({ label: '', href: '' })],
+  [/^block-cards-items$/, () => ({ title: '', description: '', icon: 'Sparkles', href: '' })],
+  [/^(footer-links|nav-links)$/, () => ({ label: '', href: '' })],
 ];
 export function templateFor(path: string, sample?: any): any {
   const t = TEMPLATES.find(([r]) => r.test(path));
   if (t) return t[1]();
-  if (/^(suites|services)-items$/.test(path)) return { ...(sample && typeof sample === 'object' ? blankLike(sample) : {}), imageUrl: '', imageAlt: '' };
+  if (/^(block-)?(suites|services)-items$/.test(path)) return { ...(sample && typeof sample === 'object' ? blankLike(sample) : {}), imageUrl: '', imageAlt: '' };
   return sample !== undefined ? blankLike(sample) : '';
 }
 
-const IMAGE_PATH = /^(suites|services)-items-\d+-imageUrl$/;
+const IMAGE_PATH = /^((block-)?(suites|services)-items-\d+-imageUrl|block-[A-Za-z]+(-\w+)*-imageUrl)$/;
+const HREF_PATH = /^(nav-megaMenu|nav-links|footer-columns|footer-links|block-[A-Za-z]+)(-\w+)*-(href|ctaHref)$/;
 const BusyCtx = createContext<(delta: number) => void>(() => undefined);
 
 /** Browse + preview + remove for suite/service photos. Whole form is locked while encoding, so the result cannot land on a stale draft or a moved item. */
@@ -103,6 +106,7 @@ function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; o
   if (typeof value === 'number') {
     return <input type="number" className={aInput} value={value} onChange={(e) => onChange(e.target.value === '' ? 0 : Number(e.target.value))} data-testid={`input-${path}`} />;
   }
+  if (HREF_PATH.test(path) && (typeof value === 'string' || value == null)) return <LinkPicker value={value ?? ''} onChange={onChange} testId={`input-${path}`} />;
   if (typeof value === 'string') {
     const long = value.length > 70 || value.includes('\n');
     return long

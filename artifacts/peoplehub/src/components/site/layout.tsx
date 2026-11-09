@@ -301,6 +301,7 @@ export function SiteFooter() {
   const brand = useBrand();
   const cols = arr<AnyObj>(footer.columns);
   const raw = arr<AnyObj>(footer.links);
+  const bottomLinks = cols.length ? raw.filter(l => !Array.isArray(l.links)) : [];
   const groups: { title: string; links: AnyObj[] }[] = cols.length
     ? cols.map((g) => ({ title: str(g.title), links: arr<AnyObj>(g.links) }))
     : raw.length && raw[0] && Array.isArray(raw[0].links)
@@ -353,6 +354,7 @@ export function SiteFooter() {
         <div className="mt-6 flex flex-wrap items-center justify-between gap-3 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground/80">
           <span data-testid="text-copyright">{copyright ? copyright.replace(/\{year\}/g, String(year)) : `\u00A9 ${year} ${brand.name}`}</span>
           <div className="flex flex-wrap items-center gap-5">
+            {bottomLinks.map((link, i) => <Link key={i} href={str(link.href, '/')} className="hover:text-foreground" data-testid={`link-footer-bottom-${i}`}>{str(link.label)}</Link>)}
             <Link href="/login" className="hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4" data-testid="link-footer-admin-panel">{str(footer.adminLoginLabel, 'Admin Panel')}</Link>
             <span>Made for Indian MSMEs</span>
           </div>

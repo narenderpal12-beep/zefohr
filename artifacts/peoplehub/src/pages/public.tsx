@@ -7,6 +7,7 @@ import {
   AiSection, ContactSection, CtaBand, FaqSection, Hero, Integrations, PricingTable, ServiceGrid, Stats, SuitesTabs, WhyUs, priorityTone,
 } from '@/components/site/sections';
 import { ClientsSection } from '@/components/site/clients';
+import { PageBlocks } from '@/components/site/page-blocks';
 import { SolutionImage } from '@/components/site/solution-image';
 import { cn } from '@/lib/utils';
 
@@ -290,6 +291,14 @@ export function BlogPostPage() {
 
 function CmsPageView({ page, crumbs }: { page: AnyObj; crumbs: { label: string; href?: string }[] }) {
   const c = (page.content ?? {}) as AnyObj;
+  if (Array.isArray(c.sections)) {
+    return (
+      <>
+        <PageHero crumbs={[...crumbs, { label: str(page.title) }]} title={str(page.title)} description={str(c.intro)} />
+        <PageBlocks sections={c.sections} />
+      </>
+    );
+  }
   return (
     <>
       <PageHero crumbs={[...crumbs, { label: str(page.title) }]} title={str(page.title)} description={str(c.intro)}>

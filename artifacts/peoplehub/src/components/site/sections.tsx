@@ -44,10 +44,10 @@ function HeroVisual({ lottieUrl }: { lottieUrl?: string }) {
           <span key={i} className="absolute h-3 w-3 rounded-full" style={{ background: c, boxShadow: `0 0 18px ${c}`, left: `${50 + 50 * Math.cos((i * Math.PI) / 2)}%`, top: `${50 + 50 * Math.sin((i * Math.PI) / 2)}%`, transform: 'translate(-50%,-50%)' }} />
         ))}
       </div>
-      <div className="absolute inset-[30%] grid place-items-center rounded-full glass border-gradient">
+      <div className="absolute left-1/2 top-1/2 grid h-24 w-40 max-w-[80%] -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full glass border-gradient sm:h-28 sm:w-44">
         <div className="text-center">
           <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{str(preview.payrollLabel)}</div>
-          <div className="font-display text-3xl font-bold text-foreground sm:text-4xl">{str(preview.payrollPeriod)}</div>
+          <div className="font-display text-2xl font-bold text-foreground sm:text-3xl">{str(preview.payrollPeriod)}</div>
           <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-0.5 text-[11px] text-emerald-300"><Check className="h-3 w-3" /> {str(preview.payrollDetail)}</div>
         </div>
       </div>

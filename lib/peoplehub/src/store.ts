@@ -207,6 +207,57 @@ export async function seed(reset=false) {
       }
       await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v4','{\"seeded\":true}'::jsonb)");
     }
+    const copyTextSeed=(await client.query("SELECT key FROM site_content WHERE key='sample_content_v5'")).rowCount;
+    if(!copyTextSeed){
+      const mediaIntro="Editorial topics are clearly marked until verified coverage is available.";
+      const caseIntro="Workflows for different teams; not customer stories or performance claims.";
+      const clean=(value:unknown):unknown=>{
+        if(typeof value!=="string")return value;
+        const cleaned=value.replace(/\bsample\b/gi,"").replace(/[ \t]{2,}/g," ").replace(/[ \t]+([,.;:!?])/g,"$1").replace(/[ \t]+$/gm,"").trim();
+        return cleaned.replace(/^[a-z]/,(first)=>first.toUpperCase());
+      };
+      const blogRows=(await client.query("SELECT id,title,excerpt,body_md,tags FROM posts WHERE tags @> ARRAY['Sample article']::text[] FOR UPDATE")).rows;
+      for(const post of blogRows){
+        const tags=(Array.isArray(post.tags)?post.tags:[]).filter((tag:string)=>!/\bsample\b/i.test(tag));
+        await client.query("UPDATE posts SET title=$1,excerpt=$2,body_md=$3,tags=$4,updated_at=now() WHERE id=$5",
+          [clean(post.title),clean(post.excerpt),clean(post.body_md),tags,post.id]);
+      }
+      const mediaRow=(await client.query("SELECT value FROM site_content WHERE key='media' FOR UPDATE")).rows[0];
+      if(mediaRow){
+        const media={...mediaRow.value};
+        media.description=clean(media.description);
+        media.items=(Array.isArray(media.items)?media.items:[]).map((item:Doc)=>{
+          if(typeof item.sampleId!=="string"||!item.sampleId.startsWith("media-sample-"))return item;
+          const title=typeof item.title==="string"?item.title.replace(/^Sample editorial topic:\s*/i,""):item.title;
+          return {...item,publication:item.publication==="Sample entry"?"":clean(item.publication),title:clean(title),description:clean(item.description)};
+        });
+        await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='media'",[JSON.stringify(media)]);
+      }
+      const casesRow=(await client.query("SELECT value FROM site_content WHERE key='caseStudies' FOR UPDATE")).rows[0];
+      if(casesRow){
+        const cases={...casesRow.value};
+        cases.eyebrow=clean(cases.eyebrow);
+        cases.description=clean(cases.description);
+        cases.items=(Array.isArray(cases.items)?cases.items:[]).map((item:Doc)=>{
+          if(typeof item.sampleId!=="string"||!item.sampleId.startsWith("usecase-sample-"))return item;
+          const body=typeof item.body==="string"?item.body.replace(/^>\s*Sample workflow\s*—\s*/i,"> "):item.body;
+          const summary=clean(item.summary);
+          const cleanedBody=clean(body);
+          const normalizedBody=typeof cleanedBody==="string"?cleanedBody.replace(/^>\s*not\b/i,"> Not"):cleanedBody;
+          return {...item,summary:typeof summary==="string"?summary.replace(/^A approach\b/i,"An approach"):summary,body:normalizedBody};
+        });
+        await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='caseStudies'",[JSON.stringify(cases)]);
+      }
+      await client.query(
+        "UPDATE pages SET content=jsonb_set(content,'{intro}',to_jsonb($1::text)),updated_at=now() WHERE slug='media-coverage' AND content->>'intro'=$2",
+        [mediaIntro,"Sample editorial topics are clearly marked until verified coverage is available."],
+      );
+      await client.query(
+        "UPDATE pages SET content=jsonb_set(content,'{intro}',to_jsonb($1::text)),updated_at=now() WHERE slug='case-studies' AND content->>'intro'=$2",
+        [caseIntro,"Sample workflows for different teams; not customer stories or performance claims."],
+      );
+      await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v5','{\"seeded\":true}'::jsonb)");
+    }
     const content = await getContent();
     for(let i=0;i<content.suites.items.length;i++){
       const s=content.suites.items[i];

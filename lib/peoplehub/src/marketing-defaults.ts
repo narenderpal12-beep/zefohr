@@ -62,14 +62,14 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
     },
     media:{
       eyebrow:"IN THE CONVERSATION",title:"PeopleHub in the media.",
-      description:"Sample editorial topics are shown for layout illustration only. They are not verified third-party coverage.",
+      description:"Editorial topics are shown for layout illustration only. They are not verified third-party coverage.",
       emptyMessage:"Verified media coverage will be published here when available.",
       items:sampleMediaItems,linkLabel:"Read coverage",
       pressTitle:"Press enquiries",pressDescription:"For interviews, company information or press enquiries, contact our team.",pressButton:"Contact our team",
     },
     caseStudies:{
-      eyebrow:"SAMPLE WORKFLOWS",title:"Use cases for people-first teams.",
-      description:"These sample use cases describe possible workflows, not actual customers, implementations or measured results.",
+      eyebrow:"WORKFLOWS",title:"Use cases for people-first teams.",
+      description:"These use cases describe possible workflows, not actual customers, implementations or measured results.",
       emptyMessage:"Use cases will appear here as they are prepared.",
       items:sampleUseCases,linkLabel:"Explore the use case",backLabel:"All use cases",ctaLabel:"Request a demo",
     },
@@ -100,8 +100,8 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
 }
 
 export const additionalMarketingPages=[
-  {slug:"media-coverage",title:"Media coverage",section:"media",intro:"Sample editorial topics are clearly marked until verified coverage is available."},
-  {slug:"case-studies",title:"Use cases",section:"caseStudies",intro:"Sample workflows for different teams; not customer stories or performance claims."},
+  {slug:"media-coverage",title:"Media coverage",section:"media",intro:"Editorial topics are clearly marked until verified coverage is available."},
+  {slug:"case-studies",title:"Use cases",section:"caseStudies",intro:"Workflows for different teams; not customer stories or performance claims."},
   {slug:"careers",title:"Careers at PeopleHub",section:"careers",intro:"Explore opportunities to help build better work."},
   {slug:"career",title:"Careers at PeopleHub",section:"careers",intro:"Explore opportunities to help build better work."},
   {slug:"support",title:"Our support",section:"support",intro:"Get help with your account, plans and organisation setup."},

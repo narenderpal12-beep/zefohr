@@ -6,7 +6,7 @@ export const samplePosts = [
     cover_image_url: "/editorial/people-operations.jpg",
     cover_image_alt: "HR colleagues welcoming a new employee at an office desk",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "HR operations", "Employee records"],
+    tags: ["HR operations", "Employee records"],
     published_at: "2026-01-12T09:00:00.000Z",
     body_md: `An employee record is more useful when people can find the information they need and understand which version is current. For a growing business, that begins with a shared structure—not a new tool by itself.
 
@@ -35,7 +35,7 @@ PeopleHub is designed to help teams organise connected people workflows. [Explor
     cover_image_url: "/editorial/people-operations.jpg",
     cover_image_alt: "Colleagues welcoming a new team member in a modern office",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "Onboarding", "Employee experience"],
+    tags: ["Onboarding", "Employee experience"],
     published_at: "2026-02-09T09:00:00.000Z",
     body_md: `A new employee should not have to guess who to meet, where to find basic information or what happens next. A simple first-week plan gives the new joiner and their team a shared reference point.
 
@@ -64,7 +64,7 @@ Good onboarding is a repeatable process with room for a human welcome. [See how 
     cover_image_url: "/editorial/payroll-review.jpg",
     cover_image_alt: "HR and finance colleagues reviewing payroll information on a laptop",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "Payroll operations", "Process"],
+    tags: ["Payroll operations", "Process"],
     published_at: "2026-03-16T09:00:00.000Z",
     body_md: `Payroll preparation is easier to coordinate when the team knows which inputs are needed, who reviews them and how corrections are handled. The right checklist depends on your organisation and professional advice; this guide is about process organisation, not statutory guidance.
 
@@ -93,7 +93,7 @@ Statutory calculations and filings should be confirmed with qualified specialist
     cover_image_url: "/editorial/workforce-shifts.jpg",
     cover_image_alt: "A supervisor coordinating with frontline colleagues at work",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "Attendance", "Workforce management"],
+    tags: ["Attendance", "Workforce management"],
     published_at: "2026-04-13T09:00:00.000Z",
     body_md: `Attendance processes become confusing when people do not know how to record time, report an exception or ask for a correction. A clear process explains each step in language employees and managers can use.
 
@@ -122,7 +122,7 @@ The right workflow should be understandable before it is automated. [Explore tim
     cover_image_url: "/editorial/manager-conversation.jpg",
     cover_image_alt: "A manager listening to a teammate during a one-to-one conversation",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "Leave management", "Employee experience"],
+    tags: ["Leave management", "Employee experience"],
     published_at: "2026-05-11T09:00:00.000Z",
     body_md: `A leave process should tell employees how to request time away and tell managers what they need to review. When the steps are unclear, people rely on informal messages and teams can lose track of decisions.
 
@@ -151,7 +151,7 @@ Leave rules vary by organisation and applicable requirements. Have the policy re
     cover_image_url: "/editorial/hiring-conversation.jpg",
     cover_image_alt: "A recruiter speaking with a candidate in an office meeting room",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "Recruitment", "Hiring"],
+    tags: ["Recruitment", "Hiring"],
     published_at: "2026-06-08T09:00:00.000Z",
     body_md: `Hiring involves several people and many handoffs. A shared workflow can make the process easier to coordinate without taking judgement away from the people making hiring decisions.
 
@@ -180,7 +180,7 @@ Tools can help organise applications and interviews, but hiring decisions remain
     cover_image_url: "/editorial/people-operations.jpg",
     cover_image_alt: "Colleagues discussing employee information together in an office",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "Self-service", "HR systems"],
+    tags: ["Self-service", "HR systems"],
     published_at: "2026-07-13T09:00:00.000Z",
     body_md: `Employee self-service can make everyday requests easier to find. It also needs clear access rules: employees should know what they can view or update, and administrators should understand how changes are reviewed.
 
@@ -209,7 +209,7 @@ Self-service should make support easier to reach, not replace it. Review privacy
     cover_image_url: "/editorial/workforce-shifts.jpg",
     cover_image_alt: "A supervisor coordinating with colleagues in an operations workspace",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "Multi-location", "HR operations"],
+    tags: ["Multi-location", "HR operations"],
     published_at: "2026-08-10T09:00:00.000Z",
     body_md: `When teams operate from different offices, sites or shifts, everyday HR processes can drift. A shared operating model gives everyone a common starting point while leaving room for approved local differences.
 
@@ -238,7 +238,7 @@ Technology can centralise records, but the organisation still needs clear owners
     cover_image_url: "/editorial/manager-conversation.jpg",
     cover_image_alt: "A manager and teammate having a focused one-to-one conversation",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "Manager enablement", "Engagement"],
+    tags: ["Manager enablement", "Engagement"],
     published_at: "2026-09-14T09:00:00.000Z",
     body_md: `Regular check-ins work best when they create space for a useful conversation rather than another form to complete. A simple structure helps managers and employees prepare while keeping the discussion personal.
 
@@ -267,7 +267,7 @@ Performance processes should be fair, clear and appropriate for your organisatio
     cover_image_url: "/editorial/payroll-review.jpg",
     cover_image_alt: "Colleagues planning a shared workplace process around a laptop",
     author: "PeopleHub Editorial",
-    tags: ["Sample article", "HR technology", "Implementation"],
+    tags: ["HR technology", "Implementation"],
     published_at: "2026-10-12T09:00:00.000Z",
     body_md: `Digitising HR does not need to begin with a large transformation programme. A focused roadmap starts with an existing process, identifies the friction and introduces change in manageable steps.
 
@@ -299,51 +299,51 @@ export const sampleMediaItems = [
   {
     sampleId: "media-sample-01",
     sample: true,
-    publication: "Sample entry",
+    publication: "",
     imageUrl: "/editorial/people-operations.jpg",
     imageAlt: "HR colleagues welcoming a new employee at an office desk",
-    title: "Sample editorial topic: Making people operations easier to navigate",
+    title: "Making people operations easier to navigate",
     description: "Illustrative media-page copy about clear HR workflows for growing teams. This is not a published article or a claim of press coverage.",
   },
   {
     sampleId: "media-sample-02",
     sample: true,
-    publication: "Sample entry",
+    publication: "",
     imageUrl: "/editorial/payroll-review.jpg",
     imageAlt: "HR and finance colleagues reviewing payroll information on a laptop",
-    title: "Sample editorial topic: Bringing payroll preparation into a shared process",
+    title: "Bringing payroll preparation into a shared process",
     description: "Illustrative discussion prompt about organising payroll inputs and reviews. No publisher, interview or coverage is represented.",
   },
   {
     sampleId: "media-sample-03",
     sample: true,
-    publication: "Sample entry",
+    publication: "",
     imageUrl: "/editorial/hiring-conversation.jpg",
     imageAlt: "A recruiter speaking with a candidate in an office meeting room",
-    title: "Sample editorial topic: Designing a thoughtful employee onboarding journey",
-    description: "A placeholder for a future editorial mention about onboarding practices. It is sample website content, not an actual media reference.",
+    title: "Designing a thoughtful employee onboarding journey",
+    description: "A placeholder for a future editorial mention about onboarding practices. It is website content, not an actual media reference.",
   },
   {
     sampleId: "media-sample-04",
     sample: true,
-    publication: "Sample entry",
+    publication: "",
     imageUrl: "/editorial/workforce-shifts.jpg",
     imageAlt: "A supervisor coordinating with frontline colleagues at work",
-    title: "Sample editorial topic: Supporting distributed and multi-location teams",
+    title: "Supporting distributed and multi-location teams",
     description: "Illustrative topic copy for a future media entry. No organisation, journalist or publication has endorsed PeopleHub.",
   },
   {
     sampleId: "media-sample-05",
     sample: true,
-    publication: "Sample entry",
+    publication: "",
     imageUrl: "/editorial/manager-conversation.jpg",
     imageAlt: "Colleagues discussing a workplace topic in a bright office",
-    title: "Sample editorial topic: Practical considerations when choosing HR software",
-    description: "Sample editorial copy only. Replace this item with a verified article and its original publisher link before presenting it as coverage.",
+    title: "Practical considerations when choosing HR software",
+    description: "Replace this item with a verified article and its original publisher link before presenting it as coverage.",
   },
 ];
 
-const useCaseBody = (title: string, intro: string, steps: string[]) => `> Sample workflow — not a customer story. This example describes a possible process and does not claim a real implementation or result.
+const useCaseBody = (title: string, intro: string, steps: string[]) => `> Not a customer story. This example describes a possible process and does not claim a real implementation or result.
 
 ${intro}
 
@@ -364,7 +364,7 @@ export const sampleUseCases = [
     slug: "use-case-growing-msme-people-operations",
     title: "People operations for a growing MSME",
     industry: "Growing businesses",
-    summary: "A sample workflow for bringing employee records, onboarding and routine requests into a more consistent operating model.",
+    summary: "A workflow for bringing employee records, onboarding and routine requests into a more consistent operating model.",
     body: useCaseBody("Growing MSME", "A growing business may find that employee information and routine processes are spread across separate files and conversations. This example shows a possible way to organise those handoffs.", [
       "Define the employee information the team needs and assign owners for updates.",
       "Use a shared onboarding checklist with visible responsibilities.",
@@ -378,7 +378,7 @@ export const sampleUseCases = [
     slug: "use-case-multi-location-workforce",
     title: "Coordinating a multi-location workforce",
     industry: "Multi-location operations",
-    summary: "A sample approach to common workflows with documented location-specific handoffs.",
+    summary: "An approach to common workflows with documented location-specific handoffs.",
     body: useCaseBody("Multi-location workforce", "Teams in different locations may follow slightly different routines. A shared process can make the common steps visible while documenting approved local variations.", [
       "Use a common naming scheme for locations, teams and work schedules.",
       "Document standard handoffs and identify any approved local differences.",
@@ -392,8 +392,8 @@ export const sampleUseCases = [
     slug: "use-case-payroll-input-coordination",
     title: "Preparing payroll inputs across teams",
     industry: "Payroll administration",
-    summary: "A sample monthly coordination flow for collecting, reviewing and clarifying payroll-related information.",
-    body: useCaseBody("Payroll input coordination", "Payroll preparation may depend on timely information from HR, managers and employees. This sample focuses on organising the internal collection and review process, not statutory calculations.", [
+    summary: "A monthly coordination flow for collecting, reviewing and clarifying payroll-related information.",
+    body: useCaseBody("Payroll input coordination", "Payroll preparation may depend on timely information from HR, managers and employees. This focuses on organising the internal collection and review process, not statutory calculations.", [
       "Publish an internal calendar for approved input collection.",
       "Name the owner for each source of information and approval.",
       "Record questions and corrections with an appropriate review trail.",
@@ -406,7 +406,7 @@ export const sampleUseCases = [
     slug: "use-case-frontline-attendance-and-shifts",
     title: "Attendance and shift coordination",
     industry: "Frontline and shift teams",
-    summary: "A sample workflow for recording attendance, communicating schedule changes and resolving exceptions.",
+    summary: "A workflow for recording attendance, communicating schedule changes and resolving exceptions.",
     body: useCaseBody("Frontline attendance", "Frontline teams often need straightforward instructions for recording time and reporting schedule changes. The organisation should define its policy and exception process before configuring tools.", [
       "Explain which approved attendance method each team should use.",
       "Publish the route for missed entries, device issues and shift changes.",
@@ -420,7 +420,7 @@ export const sampleUseCases = [
     slug: "use-case-structured-hiring",
     title: "A more structured hiring workflow",
     industry: "Recruitment teams",
-    summary: "A sample journey from approved role requirements through interviews, communication and joining coordination.",
+    summary: "A journey from approved role requirements through interviews, communication and joining coordination.",
     body: useCaseBody("Structured hiring", "A hiring team can use a shared workflow to keep role requirements, interview stages and candidate communication visible without automating hiring decisions.", [
       "Confirm an approved role brief and decision owners before sourcing.",
       "Use consistent interview stages and role-related evaluation notes.",
@@ -434,7 +434,7 @@ export const sampleUseCases = [
     slug: "use-case-employee-self-service",
     title: "Employee self-service for routine tasks",
     industry: "Employee experience",
-    summary: "A sample design for letting employees find information and submit routine requests with clear support paths.",
+    summary: "A design for letting employees find information and submit routine requests with clear support paths.",
     body: useCaseBody("Employee self-service", "Self-service can help employees find common information and complete routine tasks. It should make support easier to reach and use access rules that fit the organisation's responsibilities.", [
       "Choose a small set of useful employee-facing tasks to begin with.",
       "Explain which profile changes require HR review.",

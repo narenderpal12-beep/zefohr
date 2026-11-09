@@ -14,3 +14,9 @@ Do not mention competitor names anywhere on the public site. Keep the mandatory 
 **Why:** The user explicitly required this to avoid overstating what software alone fulfils.
 
 **How to apply:** Preserve the disclaimer's meaning when redesigning or editing copy: EOR, POSH, FRRO and labour-law support require appropriate legal, statutory and operational expertise; software alone does not fulfil every obligation.
+
+For blog, use-case and media-coverage copy, remove the word “sample” without inserting a substitute label.
+
+**Why:** The user explicitly requested removing that word without replacing it.
+
+**How to apply:** Remove the word from existing and future copy in these sections while preserving unrelated text and factual disclaimers.

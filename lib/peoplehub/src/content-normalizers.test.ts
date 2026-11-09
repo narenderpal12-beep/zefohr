@@ -31,14 +31,16 @@ test("appends missing seeded records once without replacing edited or custom ite
   assert.equal(once[1], custom);
 });
 
-test("sample collection sizes and coverage labels are explicit", () => {
+test("built-in blog, media and use-case copy has no sample label", () => {
   assert.equal(samplePosts.length, 10);
   assert.equal(new Set(samplePosts.map((post) => post.slug)).size, 10);
   assert.equal(sampleMediaItems.length, 5);
-  assert.ok(sampleMediaItems.every((item) => item.sample && item.publication === "Sample entry" && item.imageUrl && item.imageAlt));
+  assert.ok(sampleMediaItems.every((item) => item.sample && item.publication === "" && item.imageUrl && item.imageAlt));
+  assert.ok(sampleMediaItems.every((item) => !/\bsample\b/i.test([item.publication, item.title, item.description].join(" "))));
   assert.equal(sampleUseCases.length, 6);
-  assert.ok(sampleUseCases.every((item) => item.sample && !item.title.startsWith("Sample workflow:") && item.body.includes("not a customer story")));
+  assert.ok(sampleUseCases.every((item) => item.sample && !/\bsample\b/i.test([item.title, item.summary, item.body].join(" ")) && item.body.toLowerCase().includes("not a customer story")));
   assert.ok(samplePosts.every((post) => !!post.cover_image_url && !!post.cover_image_alt));
+  assert.ok(samplePosts.every((post) => !/\bsample\b/i.test([...post.tags, post.title, post.excerpt, post.body_md].join(" "))));
   assert.ok(samplePosts.every((post) => post.body_md.split(/\s+/).length > 100));
   assert.ok(sampleUseCases.every((item) => !item.title.includes("Illustrative use case") && !item.body.includes("Illustrative use case")));
 });

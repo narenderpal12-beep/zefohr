@@ -165,7 +165,7 @@ function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; o
   }
   return (
     <div className={cn('grid gap-4', depth > 0 && 'border-l border-white/[0.07] pl-3')}>
-      {Object.entries(value).map(([k, v]) => (
+      {Object.entries(value).filter(([k]) => !(/^(media|caseStudies)-items-\d+$/.test(path) && ['sample', 'sampleId'].includes(k))).map(([k, v]) => (
         <div key={k}>
           <div className="mb-1.5 text-xs font-medium text-foreground/80">{IMAGE_PATH.test(`${path}-${k}`) ? 'Photo' : humanize(k)}</div>
           <JsonNode value={v} onChange={(nv) => onChange({ ...value, [k]: nv })} path={`${path}-${k}`} depth={depth + 1} />

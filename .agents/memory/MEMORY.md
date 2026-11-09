@@ -1,4 +1,4 @@
-- [Marketing scope](marketing-scope.md) — Phase 1 only; no competitor names; compliance wording must remain editable and visible.
+- [Marketing scope](marketing-scope.md) — Phase 1 only; no competitor names; no “sample” replacement labels in blogs, use cases or media coverage.
 - [SSR integration pitfalls](ssr-integration.md) — Lottie v3 API differs from v2; keep client/server provider trees identical.
 - [Brand image input](brand-input.md) — Brand logos use image browsing and preview, not a URL field.
 - [Product and service imagery](product-imagery.md) — Real workplace photography replaces rejected clay-like graphics; retain custom uploads and removals.

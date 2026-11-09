@@ -202,7 +202,7 @@ export function BrandingAdmin() {
             <F label="Tagline"><input className={aInput} value={str(b.tagline)} onChange={(e) => brand.setDraft({ ...b, tagline: e.target.value })} data-testid="input-brand-tagline" /></F>
             <F label="Logo type"><select className={aInput} value={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} disabled={uploading} onChange={(e) => brand.setDraft({ ...b, logoMode: e.target.value })} data-testid="select-brand-logo-type"><option value="text">Text only</option><option value="image">Image logo</option><option value="mark">Built-in mark and text</option></select></F>
             {str(b.logoMode, b.logoUrl ? 'image' : 'mark') === 'image' ? <>
-              <F label="Upload logo" hint="PNG, JPEG or WebP. Resized to 800px, maximum 150KB after processing. Click Save to publish."><input className={aInput} type="file" accept="image/png,image/jpeg,image/webp" disabled={uploading} data-testid="input-brand-logo-upload" onChange={async (e) => {
+              <F label="Browse logo image" hint="Choose a PNG, JPEG or WebP from your device. Preview it before clicking Save."><input className={cn(aInput, 'file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-2 file:text-on-brand')} type="file" accept="image/png,image/jpeg,image/webp" disabled={uploading} data-testid="input-brand-logo-upload" onChange={async (e) => {
                 const file = e.target.files?.[0]; e.target.value = '';
                 if (!file) return;
                 setUploading(true); setUploadError('');
@@ -210,7 +210,6 @@ export function BrandingAdmin() {
                 catch (error) { setUploadError((error as Error).message); }
                 finally { setUploading(false); }
               }} /></F>
-              <F label="Logo URL" hint={str(b.logoUrl).startsWith('data:') ? 'Uploaded image ready. Enter a URL to replace it.' : 'Alternatively use an HTTPS URL or /path.'}><input className={aInput} disabled={uploading} value={str(b.logoUrl).startsWith('data:') ? '' : str(b.logoUrl)} onChange={(e) => brand.setDraft({ ...b, logoUrl: e.target.value })} data-testid="input-brand-logo" /></F>
               <F label="Logo alt text"><input className={aInput} value={str(b.logoAlt)} onChange={(e) => brand.setDraft({ ...b, logoAlt: e.target.value })} data-testid="input-brand-logo-alt" /></F>
               <div className="flex items-center justify-between gap-3 sm:col-span-2"><span className="text-sm">Show brand name next to logo</span><Switch on={b.showWordmark !== false} onChange={(v) => brand.setDraft({ ...b, showWordmark: v })} id="wordmark" /></div>
             </> : null}
@@ -218,8 +217,15 @@ export function BrandingAdmin() {
             {uploadError ? <p role="alert" className="text-sm text-red-500">{uploadError}</p> : null}
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
-            <p className="mb-4 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Preview</p>
-            <BrandMark name={str(b.name, 'PeopleHub')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} logoMode={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} showWordmark={b.showWordmark !== false} />
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Logo preview</p>
+            {str(b.logoMode, b.logoUrl ? 'image' : 'mark') === 'image' ? (
+              <>
+                <div className="flex min-h-36 items-center justify-center rounded-lg border border-slate-200 bg-white p-4" data-testid="brand-image-preview">
+                  {b.logoUrl ? <img src={str(b.logoUrl)} alt={str(b.logoAlt, `${str(b.name, 'Brand')} logo preview`)} className="max-h-40 max-w-full object-contain" /> : <p className="text-center text-sm text-slate-500">Browse and select an image to preview your logo here.</p>}
+                </div>
+                {b.showWordmark !== false ? <p className="brand-wordmark mt-3 font-display text-xl font-bold">{str(b.name, 'PeopleHub')}</p> : null}
+              </>
+            ) : <BrandMark name={str(b.name, 'PeopleHub')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} logoMode={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} showWordmark={b.showWordmark !== false} />}
             {b.tagline ? <p className="mt-3 text-sm text-muted-foreground">{str(b.tagline)}</p> : null}
           </div>
         </div>

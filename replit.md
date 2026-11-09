@@ -6,14 +6,15 @@ Phase 1 marketing website and organisation signup portal for an Indian HRMS prod
 
 - `artifacts/peoplehub: web` — primary Express/Vite SSR website, including a standalone API for production.
 - `artifacts/api-server: API Server` — existing shared `/api` service using the same domain library.
-- `pnpm run db:setup` — development SQL schema and non-overwriting defaults.
-- `pnpm run typecheck` — workspace library and app checks.
-- `pnpm --filter @workspace/api-spec run codegen` — API hooks and Zod validators.
+- `npm run db:setup` — development SQL schema and non-overwriting defaults.
+- `npm run typecheck` — workspace library and app checks.
+- `npm run codegen --workspace=@workspace/api-spec` — API hooks and Zod validators.
 - See README.md for secure admin creation, environment configuration and future roadmap.
 
 ## Architecture decisions
 
-- Keep the provided pnpm workspace. Website client/server are in the PeopleHub artifact; shared domain logic is in `lib/peoplehub`.
+- Use npm only: npm workspaces, root package-lock.json, npm scripts and npm workflow/publishing commands. The user explicitly rejected other package managers.
+- Keep the existing workspace directories. Website client/server are in the PeopleHub artifact; shared domain logic is in `lib/peoplehub`.
 - The user explicitly requested JWT/bcrypt and pg/plain SQL; do not migrate this app to Clerk or Drizzle without asking.
 - **Do not use Drizzle push for this product:** the SQL migration is authoritative and the starter Drizzle schema does not describe these tables.
 - Production database schema changes go through Replit Publish. Startup seeds missing content only; it never executes schema DDL.
@@ -22,6 +23,8 @@ Phase 1 marketing website and organisation signup portal for an Indian HRMS prod
 ## Product boundaries
 
 The user requested Phase 1 only. HRMS operational modules are future scope. Payment provider is intentionally a stub: subscribe requests stay pending; no simulated successful payments. No public super-admin creation or default password.
+
+The user requires light/dark mode by default, at least ten admin-selected site-wide themes, editable brand/content, product/service mega menus and broad social/footer navigation. Do not replace these with hardcoded branding or a single dark palette.
 
 ## Key files
 

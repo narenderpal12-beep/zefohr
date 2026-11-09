@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 
 export const aInput = 'w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--ph-indigo)] focus:ring-2 focus:ring-[color:var(--ph-indigo)]/20';
 export const aBtn = 'inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-foreground hover:bg-white/[0.08] disabled:opacity-50';
-export const aBtnPrimary = 'inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-2 text-xs font-semibold text-white disabled:opacity-50';
+export const aBtnPrimary = 'inline-flex items-center gap-1.5 rounded-lg bg-brand px-3.5 py-2 text-xs font-semibold text-on-brand disabled:opacity-50';
 
 const humanize = (k: string) => k.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
 
@@ -17,6 +17,26 @@ function blankLike(sample: any): any {
   return '';
 }
 
+/** Typed templates so empty collections get proper item shapes. Matched against the editor path. */
+const TEMPLATES: [RegExp, () => any][] = [
+  [/^media-items$/, () => ({ title: '', publication: '', date: '', url: '', description: '' })],
+  [/^caseStudies-items$/, () => ({ title: '', industry: '', summary: '', body: '', slug: '' })],
+  [/^careers-items$/, () => ({ title: '', department: '', location: '', employmentType: '', description: '', applyEmail: '' })],
+  [/-faq$/, () => ({ question: '', answer: '' })],
+  [/^nav-megaMenu$/, () => ({ label: '', href: '', groups: [{ title: '', links: [{ label: '', href: '', description: '', icon: '' }] }] })],
+  [/^nav-megaMenu-\d+-groups$/, () => ({ title: '', links: [{ label: '', href: '', description: '', icon: '' }] })],
+  [/^nav-megaMenu-\d+-groups-\d+-links$/, () => ({ label: '', href: '', description: '', icon: '' })],
+  [/^footer-columns$/, () => ({ title: '', links: [{ label: '', href: '' }] })],
+  [/^footer-columns-\d+-links$/, () => ({ label: '', href: '' })],
+  [/^footer-socials$/, () => ({ platform: 'instagram', label: '', url: '', enabled: true })],
+  [/^nav-links$/, () => ({ label: '', href: '' })],
+];
+export function templateFor(path: string, sample?: any): any {
+  const t = TEMPLATES.find(([r]) => r.test(path));
+  if (t) return t[1]();
+  return sample !== undefined ? blankLike(sample) : '';
+}
+
 /** Generic recursive editor for any JSON value. */
 export function JsonForm({ value, onChange, path = 'root', depth = 0 }: { value: any; onChange: (v: any) => void; path?: string; depth?: number }) {
   if (value === null || value === undefined) {
@@ -25,7 +45,7 @@ export function JsonForm({ value, onChange, path = 'root', depth = 0 }: { value:
   if (typeof value === 'boolean') {
     return (
       <button type="button" onClick={() => onChange(!value)} className={cn('relative h-6 w-11 rounded-full transition', value ? 'bg-brand' : 'bg-white/15')} aria-pressed={value} data-testid={`toggle-${path}`}>
-        <span className={cn('absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all', value ? 'left-[22px]' : 'left-0.5')} />
+        <span className={cn('absolute top-0.5 h-5 w-5 rounded-full bg-on-brand transition-all', value ? 'left-[22px]' : 'left-0.5')} />
       </button>
     );
   }
@@ -55,7 +75,7 @@ export function JsonForm({ value, onChange, path = 'root', depth = 0 }: { value:
             <JsonForm value={item} onChange={(v) => { const n = [...value]; n[i] = v; onChange(n); }} path={`${path}-${i}`} depth={depth + 1} />
           </div>
         ))}
-        <button type="button" className={aBtn} onClick={() => onChange([...value, value.length ? blankLike(value[0]) : ''])} data-testid={`button-add-${path}`}><Plus className="h-3 w-3" />Add item</button>
+        <button type="button" className={aBtn} onClick={() => onChange([...value, templateFor(path, value.length ? value[0] : undefined)])} data-testid={`button-add-${path}`}><Plus className="h-3 w-3" />Add item</button>
       </div>
     );
   }

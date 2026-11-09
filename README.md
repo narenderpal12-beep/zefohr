@@ -4,24 +4,24 @@ Editable marketing website, organisation registration portal and super-admin CMS
 
 ## Run locally
 
-This project retains the provided pnpm workspace rather than replacing it with an incompatible root-level client/server repository.
+This project uses **npm workspaces only** and a single root `package-lock.json`. Install, run, build, database and publishing commands all use npm.
 
 ```sh
-pnpm install
-pnpm run db:setup
+npm install
+npm run db:setup
 # Replit: run the managed PeopleHub and API Server workflows.
 # Outside Replit, with PORT and BASE_PATH set:
-PORT=3000 BASE_PATH=/ pnpm run dev
+npm run dev
 ```
 
-`npm run db:setup` and `npm run dev` also invoke the workspace scripts once dependencies are installed using pnpm.
+The standalone site defaults to port 3000 and `/`. Managed workflows supply their own port. Use `npm ci` for a clean, repeatable installation.
 
 - `artifacts/peoplehub/src`: React marketing website, organisation dashboard and admin UI.
 - `artifacts/peoplehub/server`: Express + Vite SSR, public HTML, real 404s, sitemap and robots routes.
 - `artifacts/api-server`: existing shared REST service at `/api`.
 - `lib/peoplehub/src`: domain modules shared by the API and the standalone SSR server.
 - `lib/peoplehub/migrations`: plain SQL development migrations using `pg`; no ORM migrations.
-- `lib/api-spec/openapi.yaml`: API contract; regenerate with `pnpm --filter @workspace/api-spec run codegen`.
+- `lib/api-spec/openapi.yaml`: API contract; regenerate with `npm run codegen --workspace=@workspace/api-spec`.
 
 The SSR Express app mounts the same API itself, so it can run as one standalone production app. In this Replit project the existing `/api` service remains the most-specific route. Both services use the same business code, PostgreSQL database and signing secret.
 
@@ -39,17 +39,17 @@ Never commit credentials or `.env` files.
 | `SUPER_ADMIN_PASSWORD` | Super-admin password of at least 10 characters, set securely |
 | `SITE_URL` | Actual published origin, e.g. the custom domain, with no path |
 
-No admin password is hardcoded and there is no public admin-creation endpoint. With no admin credentials configured, the site and organisation registration work, but admin access remains unavailable. After setting admin credentials, run `pnpm run db:seed` or restart PeopleHub. Seeding creates the admin only if the email does not exist; it never upgrades an existing organisation account or resets an existing user's password.
+No admin password is hardcoded and there is no public admin-creation endpoint. With no admin credentials configured, the site and organisation registration work, but admin access remains unavailable. After setting admin credentials, run `npm run db:seed` or restart PeopleHub. Seeding creates the admin only if the email does not exist; it never upgrades an existing organisation account or resets an existing user's password.
 
 JWTs expire in seven days and are stored in HttpOnly, SameSite=Lax cookies. Passwords are bcrypt-hashed. Sign-in and registration are rate limited. Account roles are checked server-side on every protected request. Cookie mutations are same-origin only. API errors use `{ "error": "message" }`.
 
 ## Database setup and seeding
 
 ```sh
-pnpm run db:migrate # development schema only
-pnpm run db:seed    # preserve edited content
-pnpm run db:setup   # both
-pnpm --filter @workspace/peoplehub-core run db:seed --reset # deliberately resets built-in CMS sections
+npm run db:migrate # development schema only
+npm run db:seed    # preserve edited content
+npm run db:setup   # both
+npm run db:seed --workspace=@workspace/peoplehub-core -- --reset # deliberately resets built-in CMS sections
 ```
 
 The SQL migration is idempotent. `--reset` overwrites CMS content and should not be used casually. Normal seed runs do not overwrite edits, blog posts, landing pages or SEO customisations.
@@ -92,9 +92,9 @@ Authentication-related paths are forced to noindex unless a deliberate override 
 ## Build / production
 
 ```sh
-pnpm run typecheck
-BASE_PATH=/ PORT=3000 pnpm --filter @workspace/peoplehub run build
-BASE_PATH=/ PORT=3000 pnpm run start
+npm run typecheck
+npm run build
+npm run start
 ```
 
 The client and SSR bundle are built separately. Express serves hashed assets with long-lived cache headers and dynamic HTML with no-store. Vite runs in middleware mode during development; public routes contain rendered content before browser JavaScript. Lottie is client-only and must not access browser globals on the server.
@@ -113,3 +113,15 @@ The client and SSR bundle are built separately. Express serves hashed assets wit
 Email verification and password reset; SSO; WhatsApp Business API; Razorpay billing/orders/signatures/webhooks; custom domains and white-label product features; multi-company and multi-location business modules; i18n/hreflang; API keys and webhooks; S3-compatible file storage; background jobs; full audit-log UI; employee and HR-manager operational screens; all Phase 2 HRMS functions.
 
 `lib/peoplehub/src/payments/provider.ts` defines the stub provider and the required verification/idempotency boundaries for a future Razorpay implementation.
+
+## Appearance, branding and expanded pages
+
+- Both light and dark colour modes are available by default. Visitor mode preferences use a cookie so the server and client render the same mode.
+- Appearance offers twelve palettes: Aurora, Ocean, Emerald, Sunset, Rose, Royal, Slate, Teal, Amber, Crimson, Indigo and Forest. Each has light/dark variants. The admin-selected palette applies site-wide, including forms and account screens, and existing visitors receive CMS updates automatically.
+- Branding controls the name, tagline, logo URL, logo alt text and wordmark visibility. The name also updates the global SEO site name.
+- Products and Services mega menus list the suites and specialist services. Resources and Company menus expose the expanded page collection; menu labels, descriptions and destinations are CMS content.
+- Blog and About Us remain available. New pages include Media Coverage, Case Studies, Careers, Our Support and Request a Demo. Coverage, stories and job opportunities start empty rather than inventing endorsements or vacancies.
+- Demo and support requests persist as contact leads with their request context. Submitting a demo does not automatically book a meeting.
+- The footer has product/service/company/resource columns and editable Instagram, LinkedIn, Facebook and X/Twitter options. Unconfigured social links do not pretend to point to an official account.
+- Configure `whatsapp.phone` with your actual number including country code to enable direct WhatsApp chat. Until configured, the floating contact control links to the contact page.
+- New collections and pages can be edited through Content and Pages. Existing edits are preserved during normal seeds.

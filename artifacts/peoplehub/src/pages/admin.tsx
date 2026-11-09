@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
-  Building2, FileText, Gauge, History, Inbox, LayoutGrid, LogOut, Newspaper, Pencil, Plus, RotateCcw, Route as RouteIcon, Save, Search, Trash2, X,
+  Building2, FileText, Gauge, History, Inbox, LayoutGrid, LogOut, Newspaper, Pencil, Plus, RotateCcw, Route as RouteIcon, Save, Search, Trash2, X, Palette, Sparkles,
 } from 'lucide-react';
 import {
   useGetAdminSummary, useGetAdminRecords, useCreateAdminRecord, useUpdateAdminRecord, useDeleteAdminRecord,
@@ -12,9 +12,10 @@ import {
   getGetPagesQueryKey, getGetPostsQueryKey,
 } from '@workspace/api-client-react';
 import { arr, errMsg, str, useSection, type AnyObj } from '@/lib/content';
-import { BrandMark, useMe } from '@/components/site/layout';
+import { BrandMark, ModeToggle, useMe } from '@/components/site/layout';
 import { SkeletonBlock } from '@/components/site/primitives';
 import { JsonForm, RawJson, aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
+import { AppearanceAdmin, BrandingAdmin } from './admin-appearance';
 import { SeoManager, RedirectsPanel } from './admin-seo';
 import { SignedOutPanel, StatusPill, useSignOut } from './dashboard';
 import { fmtDate } from './public';
@@ -22,6 +23,8 @@ import { cn } from '@/lib/utils';
 
 const TABS = [
   { key: '', label: 'Overview', icon: Gauge },
+  { key: 'appearance', label: 'Appearance', icon: Palette },
+  { key: 'branding', label: 'Branding', icon: Sparkles },
   { key: 'content', label: 'Content', icon: LayoutGrid },
   { key: 'pages', label: 'Pages', icon: FileText },
   { key: 'posts', label: 'Blog posts', icon: Newspaper },
@@ -64,7 +67,6 @@ export function AdminPage() {
   const params = useParams<{ tab?: string }>();
   const tab = params.tab ?? '';
   const me = useMe();
-  const nav = useSection('nav');
   const signOut = useSignOut();
   if (me.isLoading) return <div className="mx-auto max-w-6xl space-y-4 p-8"><SkeletonBlock className="h-10 w-60" /><SkeletonBlock className="h-80" /></div>;
   if (me.isError || !me.data) return <SignedOutPanel title="Super admin access" text="Sign in with the super admin account configured in your environment secrets." />;
@@ -75,8 +77,8 @@ export function AdminPage() {
     <div className="min-h-[100dvh] lg:grid lg:grid-cols-[240px_1fr]">
       <aside className="sticky top-0 z-30 border-b border-white/[0.06] bg-[color:var(--ph-bg)]/90 backdrop-blur lg:h-[100dvh] lg:border-b-0 lg:border-r">
         <div className="flex items-center justify-between p-4 lg:block lg:p-5">
-          <Link href="/" data-testid="link-admin-site"><BrandMark name={str(nav.brand, 'PeopleHub')} /></Link>
-          <span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--ph-pink)] lg:mt-2 lg:block">Super admin</span>
+          <Link href="/" data-testid="link-admin-site"><BrandMark /></Link>
+          <div className="flex items-center gap-2 lg:mt-3 lg:justify-between"><span className="hidden font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--ph-pink)] lg:block">Super admin</span><ModeToggle className="h-8 w-8" /></div>
         </div>
         <nav className="scrollbar-thin flex gap-1 overflow-x-auto px-3 pb-3 lg:flex-col lg:px-3">
           {TABS.map((t) => (
@@ -92,6 +94,8 @@ export function AdminPage() {
       </aside>
       <main className="min-w-0 p-4 sm:p-8">
         {tab === '' && <Overview />}
+        {tab === 'appearance' && <AppearanceAdmin />}
+        {tab === 'branding' && <BrandingAdmin />}
         {tab === 'content' && <ContentEditor />}
         {tab === 'pages' && <PagesAdmin />}
         {tab === 'posts' && <PostsAdmin />}
@@ -163,18 +167,18 @@ function ContentEditor() {
       <h1 className="font-display text-3xl font-bold">Site content</h1>
       <div className="mt-6 grid gap-4 lg:grid-cols-[200px_1fr]">
         <div className="scrollbar-thin flex gap-1 overflow-x-auto lg:flex-col">
-          {keys.map((k) => <button key={k} type="button" onClick={() => setKey(k)} className={cn('shrink-0 rounded-lg px-3 py-2 text-left font-mono text-xs', k === key ? 'bg-brand text-white' : 'text-muted-foreground hover:bg-white/5')} data-testid={`button-section-${k}`}>{k}</button>)}
+          {keys.map((k) => <button key={k} type="button" onClick={() => setKey(k)} className={cn('shrink-0 rounded-lg px-3 py-2 text-left font-mono text-xs', k === key ? 'bg-brand text-on-brand' : 'text-muted-foreground hover:bg-white/5')} data-testid={`button-section-${k}`}>{k}</button>)}
         </div>
         <Panel
           title={key}
           actions={<>
-            {(['form', 'raw', 'history'] as const).map((m) => <button key={m} type="button" className={cn(aBtn, mode === m && 'border-[color:var(--ph-indigo)] text-white')} onClick={() => setMode(m)} data-testid={`tab-content-${m}`}>{m === 'form' ? 'Form' : m === 'raw' ? 'Raw JSON' : <><History className="h-3 w-3" />History</>}</button>)}
+            {(['form', 'raw', 'history'] as const).map((m) => <button key={m} type="button" className={cn(aBtn, mode === m && 'border-[color:var(--ph-indigo)] text-foreground')} onClick={() => setMode(m)} data-testid={`tab-content-${m}`}>{m === 'form' ? 'Form' : m === 'raw' ? 'Raw JSON' : <><History className="h-3 w-3" />History</>}</button>)}
             <button type="button" className={aBtn} onClick={doReset} disabled={reset.isPending} data-testid="button-reset-content"><RotateCcw className="h-3 w-3" />Reset to default</button>
             <button type="button" className={aBtnPrimary} onClick={doSave} disabled={save.isPending || draft === null} data-testid="button-save-content"><Save className="h-3.5 w-3.5" />{save.isPending ? 'Saving...' : saved ? 'Saved' : 'Save'}</button>
           </>}
         >
           {save.isError ? <p className="mb-3 text-sm text-red-300">{errMsg(save.error)}</p> : null}
-          {key === 'theme' && draft ? <div className="mb-4 flex gap-2">{Object.entries(draft as AnyObj).map(([k, v]) => <span key={k} className="flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground"><span className="h-5 w-5 rounded-md border border-white/20" style={{ background: String(v) }} />{k}</span>)}</div> : null}
+          {key === 'theme' || key === 'brand' ? <p className="mb-3 text-xs text-muted-foreground">Tip: the <Link href={key === 'theme' ? '/admin/appearance' : '/admin/branding'} className="text-[color:var(--ph-cyan)] underline">{key === 'theme' ? 'Appearance' : 'Branding'}</Link> tab offers friendly controls with a preview.</p> : null}
           {mode === 'form' && draft !== null ? <JsonForm value={draft} onChange={setDraft} path={key} /> : null}
           {mode === 'raw' ? <RawJson value={draft} onChange={setDraft} /> : null}
           {mode === 'history' ? (

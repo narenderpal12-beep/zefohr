@@ -2,12 +2,13 @@ import { lazy, Suspense, useState, useEffect, type ReactElement, type ReactNode 
 import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useResolveSeo, getResolveSeoQueryKey } from '@workspace/api-client-react';
-import { BootstrapProvider, ContentProvider, str, themeStyle, useContent, type AnyObj, type Bootstrap } from '@/lib/content';
+import { BootstrapProvider, ContentProvider, ModeProvider, str, type AnyObj, type Bootstrap } from '@/lib/content';
 import { PublicShell } from '@/components/site/layout';
 import {
   AboutPage, BlogPage, BlogPostPage, ContactPage, DynamicPage, FaqPage, FeatureDetailPage, FeaturesPage, HomePage, NotFoundPage,
   PricingPage, ServiceDetailPage, ServicesPage, SolutionPage,
 } from '@/pages/public';
+import { CareersPage, CaseStudiesPage, CaseStudyDetailPage, DemoPage, MediaPage, SupportPage } from '@/pages/company';
 import { LoginPage, RegisterPage } from '@/pages/auth';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/toaster';
@@ -53,15 +54,19 @@ function SeoSync() {
 }
 
 function ThemeRoot({ children }: { children: ReactNode }) {
-  const c = useContent();
-  return <div className="dark grain min-h-[100dvh] bg-[color:var(--ph-bg)] text-foreground" style={themeStyle(c?.theme as AnyObj | undefined)}>{children}</div>;
+  return (
+    <ModeProvider>
+      {(mode, style) => <div className={`${mode} grain min-h-[100dvh] bg-[color:var(--ph-bg)] text-foreground`} data-theme-mode={mode} style={style}>{children}</div>}
+    </ModeProvider>
+  );
 }
 
 const pub = (C: () => ReactElement | null) => function PublicPage() { return <PublicShell><C /></PublicShell>; };
 const P = {
   home: pub(HomePage), features: pub(FeaturesPage), feature: pub(FeatureDetailPage), services: pub(ServicesPage), service: pub(ServiceDetailPage),
   solution: pub(SolutionPage), pricing: pub(PricingPage), about: pub(AboutPage), contact: pub(ContactPage), faq: pub(FaqPage), blog: pub(BlogPage),
-  post: pub(BlogPostPage), dynamic: pub(DynamicPage), notFound: pub(NotFoundPage),
+  post: pub(BlogPostPage), media: pub(MediaPage), cases: pub(CaseStudiesPage), caseDetail: pub(CaseStudyDetailPage), careers: pub(CareersPage),
+  support: pub(SupportPage), demo: pub(DemoPage), dynamic: pub(DynamicPage), notFound: pub(NotFoundPage),
 };
 
 /** The full route table, shared by client App and SSR PublicApp so markup is identical. */
@@ -82,6 +87,16 @@ export function PublicRoutes() {
         <Route path="/faq" component={P.faq} />
         <Route path="/blog" component={P.blog} />
         <Route path="/blog/:slug" component={P.post} />
+        <Route path="/about-us" component={P.about} />
+        <Route path="/media-coverage" component={P.media} />
+        <Route path="/case-studies" component={P.cases} />
+        <Route path="/case-studies/:slug" component={P.caseDetail} />
+        <Route path="/careers" component={P.careers} />
+        <Route path="/career" component={P.careers} />
+        <Route path="/support" component={P.support} />
+        <Route path="/our-support" component={P.support} />
+        <Route path="/request-demo" component={P.demo} />
+        <Route path="/request-for-demo" component={P.demo} />
         <Route path="/register" component={RegisterPage} />
         <Route path="/login" component={LoginPage} />
         <Route path="/dashboard">{()=> <PrivateRoute/>}</Route>

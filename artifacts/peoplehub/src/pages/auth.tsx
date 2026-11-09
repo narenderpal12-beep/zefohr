@@ -19,13 +19,12 @@ const INDUSTRIES = ['Manufacturing', 'IT & software services', 'Retail & e-comme
 const SIZE_BANDS = ['1-10', '11-50', '51-200', '201-500', '501-1000', '1000+'];
 
 function AuthFrame({ children, aside }: { children: ReactNode; aside: ReactNode }) {
-  const nav = useSection('nav');
   return (
     <div className="relative min-h-[100dvh] overflow-hidden">
       <Aurora />
       <div className="relative mx-auto grid min-h-[100dvh] max-w-6xl gap-10 px-5 py-8 sm:px-8 lg:grid-cols-[0.9fr_1.2fr] lg:py-12">
         <aside className="flex flex-col">
-          <Link href="/" data-testid="link-auth-home"><BrandMark name={str(nav.brand, 'PeopleHub')} /></Link>
+          <Link href="/" data-testid="link-auth-home"><BrandMark /></Link>
           <div className="mt-10 lg:mt-auto lg:mb-auto">{aside}</div>
         </aside>
         <main className="flex items-start lg:items-center">{children}</main>
@@ -140,7 +139,7 @@ export function RegisterPage() {
       <form onSubmit={onSubmit} noValidate className="glass w-full rounded-3xl p-5 sm:p-8">
         <div className="inline-flex w-full rounded-full bg-white/[0.04] p-1 sm:w-auto" role="radiogroup" aria-label="Sign-up mode">
           {(['trial', 'subscribe'] as const).map((m) => (
-            <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => form.setValue('mode', m)} className={cn('flex-1 rounded-full px-5 py-2 text-sm font-medium transition', mode === m ? 'bg-brand text-white' : 'text-muted-foreground')} data-testid={`toggle-mode-${m}`}>
+            <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => form.setValue('mode', m)} className={cn('flex-1 rounded-full px-5 py-2 text-sm font-medium transition', mode === m ? 'bg-brand text-on-brand' : 'text-muted-foreground')} data-testid={`toggle-mode-${m}`}>
               {m === 'trial' ? 'Free trial' : 'Subscribe'}
             </button>
           ))}
@@ -154,7 +153,7 @@ export function RegisterPage() {
               const price = cycle === 'annual' && mode === 'subscribe' ? p.annual : p.monthly;
               return (
                 <button key={str(p.key)} type="button" onClick={() => form.setValue('plan_key', str(p.key))} className={cn('relative rounded-2xl border p-4 text-left transition', on ? 'border-[color:var(--ph-indigo)] bg-[color:var(--ph-indigo)]/10' : 'border-white/10 hover:border-white/20')} data-testid={`button-plan-${str(p.key)}`}>
-                  {on ? <span className="absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full bg-brand"><Check className="h-3 w-3 text-white" /></span> : null}
+                  {on ? <span className="absolute right-3 top-3 grid h-5 w-5 place-items-center rounded-full bg-brand"><Check className="h-3 w-3 text-on-brand" /></span> : null}
                   <div className="font-semibold">{str(p.name)}</div>
                   <div className="mt-1 font-mono text-xs text-muted-foreground">{/^\d/.test(str(price)) ? `${formatINR(price)} / emp / mo` : str(price, 'Custom')}</div>
                 </button>
@@ -262,7 +261,7 @@ export function LoginPage() {
     }>
       <div className="w-full max-w-md lg:ml-auto">
         <form onSubmit={onSubmit} noValidate className="glass rounded-3xl p-6 sm:p-8">
-          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand"><Lock className="h-5 w-5 text-white" /></span>
+          <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand"><Lock className="h-5 w-5 text-on-brand" /></span>
           <h2 className="font-display mt-5 text-2xl font-bold">{str(nav.loginLabel, 'Log in')}</h2>
           <div className="mt-6 space-y-4">
             <Field label="Email" error={form.formState.errors.email?.message}><input className={inputCls} type="email" autoComplete="email" {...form.register('email')} data-testid="input-login-email" /></Field>

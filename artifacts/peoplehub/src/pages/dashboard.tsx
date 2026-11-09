@@ -59,7 +59,6 @@ export function DashboardPage() {
   const dash = useSection('dashboard');
   const roadmap = useSection('roadmap');
   const pricing = useSection('pricing');
-  const nav = useSection('nav');
   const signOut = useSignOut();
   const qc = useQueryClient();
   const change = useChangeSubscription();
@@ -93,7 +92,7 @@ export function DashboardPage() {
     <div className="relative min-h-[100dvh]">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] overflow-hidden"><Aurora /></div>
       <header className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-        <Link href="/" data-testid="link-dash-home"><BrandMark name={str(nav.brand, 'PeopleHub')} /></Link>
+        <Link href="/" data-testid="link-dash-home"><BrandMark /></Link>
         <div className="flex items-center gap-3">
           <span className="hidden text-right text-sm sm:block"><span className="block text-foreground">{str(user.name)}</span><span className="block font-mono text-[11px] text-muted-foreground">{str(user.email)}</span></span>
           <button type="button" onClick={signOut.run} disabled={signOut.pending} className={cn(btnGhost, 'px-4 py-2')} data-testid="button-logout"><LogOut className="h-4 w-4" />Log out</button>

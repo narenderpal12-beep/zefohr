@@ -164,7 +164,7 @@ export function SuitesTabs() {
           <div role="tabpanel" className="relative">
             <motion.div key={active} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="glass border-gradient h-full rounded-3xl p-6 sm:p-10">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand"><Icon className="h-6 w-6 text-white" /></span>
+                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand"><Icon className="h-6 w-6 text-on-brand" /></span>
                 {cur.priority ? <span className={cn('rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-wider', priorityTone(str(cur.priority)))}>{str(cur.priority)}</span> : null}
               </div>
               <h3 className="font-display mt-6 text-3xl font-bold text-foreground">{str(cur.title)}</h3>
@@ -316,7 +316,7 @@ export function PricingTable({ h1 }: { h1?: boolean }) {
             {(['monthly', 'annual'] as const).map((c) => (
               <button key={c} type="button" role="radio" aria-checked={cycle === c} onClick={() => setCycle(c)} className="relative rounded-full px-5 py-2 text-sm font-medium capitalize" data-testid={`toggle-cycle-${c}`}>
                 {cycle === c ? <motion.span layoutId="cycle-pill" className="absolute inset-0 rounded-full bg-brand" transition={{ type: 'spring', stiffness: 400, damping: 30 }} /> : null}
-                <span className={cn('relative', cycle === c ? 'text-white' : 'text-muted-foreground')}>{c}</span>
+                <span className={cn('relative', cycle === c ? 'text-on-brand' : 'text-muted-foreground')}>{c}</span>
               </button>
             ))}
           </div>
@@ -335,7 +335,7 @@ export function PricingTable({ h1 }: { h1?: boolean }) {
                   {p.highlighted ? <div aria-hidden className="absolute inset-x-8 -top-px h-px bg-gradient-to-r from-transparent via-[color:var(--ph-pink)] to-transparent" /> : null}
                   <div className="flex items-center justify-between">
                     <h3 className="font-display text-2xl font-bold text-foreground">{str(p.name)}</h3>
-                    {p.badge ? <span className="rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-white">{str(p.badge)}</span> : null}
+                    {p.badge ? <span className="rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-on-brand">{str(p.badge)}</span> : null}
                   </div>
                   <div className="mt-6 flex items-end gap-2">
                     <motion.span key={`${cycle}-${key}`} initial={false} animate={{ opacity: 1 }} className="font-display text-5xl font-bold text-foreground" data-testid={`text-price-${key}`}>

@@ -26,6 +26,9 @@ export async function getContent(): Promise<Doc> {
   const rows = await pool.query("SELECT key,value FROM site_content");
   const content = structuredClone(defaults);
   for(const row of rows.rows) content[row.key] = merge(content[row.key],row.value);
+  const storedBrand=rows.rows.find(r=>r.key==="brand");
+  if(!storedBrand && content.nav?.brand)content.brand.name=content.nav.brand;
+  content.nav.brand=content.brand.name;
   return content;
 }
 export async function publicData() {
@@ -51,7 +54,9 @@ export async function expireTrials() {
 }
 export async function seed(reset=false) {
   await transaction(async client=>{
-    for(const [key,value] of Object.entries(defaults)){
+    const existingNav=(await client.query("SELECT value FROM site_content WHERE key='nav'")).rows[0]?.value;
+    for(const [key,defaultValue] of Object.entries(defaults)){
+      const value=key==="brand"&&existingNav?.brand&&!reset?{...defaultValue,name:existingNav.brand}:defaultValue;
       await client.query(`INSERT INTO site_content(key,value) VALUES($1,$2) ON CONFLICT(key) ${reset ? "DO UPDATE SET value=excluded.value,updated_at=now()" : "DO NOTHING"}`,[key,JSON.stringify(value)]);
     }
     const content = await getContent();

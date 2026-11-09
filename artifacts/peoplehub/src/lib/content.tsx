@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createContext, useContext, type CSSProperties, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import { normMode, themeVars, type Mode } from './theme';
 import {
   useGetContent,
   useGetPages,
@@ -25,6 +26,8 @@ export interface Bootstrap {
   seo?: AnyObj;
   path?: string;
   status?: number;
+  /** Visitor override read from the peoplehub_mode cookie during SSR. */
+  mode?: 'light' | 'dark';
 }
 
 const BootCtx = createContext<Bootstrap | undefined>(undefined);
@@ -96,13 +99,38 @@ export function iconFor(name?: string, fallback: LucideIcon = Sparkles): LucideI
 export const arr = <T = any,>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
 export const str = (v: unknown, d = ''): string => (v === null || v === undefined ? d : String(v));
 
-export function themeStyle(theme?: AnyObj): CSSProperties {
-  const s: Record<string, string> = {};
-  if (theme?.primary) s['--ph-indigo'] = String(theme.primary);
-  if (theme?.cyan) s['--ph-cyan'] = String(theme.cyan);
-  if (theme?.pink) s['--ph-pink'] = String(theme.pink);
-  if (theme?.background) s['--ph-bg'] = String(theme.background);
-  return s as CSSProperties;
+export function themeStyle(theme: AnyObj | undefined, mode: Mode): CSSProperties {
+  return themeVars(theme, mode) as CSSProperties;
+}
+
+interface ModeCtxV { mode: Mode; canToggle: boolean; toggle: () => void; setMode: (m: Mode) => void }
+const ModeCtx = createContext<ModeCtxV>({ mode: 'dark', canToggle: false, toggle: () => {}, setMode: () => {} });
+export const useThemeMode = () => useContext(ModeCtx);
+
+/** Resolves light/dark: explicit visitor cookie override first, then admin defaultMode. Same result on SSR and first client render. */
+export function ModeProvider({ children }: { children: (mode: Mode, style: CSSProperties) => ReactNode }) {
+  const boot = useContext(BootCtx);
+  const c = useContext(ContentCtx);
+  const theme = (c?.theme ?? {}) as AnyObj;
+  const canToggle = theme.allowModeToggle !== false;
+  const [override, setOverride] = useState<Mode | undefined>(() => normMode(boot?.mode));
+  const mode: Mode = (canToggle ? override : undefined) ?? normMode(theme.defaultMode) ?? 'dark';
+  const setMode = useCallback((m: Mode) => {
+    setOverride(m);
+    if (typeof document !== 'undefined') document.cookie = `peoplehub_mode=${m}; path=/; max-age=31536000; samesite=lax`;
+    try { window.localStorage.setItem('peoplehub_mode', m); } catch { /* storage unavailable */ }
+  }, []);
+  const toggle = useCallback(() => setMode(mode === 'dark' ? 'light' : 'dark'), [mode, setMode]);
+  const style = useMemo(() => themeStyle(theme, mode), [theme, mode]);
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(mode);
+    root.style.colorScheme = mode;
+    Object.entries(style as Record<string, string>).forEach(([k, v]) => root.style.setProperty(k, v));
+  }, [mode, style]);
+  const v = useMemo(() => ({ mode, canToggle, toggle, setMode }), [mode, canToggle, toggle, setMode]);
+  return <ModeCtx.Provider value={v}>{children(mode, style)}</ModeCtx.Provider>;
 }
 
 /** CTA values in CMS may be a string label or {label, href}. */

@@ -1,0 +1,258 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { Check, Moon, RotateCcw, Save, Sun, Instagram, Linkedin, Facebook, Twitter, MessageCircle } from 'lucide-react';
+import { useGetContent, useSaveContent, getGetContentQueryKey, getGetContentHistoryQueryKey } from '@workspace/api-client-react';
+import { arr, errMsg, str, type AnyObj } from '@/lib/content';
+import { PRESETS, themeVars, type Mode } from '@/lib/theme';
+import { SkeletonBlock } from '@/components/site/primitives';
+import { BrandMark } from '@/components/site/layout';
+import { JsonForm, aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
+import { cn } from '@/lib/utils';
+
+/** Local draft of one CMS section, initialised once per key, saved through useSaveContent. */
+function useDraft(key: string) {
+  const qc = useQueryClient();
+  const content = useGetContent({ query: { queryKey: getGetContentQueryKey() } });
+  const [draft, setDraft] = useState<AnyObj | null>(null);
+  const init = useRef(false);
+  const server = (content.data as AnyObj | undefined)?.[key];
+  useEffect(() => {
+    if (content.data && !init.current) { init.current = true; setDraft(structuredClone((server ?? {}) as AnyObj)); }
+  }, [content.data, server]);
+  const save = useSaveContent();
+  const [saved, setSaved] = useState(false);
+  const doSave = () => {
+    if (!draft) return;
+    save.mutate({ key, data: draft as any }, {
+      onSuccess: () => {
+        setSaved(true); setTimeout(() => setSaved(false), 2500);
+        void qc.invalidateQueries({ queryKey: getGetContentQueryKey() });
+        void qc.invalidateQueries({ queryKey: getGetContentHistoryQueryKey(key) });
+      },
+    });
+  };
+  const revert = () => setDraft(structuredClone((server ?? {}) as AnyObj));
+  const dirty = draft !== null && JSON.stringify(draft) !== JSON.stringify(server ?? {});
+  return { draft, setDraft, doSave, revert, dirty, saving: save.isPending, saved, error: save.isError ? errMsg(save.error) : '', loading: content.isLoading };
+}
+
+function SaveBar({ d, label }: { d: ReturnType<typeof useDraft>; label: string }) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {d.error ? <span className="text-xs text-red-300">{d.error}</span> : d.dirty ? <span className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--ph-pink)]">Unsaved</span> : null}
+      <button type="button" className={aBtn} onClick={d.revert} disabled={!d.dirty} data-testid={`button-revert-${label}`}><RotateCcw className="h-3 w-3" />Revert</button>
+      <button type="button" className={aBtnPrimary} onClick={d.doSave} disabled={d.saving || !d.draft} data-testid={`button-save-${label}`}>{d.saved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}{d.saving ? 'Saving...' : d.saved ? 'Saved' : 'Save'}</button>
+    </div>
+  );
+}
+
+function Card({ title, sub, actions, children }: { title: string; sub?: string; actions?: ReactNode; children: ReactNode }) {
+  return (
+    <section className="glass rounded-2xl p-5 sm:p-6">
+      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+        <div><h2 className="font-display text-lg font-bold">{title}</h2>{sub ? <p className="mt-0.5 text-xs text-muted-foreground">{sub}</p> : null}</div>
+        {actions}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function F({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
+  return <label className="block"><span className="mb-1 block text-xs font-medium text-foreground/80">{label}</span>{children}{hint ? <span className="mt-1 block text-[11px] text-muted-foreground">{hint}</span> : null}</label>;
+}
+
+function Switch({ on, onChange, id }: { on: boolean; onChange: (v: boolean) => void; id: string }) {
+  return (
+    <button type="button" role="switch" aria-checked={on} onClick={() => onChange(!on)} className={cn('relative h-6 w-11 shrink-0 rounded-full transition', on ? 'bg-brand' : 'bg-white/15')} data-testid={`toggle-${id}`}>
+      <span className={cn('absolute top-0.5 h-5 w-5 rounded-full bg-on-brand transition-all', on ? 'left-[22px]' : 'left-0.5')} />
+    </button>
+  );
+}
+
+/** Miniature site rendered with a theme's own variables, so it previews independently of the admin's current mode. */
+function MiniPreview({ theme, mode, big }: { theme: AnyObj; mode: Mode; big?: boolean }) {
+  const style = themeVars(theme, mode) as CSSProperties;
+  return (
+    <div className={cn(mode, 'overflow-hidden rounded-xl border border-[hsl(var(--border))] bg-[color:var(--ph-bg)] text-foreground')} style={style}>
+      <div className={cn('space-y-2', big ? 'p-5' : 'p-3')}>
+        <div className="flex items-center justify-between">
+          <span className="h-2 w-10 rounded-full bg-foreground/70" />
+          <span className="h-3.5 w-9 rounded-full bg-brand" />
+        </div>
+        <div className={cn('font-display font-bold leading-none', big ? 'text-2xl' : 'text-sm')}><span className="text-gradient">Payroll, sorted.</span></div>
+        {big ? <p className="text-xs text-muted-foreground">Readable body text on this surface, with muted secondary copy.</p> : null}
+        <div className="glass flex items-center gap-1.5 rounded-lg p-2">
+          <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--ph-indigo)]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--ph-cyan)]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[color:var(--ph-pink)]" />
+          <span className="ml-auto h-1.5 w-8 rounded-full bg-muted-foreground/50" />
+        </div>
+        {big ? <div className="flex gap-2"><span className="rounded-full bg-brand px-3 py-1 text-[11px] font-semibold text-on-brand">Primary</span><span className="rounded-full border border-white/15 px-3 py-1 text-[11px]">Secondary</span><input readOnly value="Input field" className="w-28 rounded-md border border-white/10 bg-white/[0.03] px-2 py-1 text-[11px] text-foreground" aria-label="Preview input" /></div> : null}
+      </div>
+    </div>
+  );
+}
+
+export function AppearanceAdmin() {
+  const d = useDraft('theme');
+  const [previewMode, setPreviewMode] = useState<Mode>('dark');
+  if (d.loading || !d.draft) return <SkeletonBlock className="h-96" />;
+  const t = d.draft;
+  const set = (patch: AnyObj) => d.setDraft({ ...t, ...patch });
+  const preset = str(t.preset, 'aurora');
+  return (
+    <div>
+      <h1 className="font-display text-3xl font-bold">Appearance</h1>
+      <p className="mt-1 text-sm text-muted-foreground">Pick a palette for the whole site, sign-in screens, dashboard and this admin. Visitors see saved changes within a few seconds.</p>
+      <div className="mt-6 grid gap-5 xl:grid-cols-[1fr_340px]">
+        <Card title="Theme preset" sub="Every preset ships with a tuned light and dark variant." actions={<SaveBar d={d} label="theme" />}>
+          <div role="radiogroup" aria-label="Theme preset" className="grid grid-cols-2 gap-3 md:grid-cols-3">
+            {PRESETS.map((p) => {
+              const on = p.id === preset;
+              return (
+                <button key={p.id} type="button" role="radio" aria-checked={on} onClick={() => set({ preset: p.id })} className={cn('rounded-2xl border p-2.5 text-left transition', on ? 'border-[color:var(--ph-indigo)] bg-white/[0.05] ring-2 ring-[color:var(--ph-indigo)]/30' : 'border-white/10 hover:border-white/25')} data-testid={`button-preset-${p.id}`}>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <MiniPreview theme={{ preset: p.id }} mode="light" />
+                    <MiniPreview theme={{ preset: p.id }} mode="dark" />
+                  </div>
+                  <div className="mt-2.5 flex items-center justify-between px-1">
+                    <span className="text-sm font-semibold">{p.label}</span>
+                    {on ? <Check className="h-4 w-4 text-[color:var(--ph-indigo)]" /> : null}
+                  </div>
+                  <p className="px-1 text-[11px] leading-snug text-muted-foreground">{p.note}</p>
+                </button>
+              );
+            })}
+          </div>
+        </Card>
+        <div className="space-y-5">
+          <Card title="Live preview">
+            <div className="mb-3 inline-flex rounded-lg border border-white/10 p-0.5">
+              {(['light', 'dark'] as const).map((m) => <button key={m} type="button" onClick={() => setPreviewMode(m)} className={cn('inline-flex items-center gap-1 rounded-md px-3 py-1 text-xs capitalize', previewMode === m ? 'bg-white/[0.1] text-foreground' : 'text-muted-foreground')} data-testid={`button-preview-${m}`}>{m === 'light' ? <Sun className="h-3 w-3" /> : <Moon className="h-3 w-3" />}{m}</button>)}
+            </div>
+            <MiniPreview theme={t} mode={previewMode} big />
+          </Card>
+          <Card title="Mode">
+            <div className="space-y-4">
+              <F label="Default mode for visitors" hint="Used unless a visitor picks their own mode with the toggle.">
+                <div className="grid grid-cols-2 gap-2">
+                  {(['light', 'dark'] as const).map((m) => <button key={m} type="button" onClick={() => set({ defaultMode: m })} className={cn(aBtn, 'justify-center py-2 capitalize', t.defaultMode === m && 'border-[color:var(--ph-indigo)] bg-white/[0.08]')} data-testid={`button-default-${m}`}>{m === 'light' ? <Sun className="h-3.5 w-3.5" /> : <Moon className="h-3.5 w-3.5" />}{m}</button>)}
+                </div>
+              </F>
+              <div className="flex items-center justify-between gap-3"><span className="text-sm">Show light/dark toggle to visitors</span><Switch on={t.allowModeToggle !== false} onChange={(v) => set({ allowModeToggle: v })} id="allow-toggle" /></div>
+            </div>
+          </Card>
+          <Card title="Custom colours" sub="Override the preset accents. Background applies to the default mode only.">
+            <div className="flex items-center justify-between gap-3"><span className="text-sm">Use custom colours</span><Switch on={!!t.customColors} onChange={(v) => set({ customColors: v })} id="custom-colors" /></div>
+            <div className={cn('mt-4 grid grid-cols-2 gap-3', !t.customColors && 'pointer-events-none opacity-40')}>
+              {(['primary', 'cyan', 'pink', 'background'] as const).map((k) => (
+                <F key={k} label={k === 'cyan' ? 'Accent' : k === 'pink' ? 'Highlight' : k[0].toUpperCase() + k.slice(1)}>
+                  <div className="flex items-center gap-2">
+                    <input type="color" value={/^#[0-9a-f]{6}$/i.test(str(t[k])) ? str(t[k]) : '#6d6cf6'} onChange={(e) => set({ [k]: e.target.value })} className="h-9 w-10 shrink-0 cursor-pointer rounded-md border border-white/10 bg-transparent" aria-label={`${k} colour`} data-testid={`input-color-${k}`} />
+                    <input className={cn(aInput, 'font-mono text-xs')} value={str(t[k])} onChange={(e) => set({ [k]: e.target.value })} data-testid={`input-hex-${k}`} />
+                  </div>
+                </F>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const SOCIALS = [
+  { platform: 'instagram', label: 'Instagram', I: Instagram },
+  { platform: 'linkedin', label: 'LinkedIn', I: Linkedin },
+  { platform: 'facebook', label: 'Facebook', I: Facebook },
+  { platform: 'twitter', label: 'X (Twitter)', I: Twitter },
+];
+
+export function BrandingAdmin() {
+  const brand = useDraft('brand');
+  const footer = useDraft('footer');
+  const wa = useDraft('whatsapp');
+  const nav = useDraft('nav');
+  if (brand.loading || !brand.draft || !footer.draft || !wa.draft || !nav.draft) return <SkeletonBlock className="h-96" />;
+  const b = brand.draft, f = footer.draft, w = wa.draft, n = nav.draft;
+  const socials = arr<AnyObj>(f.socials);
+  const setSocial = (platform: string, patch: AnyObj) => {
+    const exists = socials.some((s) => s.platform === platform);
+    const next = exists ? socials.map((s) => (s.platform === platform ? { ...s, ...patch } : s)) : [...socials, { platform, label: SOCIALS.find((x) => x.platform === platform)?.label ?? platform, url: '', enabled: true, ...patch }];
+    footer.setDraft({ ...f, socials: next });
+  };
+  const digits = str(w.phone).replace(/[^\d]/g, '');
+  const waValid = digits.length >= 10 && digits.length <= 15;
+  return (
+    <div className="space-y-5">
+      <div>
+        <h1 className="font-display text-3xl font-bold">Branding</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Name, logo, social profiles, WhatsApp, navigation and footer. Each card saves independently.</p>
+      </div>
+      <Card title="Identity" actions={<SaveBar d={brand} label="brand" />}>
+        <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <F label="Brand name"><input className={aInput} value={str(b.name)} onChange={(e) => brand.setDraft({ ...b, name: e.target.value })} data-testid="input-brand-name" /></F>
+            <F label="Tagline"><input className={aInput} value={str(b.tagline)} onChange={(e) => brand.setDraft({ ...b, tagline: e.target.value })} data-testid="input-brand-tagline" /></F>
+            <F label="Logo URL" hint="Leave blank to use the built-in mark. Use an absolute https URL or a /path."><input className={aInput} value={str(b.logoUrl)} onChange={(e) => brand.setDraft({ ...b, logoUrl: e.target.value })} data-testid="input-brand-logo" /></F>
+            <F label="Logo alt text"><input className={aInput} value={str(b.logoAlt)} onChange={(e) => brand.setDraft({ ...b, logoAlt: e.target.value })} data-testid="input-brand-logo-alt" /></F>
+            <div className="flex items-center justify-between gap-3 sm:col-span-2"><span className="text-sm">Show brand name next to logo</span><Switch on={b.showWordmark !== false} onChange={(v) => brand.setDraft({ ...b, showWordmark: v })} id="wordmark" /></div>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
+            <p className="mb-4 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Preview</p>
+            <BrandMark name={str(b.name, 'PeopleHub')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} showWordmark={b.showWordmark !== false} />
+            {b.tagline ? <p className="mt-3 text-sm text-muted-foreground">{str(b.tagline)}</p> : null}
+          </div>
+        </div>
+      </Card>
+
+      <Card title="Social profiles" sub="Profiles without a URL show as unavailable in the footer. Never add accounts you do not own." actions={<SaveBar d={footer} label="socials" />}>
+        <div className="space-y-3">
+          {SOCIALS.map(({ platform, label, I }) => {
+            const s = socials.find((x) => x.platform === platform) ?? {};
+            return (
+              <div key={platform} className="grid items-center gap-3 sm:grid-cols-[150px_1fr_160px_auto]">
+                <span className="flex items-center gap-2 text-sm"><I className="h-4 w-4 text-[color:var(--ph-cyan)]" />{label}</span>
+                <input className={aInput} placeholder="https://" value={str(s.url)} onChange={(e) => setSocial(platform, { url: e.target.value })} aria-label={`${label} URL`} data-testid={`input-social-${platform}`} />
+                <input className={aInput} placeholder="Label" value={str(s.label, label)} onChange={(e) => setSocial(platform, { label: e.target.value })} aria-label={`${label} label`} data-testid={`input-social-label-${platform}`} />
+                <Switch on={s.enabled !== false} onChange={(v) => setSocial(platform, { enabled: v })} id={`social-${platform}`} />
+              </div>
+            );
+          })}
+          <F label="Message shown for unconfigured profiles"><input className={aInput} value={str(f.socialUnavailableMessage)} onChange={(e) => footer.setDraft({ ...f, socialUnavailableMessage: e.target.value })} data-testid="input-social-unavailable" /></F>
+        </div>
+      </Card>
+
+      <Card title="WhatsApp button" sub="With a valid number the button opens WhatsApp. Without one it links to your fallback page." actions={<SaveBar d={wa} label="whatsapp" />}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div className="flex items-center justify-between gap-3 sm:col-span-2"><span className="text-sm">Show floating button</span><Switch on={w.enabled !== false} onChange={(v) => wa.setDraft({ ...w, enabled: v })} id="whatsapp" /></div>
+          <F label="Phone with country code" hint={str(w.phone) ? (waValid ? `Opens wa.me/${digits}` : 'Enter 10 to 15 digits, e.g. 91 followed by the number') : 'Empty: visitors are sent to the fallback page'}><input className={aInput} value={str(w.phone)} onChange={(e) => wa.setDraft({ ...w, phone: e.target.value })} data-testid="input-wa-phone" /></F>
+          <F label="Fallback link"><input className={aInput} value={str(w.fallbackHref)} onChange={(e) => wa.setDraft({ ...w, fallbackHref: e.target.value })} data-testid="input-wa-fallback" /></F>
+          <F label="Button label"><input className={aInput} value={str(w.label)} onChange={(e) => wa.setDraft({ ...w, label: e.target.value })} data-testid="input-wa-label" /></F>
+          <F label="Label when no number is set"><input className={aInput} value={str(w.unconfiguredLabel)} onChange={(e) => wa.setDraft({ ...w, unconfiguredLabel: e.target.value })} data-testid="input-wa-unconfigured" /></F>
+          <div className="sm:col-span-2"><F label="Prefilled message"><textarea className={cn(aInput, 'min-h-[70px]')} value={str(w.message)} onChange={(e) => wa.setDraft({ ...w, message: e.target.value })} data-testid="input-wa-message" /></F></div>
+          <div className="sm:col-span-2 flex items-center gap-2 text-xs text-muted-foreground"><MessageCircle className="h-4 w-4 text-[#1f9d55]" />Visitors will see: <strong className="text-foreground">{waValid ? str(w.label, 'Chat on WhatsApp') : str(w.unconfiguredLabel, 'Contact our team')}</strong></div>
+        </div>
+      </Card>
+
+      <Card title="Mega menu" sub="Top-level menus, their groups and links. Icons use names such as Users, Wallet, ShieldCheck." actions={<SaveBar d={nav} label="nav" />}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <F label="Header call to action"><input className={aInput} value={str(n.ctaLabel)} onChange={(e) => nav.setDraft({ ...n, ctaLabel: e.target.value })} data-testid="input-nav-cta" /></F>
+          <F label="Log in label"><input className={aInput} value={str(n.loginLabel)} onChange={(e) => nav.setDraft({ ...n, loginLabel: e.target.value })} data-testid="input-nav-login" /></F>
+        </div>
+        <div className="mt-5"><JsonForm value={arr(n.megaMenu)} onChange={(v) => nav.setDraft({ ...n, megaMenu: v })} path="nav-megaMenu" /></div>
+      </Card>
+
+      <Card title="Footer" sub="Description, link columns, compliance note and copyright. Use {year} for the current year." actions={<SaveBar d={footer} label="footer" />}>
+        <div className="grid gap-4">
+          <F label="Description"><textarea className={cn(aInput, 'min-h-[70px]')} value={str(f.description)} onChange={(e) => footer.setDraft({ ...f, description: e.target.value })} data-testid="input-footer-description" /></F>
+          <F label="Compliance note" hint="Required disclaimer. Keep this present."><textarea className={cn(aInput, 'min-h-[70px]')} value={str(f.complianceNote)} onChange={(e) => footer.setDraft({ ...f, complianceNote: e.target.value })} data-testid="input-footer-compliance" /></F>
+          <F label="Copyright"><input className={aInput} value={str(f.copyright)} onChange={(e) => footer.setDraft({ ...f, copyright: e.target.value })} data-testid="input-footer-copyright" /></F>
+          <div><span className="mb-2 block text-xs font-medium text-foreground/80">Columns</span><JsonForm value={arr(f.columns)} onChange={(v) => footer.setDraft({ ...f, columns: v })} path="footer-columns" /></div>
+        </div>
+      </Card>
+    </div>
+  );
+}

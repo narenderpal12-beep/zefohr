@@ -86,7 +86,7 @@ function DetailPage({ kind }: { kind: 'suites' | 'services' }) {
       <Container className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         <Reveal className="glass border-gradient rounded-3xl p-7 sm:p-9">
           <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand"><I className="h-5 w-5 text-white" /></span>
+            <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand"><I className="h-5 w-5 text-on-brand" /></span>
             <h2 className="font-display text-2xl font-bold">{kind === 'suites' ? 'Modules included' : 'What we deliver'}</h2>
           </div>
           <ul className="mt-7 grid gap-2 sm:grid-cols-2">

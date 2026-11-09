@@ -8,28 +8,21 @@ router = "path"
 
 [[services]]
 name = "web"
-paths = [ "/" ]
+paths = ["/"]
 localPort = 24316
-
 [services.development]
-run = "pnpm --filter @workspace/peoplehub run dev"
-
+run = "npm run dev --workspace=@workspace/peoplehub"
 [services.production.build]
-args = [ "pnpm", "--filter", "@workspace/peoplehub", "run", "build" ]
-
+args = ["npm", "run", "build", "--workspace=@workspace/peoplehub"]
 [services.production.build.env]
 NODE_ENV = "production"
-
 [services.production.run]
-args = ["pnpm", "--filter", "@workspace/peoplehub", "run", "start"]
-
+args = ["npm", "run", "start", "--workspace=@workspace/peoplehub"]
 [services.production.run.env]
 NODE_ENV = "production"
 PORT = "24316"
-
 [services.production.health.startup]
 path = "/"
-
 [services.env]
 PORT = "24316"
 BASE_PATH = "/"

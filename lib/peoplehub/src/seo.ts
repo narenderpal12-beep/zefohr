@@ -10,10 +10,11 @@ for(const [path,type,title] of [
   ["/","static","HR, payroll and compliance for Indian businesses"],["/features","static","All-in-one HRMS platform"],
   ["/services","static","Specialised HR services"],["/pricing","static","Flexible HRMS pricing"],
   ["/about","static","People-first HR for growing businesses"],["/contact","static","Contact our people team"],
+  ["/about-us","static","People-first HR for growing businesses"],
   ["/faq","static","PeopleHub frequently asked questions"],["/blog","static","HR insights and resources"],
   ["/register","app_public","Create your organisation"],["/login","app_public","Sign in"],
   ["/dashboard","app_public","Organisation dashboard"],["/admin","app_public","Site administration"],["/admin/seo","app_public","SEO Manager"],
-  ["/features/:slug","suite","%title%"],["/services/:slug","service","%title%"],["/blog/:slug","blog","%title%"],
+  ["/features/:slug","suite","%title%"],["/services/:slug","service","%title%"],["/blog/:slug","blog","%title%"],["/case-studies/:slug","case_study","%title%"],
 ]) registerSeoRoute({path,type,titleFrom:title});
 export const appPath = (path:string)=>/^\/(admin|dashboard|login|register)(\/|$)/.test(path);
 const pathSchema = /^\/[a-zA-Z0-9/_:.-]*$/;
@@ -43,6 +44,9 @@ export async function routeCatalogue(data?:Doc) {
   for(const s of d.content.services.items) result.push({path:`/services/${s.slug}`,page_type:"service",title:s.title,description:s.description,item:s});
   for(const p of d.pages) result.push({path:`/${p.slug.replace(/^\/+/,"")}`,page_type:"landing",title:p.title,description:p.content?.intro||p.content?.body?.slice(0,155),item:p});
   for(const p of d.posts) result.push({path:`/blog/${p.slug}`,page_type:"blog",title:p.title,description:p.excerpt,item:p});
+  for(const [i,p] of (d.content.caseStudies?.items??[]).entries()){
+    if(p.title)result.push({path:`/case-studies/${p.slug||`story-${i+1}`}`,page_type:"case_study",title:p.title,description:p.summary,item:p});
+  }
   for(const [slug,p] of Object.entries(d.content.legal) as [string,Doc][]) result.push({path:`/${slug}`,page_type:"legal",title:p.title,description:p.body.slice(0,155),item:p});
   return result;
 }

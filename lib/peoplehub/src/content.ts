@@ -32,7 +32,38 @@ function validateContent(key:string,value:Doc) {
       for(const cycle of ["monthly","annual"])if(plan[cycle]!=null&&(!Number.isFinite(plan[cycle])||plan[cycle]<0))fail("Prices must be positive numbers or null");
     }
   }
-  if(key==="theme")for(const color of Object.values(value))if(typeof color!=="string"||!/^#[a-f0-9]{3,8}$/i.test(color))fail("Theme colours must be hex colours");
+  if(key==="theme"){
+    const theme=z.object({
+      preset:z.enum(["aurora","ocean","emerald","sunset","rose","royal","slate","teal","amber","crimson","indigo","forest"]).optional(),
+      defaultMode:z.enum(["light","dark"]).optional(),allowModeToggle:z.boolean().optional(),customColors:z.boolean().optional(),
+      primary:z.string().regex(/^#[a-f0-9]{3,8}$/i).optional(),cyan:z.string().regex(/^#[a-f0-9]{3,8}$/i).optional(),
+      pink:z.string().regex(/^#[a-f0-9]{3,8}$/i).optional(),background:z.string().regex(/^#[a-f0-9]{3,8}$/i).optional(),
+    }).strict();
+    if(!theme.safeParse(value).success)fail("Choose a valid theme, colour mode and hex colours.");
+  }
+  if(key==="brand"){
+    if(typeof value.name!=="string"||!value.name.trim()||value.name.length>100)fail("Brand name must be 1–100 characters");
+    if(value.logoUrl&&!/^(https?:\/\/|\/(?!\/))/.test(value.logoUrl))fail("Use a valid logo URL or local image path");
+    if(typeof value.showWordmark!=="boolean")fail("Choose whether to show the brand name");
+  }
+  if(key==="whatsapp"){
+    if(typeof value.enabled!=="boolean")fail("Choose whether WhatsApp contact is enabled");
+    if(value.phone&&!/^\+?[\d\s()-]{8,24}$/.test(value.phone))fail("Enter a WhatsApp number including country code");
+  }
+  if(key==="footer"&&Array.isArray(value.socials)){
+    for(const social of value.socials)if(social.url&&!/^https?:\/\//i.test(social.url))fail("Social links must be full http(s) URLs or blank");
+  }
+  if(key==="caseStudies"){
+    if(!Array.isArray(value.items))fail("Case studies must be a list");
+    const slugs=new Set<string>();
+    for(let i=0;i<value.items.length;i++){
+      const item=value.items[i];
+      if(!item||typeof item!=="object"||typeof item.title!=="string")fail("Each case study needs a title");
+      const slug=item.slug||`story-${i+1}`;
+      if(!/^[a-z0-9-]+$/.test(slug)||slugs.has(slug))fail("Use a unique lower-case URL slug for every case study");
+      slugs.add(slug);
+    }
+  }
 }
 export const contentRouter=Router();
 contentRouter.get("/content",async(_req,res)=>{res.set("Cache-Control","no-store").json(await getContent());});
@@ -42,6 +73,18 @@ async function saveSection(key:string,value:Doc,actor:string){
   await transaction(async client=>{
     await client.query("INSERT INTO site_content_history(key,value,updated_by) VALUES($1,$2,$3)",[key,JSON.stringify(before),actor]);
     await client.query("INSERT INTO site_content(key,value,updated_by) VALUES($1,$2,$3) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_by=excluded.updated_by,updated_at=now()",[key,JSON.stringify(value),actor]);
+    if(key==="brand"){
+      await client.query("UPDATE site_content SET value=jsonb_set(value,'{brand}',to_jsonb($1::text)),updated_at=now(),updated_by=$2 WHERE key='nav'",[value.name,actor]);
+      await client.query("UPDATE seo_settings SET site_name=$1 WHERE id=1",[value.name]);
+    }
+    if(key==="nav"&&value.brand){
+      await client.query("UPDATE site_content SET value=jsonb_set(value,'{name}',to_jsonb($1::text)),updated_at=now(),updated_by=$2 WHERE key='brand'",[value.brand,actor]);
+      await client.query("UPDATE seo_settings SET site_name=$1 WHERE id=1",[value.brand]);
+    }
+    const sectionPages:Record<string,string[]>={media:["media-coverage"],caseStudies:["case-studies"],careers:["careers","career"],support:["support","our-support"],demo:["request-demo","request-for-demo"]};
+    if(sectionPages[key]&&typeof value.title==="string"&&typeof value.description==="string"){
+      await client.query("UPDATE pages SET title=$1,content=jsonb_set(content,'{intro}',to_jsonb($2::text)),updated_at=now() WHERE slug=ANY($3::text[])",[value.title,value.description,sectionPages[key]]);
+    }
     if(key==="pricing"||key==="suites"){
       const cms={...await getContent(),[key]:value};
       const current=(await client.query("SELECT organisation_id,plan_key FROM subscriptions")).rows;

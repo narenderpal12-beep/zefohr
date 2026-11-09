@@ -3,17 +3,19 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "dev": "pnpm --filter @workspace/peoplehub run dev",
-    "start": "pnpm --filter @workspace/peoplehub run start",
-    "db:migrate": "pnpm --filter @workspace/peoplehub-core run db:migrate",
-    "db:seed": "pnpm --filter @workspace/peoplehub-core run db:seed",
-    "db:setup": "pnpm --filter @workspace/peoplehub-core run db:setup",
-    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
-    "build": "pnpm run typecheck && pnpm -r --if-present run build",
+    "dev": "npm run dev --workspace=@workspace/peoplehub",
+    "start": "npm run start --workspace=@workspace/peoplehub",
+    "db:migrate": "npm run db:migrate --workspace=@workspace/peoplehub-core",
+    "db:seed": "npm run db:seed --workspace=@workspace/peoplehub-core",
+    "db:setup": "npm run db:setup --workspace=@workspace/peoplehub-core",
+    "build": "npm run typecheck && npm run build --workspace=@workspace/api-server && npm run build --workspace=@workspace/peoplehub",
     "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "npm run typecheck:libs && npm run typecheck --workspaces --if-present"
   },
   "private": true,
+  "packageManager": "npm@11.19.1",
+  "workspaces": ["artifacts/*", "lib/*", "lib/integrations/*", "scripts"],
+  "overrides": {"esbuild": "0.28.2", "react": "19.1.0", "react-dom": "19.1.0"},
   "dependencies": {
     "@replit/connectors-sdk": "^0.4.3"
   },

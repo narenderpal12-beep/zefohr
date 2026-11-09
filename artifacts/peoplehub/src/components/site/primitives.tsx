@@ -120,7 +120,7 @@ export function GlassCard({ children, className, tilt = true, ...rest }: { child
 }
 
 export const btnPrimary =
-  'inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-[0_10px_40px_-12px_var(--ph-indigo)] transition-transform duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:pointer-events-none';
+  'inline-flex items-center justify-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-on-brand shadow-[0_10px_40px_-12px_var(--ph-indigo)] transition-transform duration-300 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:pointer-events-none';
 export const btnGhost =
   'inline-flex items-center justify-center gap-2 rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-semibold text-foreground backdrop-blur transition-colors hover:bg-white/[0.09] disabled:opacity-60';
 

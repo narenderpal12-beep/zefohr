@@ -6,7 +6,7 @@ import {configureApp,errorHandler,publicData,resolveSeo,renderHead,sitemap,robot
 
 const production=process.env.NODE_ENV==="production";
 const root=process.cwd();
-const port=Number(process.env.PORT);
+const port=Number(process.env.PORT || 3000);
 if(!port)throw new Error("PORT is required");
 const app=express();
 configureApp(app);
@@ -38,7 +38,8 @@ app.get("/{*splat}",async(req,res,next)=>{
     if(status===404 && !/\.(js|css|map|ico|png|svg|webp|jpg|woff2?)$/.test(requestPath)){
       await pool.query("INSERT INTO not_found_log(path) VALUES($1) ON CONFLICT(path) DO UPDATE SET count=not_found_log.count+1,last_seen=now()",[requestPath.slice(0,500)]);
     }
-    const initial={...data,seo,path:requestPath,status};
+    const preferredMode=req.cookies.peoplehub_mode;
+    const initial={...data,seo,path:requestPath,status,mode:preferredMode==="light"||preferredMode==="dark"?preferredMode:undefined};
     let template=await readFile(path.join(root,production?"dist/public/index.html":"index.html"),"utf8");
     if(vite)template=await vite.transformIndexHtml(req.originalUrl,template);
     const entry=production?await import("../dist/ssr/entry-server.js"):await vite!.ssrLoadModule("/src/entry-server.tsx");

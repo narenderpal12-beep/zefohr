@@ -22,8 +22,8 @@ function blankLike(sample: any): any {
 /** Typed templates so empty collections get proper item shapes. Matched against the editor path. */
 const TEMPLATES: [RegExp, () => any][] = [
   [/^clients-items$/, () => ({ id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `c-${Date.now()}`, name: '', alt: '', logoUrl: '', website: '', visible: true })],
-  [/^media-items$/, () => ({ title: '', publication: '', date: '', url: '', description: '' })],
-  [/^caseStudies-items$/, () => ({ title: '', industry: '', summary: '', body: '', slug: '' })],
+  [/^media-items$/, () => ({ title: '', publication: '', date: '', url: '', description: '', imageUrl: '', imageAlt: '' })],
+  [/^caseStudies-items$/, () => ({ title: '', industry: '', summary: '', body: '', slug: '', imageUrl: '', imageAlt: '' })],
   [/^careers-items$/, () => ({ title: '', department: '', location: '', employmentType: '', description: '', applyEmail: '' })],
   [/-faq$/, () => ({ question: '', answer: '' })],
   [/^nav-megaMenu$/, () => ({ label: '', href: '', groups: [{ title: '', links: [{ label: '', href: '', description: '', icon: '' }] }] })],
@@ -42,7 +42,7 @@ export function templateFor(path: string, sample?: any): any {
   return sample !== undefined ? blankLike(sample) : '';
 }
 
-const IMAGE_PATH = /^((block-)?(suites|services)-items-\d+-imageUrl|block-[A-Za-z]+(-\w+)*-imageUrl)$/;
+const IMAGE_PATH = /^((block-)?(suites|services)-items-\d+-imageUrl|(media|caseStudies)-items-\d+-imageUrl|block-[A-Za-z]+(-\w+)*-imageUrl)$/;
 const HREF_PATH = /^(nav-megaMenu|nav-links|footer-columns|footer-links|block-[A-Za-z]+)(-\w+)*-(href|ctaHref)$/;
 const HERO_COLOR_PATH = /^hero-(titleColor|descriptionColor|buttonColor|buttonTextColor)$/;
 const HEX_COLOR = /^#[\da-f]{6}$/i;
@@ -68,7 +68,7 @@ function HeroColorField({ value, onChange, path }: { value: string; onChange: (v
 }
 
 /** Browse + preview + remove for suite/service photos. Whole form is locked while encoding, so the result cannot land on a stale draft or a moved item. */
-function ImageField({ value, onChange, path }: { value: string; onChange: (v: string) => void; path: string }) {
+export function ImageField({ value, onChange, path, onBusyChange }: { value: string; onChange: (v: string) => void; path: string; onBusyChange?: (busy: boolean) => void }) {
   const bump = useContext(BusyCtx);
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -77,8 +77,8 @@ function ImageField({ value, onChange, path }: { value: string; onChange: (v: st
   useEffect(() => { setBroken(false); }, [value]);
   const pick = async (file?: File) => {
     if (!file) return;
-    setErr(null); setBusy(true); bump(1);
-    try { const url = await encodeLogo(file); setBroken(false); onChange(url); } catch (e) { setErr((e as Error).message); } finally { setBusy(false); bump(-1); if (input.current) input.current.value = ''; }
+    setErr(null); setBusy(true); bump(1); onBusyChange?.(true);
+    try { const url = await encodeLogo(file); setBroken(false); onChange(url); } catch (e) { setErr((e as Error).message); } finally { setBusy(false); bump(-1); onBusyChange?.(false); if (input.current) input.current.value = ''; }
   };
   return (
     <div className="flex flex-wrap items-center gap-3">
@@ -149,7 +149,14 @@ function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; o
                 <button type="button" className={cn(aBtn, 'text-red-300')} onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label="Remove" data-testid={`button-remove-${path}-${i}`}><Trash2 className="h-3 w-3" /></button>
               </div>
             </div>
-            <JsonNode value={item} onChange={(v) => { const n = [...value]; n[i] = v; onChange(n); }} path={`${path}-${i}`} depth={depth + 1} />
+            <JsonNode
+              value={(path === 'media-items' || path === 'caseStudies-items') && item && typeof item === 'object' && !Array.isArray(item)
+                ? { ...item, imageUrl: item.imageUrl ?? '', imageAlt: item.imageAlt ?? '' }
+                : item}
+              onChange={(v) => { const n = [...value]; n[i] = v; onChange(n); }}
+              path={`${path}-${i}`}
+              depth={depth + 1}
+            />
           </div>
         ))}
         <button type="button" className={aBtn} onClick={() => onChange([...value, templateFor(path, value.length ? value[0] : undefined)])} data-testid={`button-add-${path}`}><Plus className="h-3 w-3" />Add item</button>

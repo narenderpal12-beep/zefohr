@@ -24,8 +24,8 @@ function validateSectionLinks(value:unknown):void{
 }
 function validateContent(key:string,value:Doc) {
   if(!value || typeof value!=="object" || Array.isArray(value))fail("A section must be a JSON object");
-  const sectionLimit=["suites","services","pageLayouts"].includes(key)?2100000:key==="clients"?1500000:500000;
-  if(JSON.stringify(value).length>sectionLimit)fail(["clients","suites","services"].includes(key)?"Image collection is too large. Use smaller images or fewer uploads.":"Section is too large");
+  const sectionLimit=["suites","services","pageLayouts"].includes(key)?2100000:["clients","media","caseStudies"].includes(key)?1500000:500000;
+  if(JSON.stringify(value).length>sectionLimit)fail(["clients","media","caseStudies","suites","services"].includes(key)?"Image collection is too large. Use smaller images or fewer uploads.":"Section is too large");
   if(key==="clients"){
     const result=clientsSchema.safeParse(value);
     if(!result.success)fail(result.error.issues[0]?.message??"Invalid client details");
@@ -89,7 +89,17 @@ function validateContent(key:string,value:Doc) {
       if(!item||typeof item!=="object"||typeof item.title!=="string")fail("Each case study needs a title");
       const slug=item.slug||`story-${i+1}`;
       if(!/^[a-z0-9-]+$/.test(slug)||slugs.has(slug))fail("Use a unique lower-case URL slug for every case study");
+      if(item.imageUrl!=null&&(typeof item.imageUrl!=="string"||item.imageUrl.length>200000||(item.imageUrl!==""&&!safeLogo(item.imageUrl))))fail("Choose a valid PNG, JPEG or WebP upload up to 150KB");
+      if(item.imageAlt!=null&&(typeof item.imageAlt!=="string"||item.imageAlt.length>300))fail("Image descriptions must be text up to 300 characters");
       slugs.add(slug);
+    }
+  }
+  if(key==="media"){
+    if(!Array.isArray(value.items))fail("Media coverage must be a list");
+    for(const item of value.items){
+      if(!item||typeof item!=="object")fail("Each media entry must be an object");
+      if(item.imageUrl!=null&&(typeof item.imageUrl!=="string"||item.imageUrl.length>200000||(item.imageUrl!==""&&!safeLogo(item.imageUrl))))fail("Choose a valid PNG, JPEG or WebP upload up to 150KB");
+      if(item.imageAlt!=null&&(typeof item.imageAlt!=="string"||item.imageAlt.length>300))fail("Image descriptions must be text up to 300 characters");
     }
   }
 }
@@ -159,7 +169,7 @@ contentRouter.post("/billing/subscribe",requireAuth,async(req,res)=>{
   res.json(await paymentProvider.createOrder({organisation_id:user.organisation_id,plan_key:req.body.plan_key,billing_cycle:cycle}));
 });
 const pageInput=z.object({slug:z.string().min(1).max(250),title:z.string().min(1).max(200),content:z.record(z.string(),z.unknown()).default({}),status:z.enum(["draft","published"]).default("draft")});
-const postInput=z.object({slug:z.string().regex(/^[a-z0-9-]+$/),title:z.string().min(1).max(200),excerpt:z.string().max(5000).default(""),body_md:z.string().max(100000).default(""),cover_image_url:z.string().max(2000).default(""),cover_image_alt:z.string().max(500).default(""),author:z.string().max(100).default(""),tags:z.array(z.string().max(100)).default([]),status:z.enum(["draft","published"]).default("draft"),published_at:z.string().nullable().optional()});
+const postInput=z.object({slug:z.string().regex(/^[a-z0-9-]+$/),title:z.string().min(1).max(200),excerpt:z.string().max(5000).default(""),body_md:z.string().max(100000).default(""),cover_image_url:z.string().max(200000).default(""),cover_image_alt:z.string().max(500).default(""),author:z.string().max(100).default(""),tags:z.array(z.string().max(100)).default([]),status:z.enum(["draft","published"]).default("draft"),published_at:z.string().nullable().optional()});
 export const adminRouter=Router();
 adminRouter.use(requireAuth,requireAdmin);
 adminRouter.get("/summary",async(_req,res)=>{
@@ -209,7 +219,7 @@ async function writeRecord(entity:string,id:string|null,input:Doc,actor:string){
     }
   }
   if(entity==="posts"){
-    if(b.cover_image_url&&!/^https?:\/\//.test(b.cover_image_url)&&!b.cover_image_url.startsWith("/"))fail("Invalid cover image URL");
+    if(b.cover_image_url&&!safeLogo(b.cover_image_url)&&!/^http:\/\/[^\s]+$/i.test(b.cover_image_url))fail("Choose a local image, HTTPS image or PNG/JPEG/WebP upload up to 150KB");
     if(b.published_at && Number.isNaN(Date.parse(b.published_at)))fail("Invalid publication date");
     if(b.status==="published"&&!b.published_at)b.published_at=new Date().toISOString();
   }

@@ -13,7 +13,7 @@ import {
 import { arr, errMsg, str, useSection, type AnyObj } from '@/lib/content';
 import { BrandMark, ModeToggle, useMe } from '@/components/site/layout';
 import { SkeletonBlock } from '@/components/site/primitives';
-import { aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
+import { aBtn, aBtnPrimary, aInput, ImageField } from '@/components/admin/json-form';
 import { AppearanceAdmin, BrandingAdmin } from './admin-appearance';
 import { ClientsAdmin } from './admin-clients';
 import { ContentAdmin, PagesAdmin } from './admin-content';
@@ -174,7 +174,7 @@ function Table({ head, children, empty }: { head: string[]; children: ReactNode;
   );
 }
 
-const blankPost = { slug: '', title: '', excerpt: '', body_md: '', cover_image_url: '', author: '', tags: [] as string[], status: 'draft', published_at: '' };
+const blankPost = { slug: '', title: '', excerpt: '', body_md: '', cover_image_url: '', cover_image_alt: '', author: '', tags: [] as string[], status: 'draft', published_at: '' };
 
 function PostsAdmin() {
   const { q, rows, invalidate } = useRecords('posts');
@@ -183,12 +183,13 @@ function PostsAdmin() {
   const del = useDeleteAdminRecord();
   const [edit, setEdit] = useState<AnyObj | null>(null);
   const [tags, setTags] = useState('');
+  const [imageBusy, setImageBusy] = useState(false);
   const open = (p: AnyObj) => { setEdit(structuredClone({ ...blankPost, ...p, published_at: p.published_at ? String(p.published_at).slice(0, 16) : '' })); setTags(arr<string>(p.tags).join(', ')); };
   const saveIt = (publish?: boolean) => {
     if (!edit) return;
     const status = publish ? 'published' : edit.status;
     const data: AnyObj = {
-      slug: edit.slug, title: edit.title, excerpt: edit.excerpt, body_md: edit.body_md, cover_image_url: edit.cover_image_url, author: edit.author,
+      slug: edit.slug, title: edit.title, excerpt: edit.excerpt, body_md: edit.body_md, cover_image_url: edit.cover_image_url, cover_image_alt: edit.cover_image_alt, author: edit.author,
       tags: tags.split(',').map((t) => t.trim()).filter(Boolean), status,
       published_at: edit.published_at ? new Date(edit.published_at).toISOString() : status === 'published' ? new Date().toISOString() : null,
     };
@@ -226,7 +227,8 @@ function PostsAdmin() {
             <LField label="Slug"><input className={cn(aInput, 'font-mono')} value={str(edit.slug)} onChange={set('slug')} data-testid="input-post-slug" /></LField>
             <LField label="Author"><input className={aInput} value={str(edit.author)} onChange={set('author')} data-testid="input-post-author" /></LField>
             <LField label="Tags (comma separated)"><input className={aInput} value={tags} onChange={(e) => setTags(e.target.value)} data-testid="input-post-tags" /></LField>
-            <LField label="Cover image URL"><input className={aInput} value={str(edit.cover_image_url)} onChange={set('cover_image_url')} data-testid="input-post-cover" /></LField>
+            <div className="sm:col-span-2"><LField label="Cover image"><ImageField value={str(edit.cover_image_url)} onChange={(value) => setEdit({ ...edit, cover_image_url: value })} onBusyChange={setImageBusy} path="post-cover" /></LField></div>
+            <LField label="Cover image description"><input className={aInput} value={str(edit.cover_image_alt)} onChange={set('cover_image_alt')} data-testid="input-post-cover-alt" /></LField>
             <div className="grid grid-cols-2 gap-3">
               <LField label="Status"><select className={aInput} value={str(edit.status)} onChange={set('status')} data-testid="select-post-status"><option value="draft">Draft</option><option value="published">Published</option></select></LField>
               <LField label="Publish date"><input type="datetime-local" className={aInput} value={str(edit.published_at)} onChange={set('published_at')} data-testid="input-post-date" /></LField>
@@ -235,7 +237,7 @@ function PostsAdmin() {
             <div className="sm:col-span-2"><LField label="Body (markdown)" hint="Supports ## headings, lists, **bold**, *italic*, `code`, [links](/pricing) and > quotes."><textarea className={cn(aInput, 'min-h-[260px] font-mono text-xs')} value={str(edit.body_md)} onChange={set('body_md')} data-testid="input-post-body" /></LField></div>
           </div>
           {err ? <p className="mt-3 text-sm text-red-300">{errMsg(err)}</p> : null}
-          <div className="mt-6 flex justify-end gap-2"><button className={aBtn} onClick={() => saveIt()} data-testid="button-save-post">Save</button><button className={aBtnPrimary} onClick={() => saveIt(true)} disabled={create.isPending || update.isPending} data-testid="button-publish-post">Save and publish</button></div>
+          <div className="mt-6 flex justify-end gap-2"><button className={aBtn} onClick={() => saveIt()} disabled={imageBusy || create.isPending || update.isPending} data-testid="button-save-post">Save</button><button className={aBtnPrimary} onClick={() => saveIt(true)} disabled={imageBusy || create.isPending || update.isPending} data-testid="button-publish-post">Save and publish</button></div>
         </Modal>
       ) : null}
     </div>

@@ -175,8 +175,9 @@ export function BrandingAdmin() {
   const footer = useDraft('footer');
   const wa = useDraft('whatsapp');
   const nav = useDraft('nav');
-  if (brand.loading || !brand.draft || !footer.draft || !wa.draft || !nav.draft) return <SkeletonBlock className="h-96" />;
-  const b = brand.draft, f = footer.draft, w = wa.draft, n = nav.draft;
+  const contact = useDraft('contact');
+  if (brand.loading || !brand.draft || !footer.draft || !wa.draft || !nav.draft || !contact.draft) return <SkeletonBlock className="h-96" />;
+  const b = brand.draft, f = footer.draft, w = wa.draft, n = nav.draft, c = contact.draft;
   const socials = arr<AnyObj>(f.socials);
   const setSocial = (platform: string, patch: AnyObj) => {
     const exists = socials.some((s) => s.platform === platform);
@@ -189,7 +190,7 @@ export function BrandingAdmin() {
     <div className="space-y-5">
       <div>
         <h1 className="font-display text-3xl font-bold">Branding</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Name, logo, social profiles, WhatsApp, navigation and footer. Each card saves independently.</p>
+        <p className="mt-1 text-sm text-muted-foreground">Website profile, name, logo, contact details, social profiles, WhatsApp, navigation and footer. Each card saves independently. Use Content and Pages to edit all website copy.</p>
       </div>
       <Card title="Identity" actions={<SaveBar d={brand} label="brand" />}>
         <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
@@ -205,6 +206,16 @@ export function BrandingAdmin() {
             <BrandMark name={str(b.name, 'PeopleHub')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} showWordmark={b.showWordmark !== false} />
             {b.tagline ? <p className="mt-3 text-sm text-muted-foreground">{str(b.tagline)}</p> : null}
           </div>
+        </div>
+      </Card>
+
+      <Card title="Website contact profile" sub="Shared by the Contact page, Support page and footer. Leave optional details blank to hide them." actions={<SaveBar d={contact} label="contact-profile" />}>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <F label="Mobile / telephone" hint="Include the country code."><input type="tel" className={aInput} value={str(c.phone)} onChange={(e) => contact.setDraft({ ...c, phone: e.target.value })} data-testid="input-profile-phone" /></F>
+          <F label="Public email"><input type="email" className={aInput} value={str(c.email)} onChange={(e) => contact.setDraft({ ...c, email: e.target.value })} data-testid="input-profile-email" /></F>
+          <div className="sm:col-span-2"><F label="Office address"><textarea rows={3} className={aInput} value={str(c.address)} onChange={(e) => contact.setDraft({ ...c, address: e.target.value })} data-testid="input-profile-address" /></F></div>
+          <F label="Map link" hint="Optional full https link to your office location."><input type="url" className={aInput} value={str(c.mapUrl)} onChange={(e) => contact.setDraft({ ...c, mapUrl: e.target.value })} data-testid="input-profile-map" /></F>
+          <F label="Office hours"><input className={aInput} value={str(c.officeHours)} onChange={(e) => contact.setDraft({ ...c, officeHours: e.target.value })} data-testid="input-profile-hours" /></F>
         </div>
       </Card>
 

@@ -46,6 +46,13 @@ function validateContent(key:string,value:Doc) {
     if(value.logoUrl&&!/^(https?:\/\/|\/(?!\/))/.test(value.logoUrl))fail("Use a valid logo URL or local image path");
     if(typeof value.showWordmark!=="boolean")fail("Choose whether to show the brand name");
   }
+  if(key==="contact"){
+    for(const field of ["phone","email","address","mapUrl","officeHours"]){
+      if(value[field]!=null&&(typeof value[field]!=="string"||value[field].length>2000))fail("Contact profile fields must be text up to 2,000 characters");
+    }
+    if(value.mapUrl&&!/^https?:\/\/[^\s]+$/i.test(value.mapUrl))fail("Map link must be a full http(s) URL or blank");
+    if(value.email&&!z.string().email().safeParse(value.email).success)fail("Enter a valid public email or leave it blank");
+  }
   if(key==="whatsapp"){
     if(typeof value.enabled!=="boolean")fail("Choose whether WhatsApp contact is enabled");
     if(value.phone&&!/^\+?[\d\s()-]{8,24}$/.test(value.phone))fail("Enter a WhatsApp number including country code");

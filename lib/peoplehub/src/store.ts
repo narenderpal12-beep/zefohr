@@ -59,6 +59,13 @@ export async function seed(reset=false) {
       const value=key==="brand"&&existingNav?.brand&&!reset?{...defaultValue,name:existingNav.brand}:defaultValue;
       await client.query(`INSERT INTO site_content(key,value) VALUES($1,$2) ON CONFLICT(key) ${reset ? "DO UPDATE SET value=excluded.value,updated_at=now()" : "DO NOTHING"}`,[key,JSON.stringify(value)]);
     }
+    // Upgrade the old profile once. Retaining an address key (even blank) lets
+    // administrators clear or change these details without a restart restoring them.
+    await client.query(`UPDATE site_content SET value=value || jsonb_build_object(
+      'address',$1::text,'phone',COALESCE(NULLIF(value->>'phone',''),$2::text),
+      'mapUrl','','officeHours',''),updated_at=now()
+      WHERE key='contact' AND NOT (value ? 'address')`,
+      [defaults.contact.address,defaults.contact.phone]);
     const content = await getContent();
     for(let i=0;i<content.suites.items.length;i++){
       const s=content.suites.items[i];

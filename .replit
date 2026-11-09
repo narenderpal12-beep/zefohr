@@ -13,3 +13,8 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 180000
+
+[userenv]
+
+[userenv.shared]
+SUPER_ADMIN_EMAIL = "admin@gifgor.com"

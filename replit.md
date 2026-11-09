@@ -24,7 +24,7 @@ Phase 1 marketing website and organisation signup portal for an Indian HRMS prod
 
 The user requested Phase 1 only. HRMS operational modules are future scope. Payment provider is intentionally a stub: subscribe requests stay pending; no simulated successful payments. No public super-admin creation or default password.
 
-The user requires light/dark mode by default, at least ten admin-selected site-wide themes, editable brand/content, product/service mega menus and broad social/footer navigation. Do not replace these with hardcoded branding or a single dark palette.
+The user requires light/dark mode by default, at least ten admin-selected site-wide themes, editable brand/content, product/service mega menus and broad social/footer navigation. All website profile details, including shared address, mobile, email, map link and office hours, must stay editable through admin. Do not hardcode profile details in UI components or replace themes with a single dark palette.
 
 ## Key files
 

@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ArrowRight, ArrowUpRight, Check, CheckCircle2, IndianRupee, Mail, Phone, ShieldCheck, Fingerprint, MessageCircle, Send, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, CheckCircle2, IndianRupee, Mail, Phone, MapPin, ShieldCheck, Fingerprint, MessageCircle, Send, Sparkles } from 'lucide-react';
 import { useCreateLead } from '@workspace/api-client-react';
 import { arr, cta, errMsg, formatINR, iconFor, str, useSection, type AnyObj } from '@/lib/content';
 import { Aurora, Container, Counter, CtaLink, Eyebrow, FaqList, GlassCard, Marquee, Reveal, SectionHead, btnPrimary } from './primitives';
@@ -426,6 +426,8 @@ export function ContactSection({ h1 }: { h1?: boolean }) {
           <div className="mt-8 space-y-3">
             {contact.email ? <a href={`mailto:${contact.email}`} className="flex items-center gap-3 rounded-2xl glass p-4 hover:border-white/20" data-testid="link-contact-email"><Mail className="h-5 w-5 text-[color:var(--ph-cyan)]" />{str(contact.email)}</a> : null}
             {contact.phone ? <a href={`tel:${String(contact.phone).replace(/\s/g, '')}`} className="flex items-center gap-3 rounded-2xl glass p-4 hover:border-white/20" data-testid="link-contact-phone"><Phone className="h-5 w-5 text-[color:var(--ph-pink)]" />{str(contact.phone)}</a> : null}
+            {contact.address ? <div className="flex items-start gap-3 rounded-2xl glass p-4" data-testid="text-contact-address"><MapPin className="mt-0.5 h-5 w-5 shrink-0 text-[color:var(--ph-cyan)]" /><address className="whitespace-pre-line break-words not-italic">{contact.mapUrl ? <a href={str(contact.mapUrl)} target="_blank" rel="noopener noreferrer" className="hover:underline">{str(contact.address)}</a> : str(contact.address)}</address></div> : null}
+            {contact.officeHours ? <p className="text-sm text-muted-foreground" data-testid="text-contact-hours">{str(contact.officeHours)}</p> : null}
           </div>
         </Reveal>
         <div className="glass rounded-3xl p-6 sm:p-8">

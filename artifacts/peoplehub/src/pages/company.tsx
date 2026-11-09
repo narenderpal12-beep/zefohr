@@ -249,10 +249,12 @@ export function SupportPage() {
         <div>
           <div className="flex items-center gap-3"><LifeBuoy className="h-5 w-5 text-[color:var(--ph-cyan)]" /><h2 className="font-display text-2xl font-bold">{str(s.faqTitle)}</h2></div>
           {faq.length ? <div className="mt-6"><FaqList items={faq} idPrefix="support-faq" /></div> : <p className="mt-4 text-sm text-muted-foreground">{str(s.emptyFaqMessage)}</p>}
-          {contact.email || contact.phone ? (
+          {contact.email || contact.phone || contact.address || contact.officeHours ? (
             <div className="glass mt-6 space-y-2 rounded-2xl p-5 text-sm">
               {contact.email ? <a href={`mailto:${contact.email}`} className="flex items-center gap-2 text-foreground/90 hover:text-foreground" data-testid="link-support-email"><Mail className="h-4 w-4 text-[color:var(--ph-pink)]" />{str(contact.email)}</a> : null}
               {contact.phone ? <a href={`tel:${String(contact.phone).replace(/\s/g, '')}`} className="block font-mono text-foreground/90" data-testid="link-support-phone">{str(contact.phone)}</a> : null}
+              {contact.address ? <address className="flex items-start gap-2 whitespace-pre-line break-words not-italic" data-testid="text-support-address"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[color:var(--ph-cyan)]" /><span>{contact.mapUrl ? <a href={str(contact.mapUrl)} target="_blank" rel="noopener noreferrer" className="hover:underline">{str(contact.address)}</a> : str(contact.address)}</span></address> : null}
+              {contact.officeHours ? <p className="text-muted-foreground">{str(contact.officeHours)}</p> : null}
             </div>
           ) : null}
         </div>

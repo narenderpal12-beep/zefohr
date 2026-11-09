@@ -318,6 +318,8 @@ export function SiteFooter() {
             <div className="mt-6 space-y-1 font-mono text-xs text-muted-foreground">
               {contact.email ? <a href={`mailto:${contact.email}`} className="block hover:text-foreground">{str(contact.email)}</a> : null}
               {contact.phone ? <a href={`tel:${String(contact.phone).replace(/\s/g, '')}`} className="block hover:text-foreground">{str(contact.phone)}</a> : null}
+              {contact.address ? <address className="max-w-xs whitespace-pre-line break-words not-italic" data-testid="text-footer-address">{contact.mapUrl ? <a href={str(contact.mapUrl)} target="_blank" rel="noopener noreferrer" className="hover:text-foreground">{str(contact.address)}</a> : str(contact.address)}</address> : null}
+              {contact.officeHours ? <p className="whitespace-pre-line">{str(contact.officeHours)}</p> : null}
             </div>
             <SocialLinks />
           </div>

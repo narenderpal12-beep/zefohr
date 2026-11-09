@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { Check, Moon, RotateCcw, Save, Sun, Instagram, Linkedin, Facebook, Twitter, MessageCircle } from 'lucide-react';
 import { useGetContent, useSaveContent, getGetContentQueryKey, getGetContentHistoryQueryKey } from '@workspace/api-client-react';
 import { arr, errMsg, str, type AnyObj } from '@/lib/content';
-import { PRESETS, themeVars, type Mode } from '@/lib/theme';
+import { PRESETS, SITE_WIDTH_OPTIONS, themeVars, type Mode } from '@/lib/theme';
 import { SkeletonBlock } from '@/components/site/primitives';
 import { BrandMark } from '@/components/site/layout';
 import { JsonForm, aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
@@ -103,6 +103,8 @@ export function AppearanceAdmin() {
   const t = d.draft;
   const set = (patch: AnyObj) => d.setDraft({ ...t, ...patch });
   const preset = str(t.preset, 'aurora');
+  const containerLayout = SITE_WIDTH_OPTIONS.some((option) => option.id === t.containerLayout) ? str(t.containerLayout) : 'standard';
+  const customContainerWidth = Math.max(1080, Math.min(1920, Number(t.customContainerWidth) || 1440));
   return (
     <div>
       <h1 className="font-display text-3xl font-bold">Appearance</h1>
@@ -126,6 +128,34 @@ export function AppearanceAdmin() {
                 </button>
               );
             })}
+          </div>
+          <div className="mt-6 border-t border-white/10 pt-5">
+            <div className="mb-3">
+              <h3 className="text-sm font-semibold">Overall website width</h3>
+              <p className="mt-1 text-xs text-muted-foreground">Controls the public header, page content and footer. The admin and dashboard keep their own layout.</p>
+            </div>
+            <div role="radiogroup" aria-label="Overall website width" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {SITE_WIDTH_OPTIONS.map((option) => {
+                const on = containerLayout === option.id;
+                return (
+                  <button key={option.id} type="button" role="radio" aria-checked={on} onClick={() => set({ containerLayout: option.id })} className={cn('rounded-xl border p-3 text-left transition', on ? 'border-[color:var(--ph-indigo)] bg-white/[0.05] ring-2 ring-[color:var(--ph-indigo)]/25' : 'border-white/10 hover:border-white/25')} data-testid={`button-layout-${option.id}`}>
+                    <div className="flex h-8 items-center justify-center rounded-md bg-white/[0.04]">
+                      <div className="h-3 rounded bg-brand" style={{ width: option.preview }} />
+                    </div>
+                    <div className="mt-2 flex items-center justify-between gap-2">
+                      <span className="text-xs font-semibold">{option.label}</span>
+                      {on ? <Check className="h-3.5 w-3.5 text-[color:var(--ph-indigo)]" /> : null}
+                    </div>
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">{option.note}</p>
+                  </button>
+                );
+              })}
+            </div>
+            {containerLayout === 'custom' ? (
+              <F label={`Maximum width: ${customContainerWidth}px`} hint="Choose a width between 1,080 and 1,920 pixels. It will still fit smaller screens.">
+                <input type="range" min="1080" max="1920" step="40" value={customContainerWidth} onChange={(e) => set({ customContainerWidth: Number(e.target.value) })} className="mt-2 w-full accent-[color:var(--ph-indigo)]" aria-label="Custom website maximum width" data-testid="input-custom-container-width" />
+              </F>
+            ) : null}
           </div>
         </Card>
         <div className="space-y-5">

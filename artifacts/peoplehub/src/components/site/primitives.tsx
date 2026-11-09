@@ -216,17 +216,18 @@ export function PageHero({ crumbs, eyebrow, title, description, children }: { cr
   return (
     <section className="relative overflow-hidden pb-16 pt-32 sm:pt-40">
       <Aurora />
-      <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
+      <Container>
         {crumbs ? <Breadcrumbs items={crumbs} /> : null}
         <SectionHead eyebrow={eyebrow} title={title} description={description} h1 />
         {children}
-      </div>
+      </Container>
     </section>
   );
 }
 
 export function Container({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('relative mx-auto max-w-6xl px-5 sm:px-8', className)}>{children}</div>;
+  const hasCustomMaxWidth = className?.split(/\s+/).some((token) => /^(?:[a-z]+:)*max-w-/.test(token));
+  return <div className={cn('relative mx-auto w-full px-5 sm:px-8', className)} style={hasCustomMaxWidth ? undefined : { maxWidth: 'var(--ph-container-max, 72rem)' }}>{children}</div>;
 }
 
 export function SkeletonBlock({ className }: { className?: string }) {

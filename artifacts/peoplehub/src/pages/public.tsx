@@ -365,7 +365,7 @@ export function DynamicPage() {
 
 export function PageSkeleton() {
   return (
-    <div className="mx-auto max-w-6xl px-5 pt-40 sm:px-8" aria-busy>
+    <div className="mx-auto w-full px-5 pt-40 sm:px-8" style={{ maxWidth: 'var(--ph-container-max, 72rem)' }} aria-busy>
       <SkeletonBlock className="h-4 w-40" />
       <SkeletonBlock className="mt-6 h-16 w-3/4" />
       <SkeletonBlock className="mt-4 h-5 w-1/2" />

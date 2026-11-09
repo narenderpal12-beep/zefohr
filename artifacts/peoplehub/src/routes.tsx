@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState, useEffect, type ReactElement, type ReactNode } from 'react';
+import { lazy, Suspense, useState, useEffect, type CSSProperties, type ReactElement, type ReactNode } from 'react';
 import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useResolveSeo, getResolveSeoQueryKey } from '@workspace/api-client-react';
@@ -10,6 +10,7 @@ import {
   PricingPage, ServiceDetailPage, ServicesPage, SolutionPage,
 } from '@/pages/public';
 import { CareersPage, CaseStudiesPage, CaseStudyDetailPage, DemoPage, MediaPage, SupportPage } from '@/pages/company';
+import { siteContainerMaxWidth } from '@/lib/theme';
 import { LoginPage, RegisterPage } from '@/pages/auth';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/toaster';
@@ -55,9 +56,10 @@ function SeoSync() {
 }
 
 function ThemeRoot({ children }: { children: ReactNode }) {
+  const theme = useSection('theme');
   return (
     <ModeProvider>
-      {(mode, style) => <div className={`${mode} grain min-h-[100dvh] bg-[color:var(--ph-bg)] text-foreground`} data-theme-mode={mode} style={style}>
+      {(mode, style) => <div className={`${mode} grain min-h-[100dvh] bg-[color:var(--ph-bg)] text-foreground`} data-theme-mode={mode} style={{ ...style, '--ph-container-max': siteContainerMaxWidth(theme) } as CSSProperties}>
         <svg width="0" height="0" aria-hidden="true" focusable="false" className="pointer-events-none absolute overflow-hidden">
           <defs>
             <linearGradient id="peoplehub-icon-gradient" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="24" y2="24">

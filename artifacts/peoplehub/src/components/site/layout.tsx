@@ -224,7 +224,7 @@ export function SiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 px-3 pt-3 sm:px-5">
-      <div className={cn('mx-auto flex max-w-6xl items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition-all duration-500 sm:px-4', scrolled || open ? 'glass-strong shadow-2xl shadow-black/20' : 'border border-transparent')}>
+      <div className={cn('mx-auto flex w-full items-center justify-between gap-3 rounded-2xl px-3 py-2.5 transition-all duration-500 sm:px-4', scrolled || open ? 'glass-strong shadow-2xl shadow-black/20' : 'border border-transparent')} style={{ maxWidth: 'var(--ph-container-max, 72rem)' }}>
         <Link href="/" aria-label={`${brand.name} home`} data-testid="link-home"><BrandMark /></Link>
         <DesktopNav items={items} />
         <div className="hidden items-center gap-2 lg:flex">
@@ -249,7 +249,7 @@ export function SiteHeader() {
       </div>
       <AnimatePresence>
         {open ? (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="glass-strong scrollbar-thin mx-auto mt-2 max-h-[calc(100dvh-6rem)] max-w-6xl overflow-y-auto rounded-2xl p-3 lg:hidden">
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="glass-strong scrollbar-thin mx-auto mt-2 max-h-[calc(100dvh-6rem)] w-full overflow-y-auto rounded-2xl p-3 lg:hidden" style={{ maxWidth: 'var(--ph-container-max, 72rem)' }}>
             <nav aria-label="Mobile">
               <MobileNav items={items} />
               <div className="mt-2 grid grid-cols-2 gap-2 border-t border-white/10 pt-3">
@@ -313,7 +313,7 @@ export function SiteFooter() {
   return (
     <footer className="relative mt-24 border-t border-white/[0.06]">
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[color:var(--ph-indigo)] to-transparent" />
-      <div className="mx-auto max-w-6xl px-5 py-16 sm:px-8">
+      <div className="mx-auto w-full px-5 py-16 sm:px-8" style={{ maxWidth: 'var(--ph-container-max, 72rem)' }}>
         <div className="grid gap-12 lg:grid-cols-[1.2fr_2.8fr]">
           <div>
             <BrandMark />
@@ -347,7 +347,7 @@ export function SiteFooter() {
           </div>
         </div>
       </div>
-      <div className="mx-auto max-w-6xl px-5 pb-10 sm:px-8">
+      <div className="mx-auto w-full px-5 pb-10 sm:px-8" style={{ maxWidth: 'var(--ph-container-max, 72rem)' }}>
         {footer.complianceNote ? (
           <p className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 text-xs leading-relaxed text-muted-foreground" data-testid="text-footer-compliance">{str(footer.complianceNote)}</p>
         ) : null}

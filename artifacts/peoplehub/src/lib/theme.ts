@@ -3,6 +3,27 @@ export type Mode = 'light' | 'dark';
 type Swatch = { primary: string; cyan: string; pink: string; bg: string };
 export interface Preset { id: string; label: string; note: string; hue: number; sat: number; dark: Swatch; light: Swatch }
 
+export const SITE_WIDTH_OPTIONS = [
+  { id: 'standard', label: 'Standard container', note: 'Comfortable reading width', preview: '72%' },
+  { id: 'wide', label: 'Wide container', note: 'More room for content', preview: '86%' },
+  { id: 'fluid', label: 'Full width', note: 'Use the available screen width', preview: '100%' },
+  { id: 'custom', label: 'Custom width', note: 'Set a maximum width', preview: '80%' },
+] as const;
+
+/** Resolve a saved Appearance choice to a safe CSS max-width. */
+export function siteContainerMaxWidth(theme: Record<string, unknown> | undefined): string {
+  switch (theme?.containerLayout) {
+    case 'wide': return '84rem';
+    case 'fluid': return '100%';
+    case 'custom': {
+      const width = Number(theme.customContainerWidth);
+      return `${Math.max(1080, Math.min(1920, Number.isFinite(width) && width ? width : 1440))}px`;
+    }
+    case 'standard':
+    default: return '72rem';
+  }
+}
+
 export const PRESETS: Preset[] = [
   { id: 'aurora', label: 'Aurora', note: 'Indigo, cyan and rose. The signature look.', hue: 232, sat: 45,
     dark: { primary: '#6d6cf6', cyan: '#22d3ee', pink: '#f472b6', bg: '#060816' }, light: { primary: '#4f46e5', cyan: '#0e7490', pink: '#be185d', bg: '#f5f6fc' } },

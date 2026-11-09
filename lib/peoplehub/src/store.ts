@@ -2,6 +2,8 @@ import { pool } from "@workspace/db";
 import type { PoolClient } from "pg";
 import { defaults, defaultPages } from "./defaults";
 import bcrypt from "bcryptjs";
+import { appendMissingSamples, renameLegacyCaseStudyLinks, withoutRefundPolicyLinks } from "./content-normalizers";
+import { samplePosts, sampleMediaItems, sampleUseCases } from "./sample-content";
 
 export { pool };
 export type Doc = Record<string, any>;
@@ -25,7 +27,7 @@ function merge(base: any, over: any): any {
 export async function getContent(): Promise<Doc> {
   const rows = await pool.query("SELECT key,value FROM site_content");
   const content = structuredClone(defaults);
-  for(const row of rows.rows) content[row.key] = merge(content[row.key],row.value);
+  for(const row of rows.rows) if(!row.key.startsWith("sample_content_v"))content[row.key] = merge(content[row.key],row.value);
   // Collections replace arrays when merging. Add imagery to older records by
   // stable identity, without replacing copy, order, uploaded images or removals.
   for(const key of ["suites","services"]){
@@ -40,6 +42,7 @@ export async function getContent(): Promise<Doc> {
   const storedBrand=rows.rows.find(r=>r.key==="brand");
   if(!storedBrand && content.nav?.brand)content.brand.name=content.nav.brand;
   content.nav.brand=content.brand.name;
+  content.footer=withoutRefundPolicyLinks(content.footer) as Doc;
   return content;
 }
 export async function publicData() {
@@ -77,6 +80,83 @@ export async function seed(reset=false) {
       'mapUrl','','officeHours',''),updated_at=now()
       WHERE key='contact' AND NOT (value ? 'address')`,
       [defaults.contact.address,defaults.contact.phone]);
+    const sampleSeed=(await client.query("SELECT key FROM site_content WHERE key='sample_content_v1'")).rowCount;
+    if(!sampleSeed){
+      for(const [key,samples] of [["media",sampleMediaItems],["caseStudies",sampleUseCases]] as const){
+        const row=(await client.query("SELECT value FROM site_content WHERE key=$1 FOR UPDATE",[key])).rows[0];
+        const current=row?.value??defaults[key];
+        const next={...current,items:appendMissingSamples(current.items,samples)};
+        await client.query("INSERT INTO site_content(key,value) VALUES($1,$2) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=now()",[key,JSON.stringify(next)]);
+      }
+      const legalRow=(await client.query("SELECT value FROM site_content WHERE key='legal' FOR UPDATE")).rows[0];
+      if(legalRow){
+        const legal={...legalRow.value};
+        const oldDefaults:Record<string,string>={
+          "privacy-policy":"PeopleHub collects the contact, organisation and account information you submit to provide your account and respond to enquiries. We use role-based access controls to restrict access to organisation data. Contact the PeopleHub team to request access, correction or deletion of your information. This is a draft policy and must be reviewed and completed with the operator's legal details, retention periods, contact information and applicable data-protection obligations before public launch.",
+          terms:"PeopleHub Phase 1 provides marketing information, organisation registration and subscription administration. HRMS business modules are planned for a later phase. Specialised services are subject to separately agreed scope and fees. Software alone does not fulfil every statutory obligation. These draft terms must be reviewed and completed with the operator's legal identity, contact details, governing law and dispute-resolution terms before public launch.",
+        };
+        for(const slug of ["privacy-policy","terms"]){
+          const existing=legal[slug]??{};
+          legal[slug]={
+            ...existing,
+            ...(existing.body===oldDefaults[slug]?{body:defaults.legal[slug].body}:{}),
+            reviewNotice:existing.reviewNotice||defaults.legal[slug].reviewNotice,
+          };
+        }
+        await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='legal'",[JSON.stringify(legal)]);
+      }
+      for(const post of samplePosts){
+        await client.query(
+          "INSERT INTO posts(slug,title,excerpt,body_md,author,tags,status,published_at) VALUES($1,$2,$3,$4,$5,$6,'published',$7) ON CONFLICT(slug) DO NOTHING",
+          [post.slug,post.title,post.excerpt,post.body_md,post.author,post.tags,post.published_at],
+        );
+      }
+      await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v1','{\"seeded\":true}'::jsonb)");
+    }
+    const copySeed=(await client.query("SELECT key FROM site_content WHERE key='sample_content_v2'")).rowCount;
+    if(!copySeed){
+      const oldCopy:Record<string,Record<string,string>>={
+        media:{description:"News, announcements and independent perspectives about PeopleHub."},
+        caseStudies:{
+          eyebrow:"REAL TEAMS. REAL POSSIBILITIES.",
+          title:"Stories built around people.",
+          description:"Explore customer experiences and implementation stories when verified case studies are available.",
+          emptyMessage:"We're preparing our first verified customer stories. Check back soon, or request a demo to explore the platform.",
+          linkLabel:"Read the story",
+          backLabel:"All case studies",
+        },
+      };
+      for(const [key,fields] of Object.entries(oldCopy)){
+        const row=(await client.query("SELECT value FROM site_content WHERE key=$1 FOR UPDATE",[key])).rows[0];
+        if(!row)continue;
+        const value={...row.value};
+        let changed=false;
+        for(const [field,oldValue] of Object.entries(fields)){
+          if(value[field]===oldValue){value[field]=defaults[key][field];changed=true;}
+        }
+        if(changed)await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key=$2",[JSON.stringify(value),key]);
+      }
+      const oldPages=[
+        {slug:"media-coverage",title:"Media coverage",intro:"News, announcements and perspectives about PeopleHub."},
+        {slug:"case-studies",title:"Case studies",intro:"Verified customer experiences and implementation stories."},
+      ];
+      for(const page of oldPages){
+        const updated=defaultPages.find((p)=>p.slug===page.slug)!;
+        await client.query(
+          "UPDATE pages SET title=$1,content=jsonb_set(content,'{intro}',to_jsonb($2::text)),updated_at=now() WHERE slug=$3 AND title=$4 AND content->>'intro'=$5",
+          [updated.title,updated.content.intro,page.slug,page.title,page.intro],
+        );
+      }
+      for(const key of ["nav","footer"]){
+        const row=(await client.query("SELECT value FROM site_content WHERE key=$1 FOR UPDATE",[key])).rows[0];
+        if(!row)continue;
+        const renamed=renameLegacyCaseStudyLinks(row.value);
+        if(JSON.stringify(renamed)!==JSON.stringify(row.value)){
+          await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key=$2",[JSON.stringify(renamed),key]);
+        }
+      }
+      await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v2','{\"seeded\":true}'::jsonb)");
+    }
     const content = await getContent();
     for(let i=0;i<content.suites.items.length;i++){
       const s=content.suites.items[i];

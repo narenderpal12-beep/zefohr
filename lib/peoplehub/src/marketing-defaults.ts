@@ -1,4 +1,5 @@
 import type {Doc} from "./store";
+import {sampleMediaItems, sampleUseCases} from "./sample-content";
 
 const companyLinks=[
   {label:"About us",href:"/about"},{label:"Careers",href:"/careers"},
@@ -53,7 +54,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       socialUnavailableMessage:"Social profile will be available soon.",
       socialHeading:"Stay connected",legalHeading:"Legal",contactHeading:"Get in touch",
       demoLabel:"Find the right fit for your team",demoButton:"Request a demo",
-      links:[{label:"Privacy policy",href:"/privacy-policy"},{label:"Terms of service",href:"/terms"},{label:"Refund policy",href:"/refund-policy"},{label:"Contact",href:"/contact"}],
+      links:[{label:"Privacy policy",href:"/privacy-policy"},{label:"Terms of service",href:"/terms"},{label:"Contact",href:"/contact"}],
     },
     whatsapp:{
       enabled:true,phone:"+919311638356",message:"Hello, I would like to learn more about PeopleHub.",
@@ -61,16 +62,16 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
     },
     media:{
       eyebrow:"IN THE CONVERSATION",title:"PeopleHub in the media.",
-      description:"News, announcements and independent perspectives about PeopleHub.",
-      emptyMessage:"Media coverage will be published here as it becomes available.",
-      items:[],linkLabel:"Read coverage",
+      description:"Sample editorial topics are shown for layout illustration only. They are not verified third-party coverage.",
+      emptyMessage:"Verified media coverage will be published here when available.",
+      items:sampleMediaItems,linkLabel:"Read coverage",
       pressTitle:"Press enquiries",pressDescription:"For interviews, company information or press enquiries, contact our team.",pressButton:"Contact our team",
     },
     caseStudies:{
-      eyebrow:"REAL TEAMS. REAL POSSIBILITIES.",title:"Stories built around people.",
-      description:"Explore customer experiences and implementation stories when verified case studies are available.",
-      emptyMessage:"We're preparing our first verified customer stories. Check back soon, or request a demo to explore the platform.",
-      items:[],linkLabel:"Read the story",backLabel:"All case studies",ctaLabel:"Request a demo",
+      eyebrow:"ILLUSTRATIVE WORKFLOWS",title:"Use cases for people-first teams.",
+      description:"These sample use cases describe possible workflows, not actual customers, implementations or measured results.",
+      emptyMessage:"Use cases will appear here as they are prepared.",
+      items:sampleUseCases,linkLabel:"Explore the use case",backLabel:"All use cases",ctaLabel:"Request a demo",
     },
     careers:{
       eyebrow:"BUILD BETTER WORK WITH US",title:"Your next chapter could start here.",
@@ -99,8 +100,8 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
 }
 
 export const additionalMarketingPages=[
-  {slug:"media-coverage",title:"Media coverage",section:"media",intro:"News, announcements and perspectives about PeopleHub."},
-  {slug:"case-studies",title:"Case studies",section:"caseStudies",intro:"Verified customer experiences and implementation stories."},
+  {slug:"media-coverage",title:"Media coverage",section:"media",intro:"Sample editorial topics are clearly marked until verified coverage is available."},
+  {slug:"case-studies",title:"Use cases",section:"caseStudies",intro:"Illustrative workflows for different teams; not customer stories or performance claims."},
   {slug:"careers",title:"Careers at PeopleHub",section:"careers",intro:"Explore opportunities to help build better work."},
   {slug:"career",title:"Careers at PeopleHub",section:"careers",intro:"Explore opportunities to help build better work."},
   {slug:"support",title:"Our support",section:"support",intro:"Get help with your account, plans and organisation setup."},

@@ -353,7 +353,15 @@ export function DynamicPage() {
     return (
       <>
         <PageHero crumbs={[{ label: 'Home', href: '/' }, { label: str(l.title) }]} eyebrow="Legal" title={str(l.title)} />
-        <Container className="max-w-3xl"><div className="glass rounded-3xl p-7 sm:p-10"><Markdown source={str(l.body)} /></div></Container>
+        <Container className="max-w-3xl">
+          {slug === 'privacy-policy' || slug === 'terms' ? (
+            <aside className="mb-5 rounded-2xl border border-amber-300/30 bg-amber-300/[0.06] p-5 text-sm leading-relaxed text-amber-100" role="note" data-testid={`notice-legal-draft-${slug}`}>
+              <strong className="block font-mono text-xs uppercase tracking-wider">Draft for review · not legal advice</strong>
+              <p className="mt-2">{str(l.reviewNotice, 'Complete all bracketed placeholders with verified details and have qualified counsel review this draft for the applicable jurisdiction before publication.')}</p>
+            </aside>
+          ) : null}
+          <div className="glass rounded-3xl p-7 sm:p-10"><Markdown source={str(l.body)} /></div>
+        </Container>
       </>
     );
   }

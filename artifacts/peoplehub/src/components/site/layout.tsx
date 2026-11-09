@@ -307,7 +307,9 @@ export function SiteFooter() {
     : raw.length && raw[0] && Array.isArray(raw[0].links)
       ? raw.map((g) => ({ title: str(g.title ?? g.label), links: arr<AnyObj>(g.links) }))
       : raw.length ? [{ title: 'Explore', links: raw }] : [];
-  const legalLinks = Object.entries(legal as AnyObj).map(([k, v]) => ({ href: `/${k}`, label: str((v as AnyObj)?.title, k) }));
+  const legalLinks = Object.entries(legal as AnyObj)
+    .filter(([key]) => key !== 'refund-policy')
+    .map(([k, v]) => ({ href: `/${k}`, label: str((v as AnyObj)?.title, k) }));
   const year = new Date().getFullYear();
   const copyright = str(footer.copyright);
   return (

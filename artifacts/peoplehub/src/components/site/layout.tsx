@@ -17,21 +17,23 @@ export function useBrand() {
     tagline: str(brand.tagline),
     logoUrl: str(brand.logoUrl),
     logoAlt: str(brand.logoAlt, 'PeopleHub logo'),
+    logoMode: str(brand.logoMode, brand.logoUrl ? 'image' : 'mark'),
     showWordmark: brand.showWordmark !== false,
   };
 }
 
-export function BrandMark({ name, className, logoUrl, logoAlt, showWordmark = true }: { name?: string; className?: string; logoUrl?: string; logoAlt?: string; showWordmark?: boolean }) {
+export function BrandMark({ name, className, logoUrl, logoAlt, logoMode, showWordmark = true }: { name?: string; className?: string; logoUrl?: string; logoAlt?: string; logoMode?: string; showWordmark?: boolean }) {
   const b = useBrand();
   const n = name ?? b.name;
-  const logo = logoUrl ?? b.logoUrl;
+  const mode = logoMode ?? b.logoMode;
+  const logo = mode === 'image' ? (logoUrl ?? b.logoUrl) : '';
   const alt = logoAlt ?? b.logoAlt;
   const word = name !== undefined ? showWordmark : b.showWordmark;
   return (
     <span className={cn('flex items-center gap-2.5', className)} data-testid="brand-mark">
       {logo ? (
         <img src={logo} alt={alt} className="h-9 w-auto max-w-[160px] object-contain" />
-      ) : (
+      ) : mode !== 'text' ? (
         <span className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-brand shadow-[0_8px_30px_-8px_var(--ph-indigo)]">
           <svg viewBox="0 0 32 32" className="h-5 w-5" aria-hidden>
             <circle cx="11" cy="11" r="4.2" fill="var(--ph-on-brand)" />
@@ -40,7 +42,7 @@ export function BrandMark({ name, className, logoUrl, logoAlt, showWordmark = tr
             <path d="M17.6 20.4c1.1-1.3 2.4-2 3.9-2 2.5 0 4.6 2 5.2 5.6" stroke="var(--ph-on-brand)" strokeOpacity=".75" strokeWidth="2.2" strokeLinecap="round" fill="none" />
           </svg>
         </span>
-      )}
+      ) : null}
       {word || !logo ? <span className="brand-wordmark font-display text-xl font-bold tracking-tight text-foreground">{n}</span> : <span className="sr-only">{n}</span>}
     </span>
   );

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 const imageData = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})$/;
-function safeLogo(value:string):boolean {
+export function safeLogo(value:string):boolean {
   if(value.startsWith("/")&&!value.startsWith("//"))return !/[\s\\<>]/.test(value);
   try {if(new URL(value).protocol==="https:")return true;}catch {/* Check embedded image next. */}
   const match=value.match(imageData);

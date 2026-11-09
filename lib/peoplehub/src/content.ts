@@ -7,7 +7,7 @@ import { requireAuth,requireAdmin } from "./auth";
 import { invalidateSeo,discoverPages,cleanPath } from "./seo";
 import { paymentProvider } from "./payments/provider";
 import { rateLimit } from "express-rate-limit";
-import { clientsSchema } from "./clients";
+import { clientsSchema, safeLogo } from "./clients";
 
 const uuid=z.string().uuid();
 function validateContent(key:string,value:Doc) {
@@ -48,7 +48,9 @@ function validateContent(key:string,value:Doc) {
   }
   if(key==="brand"){
     if(typeof value.name!=="string"||!value.name.trim()||value.name.length>100)fail("Brand name must be 1–100 characters");
-    if(value.logoUrl&&!/^(https?:\/\/|\/(?!\/))/.test(value.logoUrl))fail("Use a valid logo URL or local image path");
+    if(value.logoUrl&&(typeof value.logoUrl!=="string"||value.logoUrl.length>200000||!safeLogo(value.logoUrl)))fail("Use a local image path, HTTPS URL or PNG/JPEG/WebP upload up to 150KB");
+    if(value.logoMode!=null&&!["text","image","mark"].includes(value.logoMode))fail("Choose text, image or built-in logo");
+    if(value.logoMode==="image"&&!value.logoUrl)fail("Upload an image or enter its URL");
     if(typeof value.showWordmark!=="boolean")fail("Choose whether to show the brand name");
   }
   if(key==="contact"){

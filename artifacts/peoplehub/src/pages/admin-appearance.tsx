@@ -9,6 +9,7 @@ import { SkeletonBlock } from '@/components/site/primitives';
 import { BrandMark } from '@/components/site/layout';
 import { JsonForm, aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
 import { cn } from '@/lib/utils';
+import { encodeLogo } from '@/lib/logo-upload';
 
 /** Local draft of one CMS section, initialised once per key, saved through useSaveContent. */
 function useDraft(key: string) {
@@ -37,12 +38,12 @@ function useDraft(key: string) {
   return { draft, setDraft, doSave, revert, dirty, saving: save.isPending, saved, error: save.isError ? errMsg(save.error) : '', loading: content.isLoading };
 }
 
-function SaveBar({ d, label }: { d: ReturnType<typeof useDraft>; label: string }) {
+function SaveBar({ d, label, disabled = false }: { d: ReturnType<typeof useDraft>; label: string; disabled?: boolean }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {d.error ? <span className="text-xs text-red-300">{d.error}</span> : d.dirty ? <span className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--ph-pink)]">Unsaved</span> : null}
       <button type="button" className={aBtn} onClick={d.revert} disabled={!d.dirty} data-testid={`button-revert-${label}`}><RotateCcw className="h-3 w-3" />Revert</button>
-      <button type="button" className={aBtnPrimary} onClick={d.doSave} disabled={d.saving || !d.draft} data-testid={`button-save-${label}`}>{d.saved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}{d.saving ? 'Saving...' : d.saved ? 'Saved' : 'Save'}</button>
+      <button type="button" className={aBtnPrimary} onClick={d.doSave} disabled={disabled || d.saving || !d.draft} data-testid={`button-save-${label}`}>{d.saved ? <Check className="h-3.5 w-3.5" /> : <Save className="h-3.5 w-3.5" />}{d.saving ? 'Saving...' : d.saved ? 'Saved' : 'Save'}</button>
     </div>
   );
 }
@@ -172,6 +173,8 @@ const SOCIALS = [
 
 export function BrandingAdmin() {
   const brand = useDraft('brand');
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
   const footer = useDraft('footer');
   const wa = useDraft('whatsapp');
   const nav = useDraft('nav');
@@ -192,18 +195,31 @@ export function BrandingAdmin() {
         <h1 className="font-display text-3xl font-bold">Branding</h1>
         <p className="mt-1 text-sm text-muted-foreground">Website profile, name, logo, contact details, social profiles, WhatsApp, navigation and footer. Each card saves independently. Use Content and Pages to edit all website copy.</p>
       </div>
-      <Card title="Identity" actions={<SaveBar d={brand} label="brand" />}>
+      <Card title="Identity" actions={<SaveBar d={brand} label="brand" disabled={uploading} />}>
         <div className="grid gap-5 lg:grid-cols-[1fr_280px]">
           <div className="grid gap-4 sm:grid-cols-2">
             <F label="Brand name"><input className={aInput} value={str(b.name)} onChange={(e) => brand.setDraft({ ...b, name: e.target.value })} data-testid="input-brand-name" /></F>
             <F label="Tagline"><input className={aInput} value={str(b.tagline)} onChange={(e) => brand.setDraft({ ...b, tagline: e.target.value })} data-testid="input-brand-tagline" /></F>
-            <F label="Logo URL" hint="Leave blank to use the built-in mark. Use an absolute https URL or a /path."><input className={aInput} value={str(b.logoUrl)} onChange={(e) => brand.setDraft({ ...b, logoUrl: e.target.value })} data-testid="input-brand-logo" /></F>
-            <F label="Logo alt text"><input className={aInput} value={str(b.logoAlt)} onChange={(e) => brand.setDraft({ ...b, logoAlt: e.target.value })} data-testid="input-brand-logo-alt" /></F>
-            <div className="flex items-center justify-between gap-3 sm:col-span-2"><span className="text-sm">Show brand name next to logo</span><Switch on={b.showWordmark !== false} onChange={(v) => brand.setDraft({ ...b, showWordmark: v })} id="wordmark" /></div>
+            <F label="Logo type"><select className={aInput} value={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} disabled={uploading} onChange={(e) => brand.setDraft({ ...b, logoMode: e.target.value })} data-testid="select-brand-logo-type"><option value="text">Text only</option><option value="image">Image logo</option><option value="mark">Built-in mark and text</option></select></F>
+            {str(b.logoMode, b.logoUrl ? 'image' : 'mark') === 'image' ? <>
+              <F label="Upload logo" hint="PNG, JPEG or WebP. Resized to 800px, maximum 150KB after processing. Click Save to publish."><input className={aInput} type="file" accept="image/png,image/jpeg,image/webp" disabled={uploading} data-testid="input-brand-logo-upload" onChange={async (e) => {
+                const file = e.target.files?.[0]; e.target.value = '';
+                if (!file) return;
+                setUploading(true); setUploadError('');
+                try { const logoUrl = await encodeLogo(file); brand.setDraft((current) => current ? { ...current, logoUrl, logoMode: 'image' } : current); }
+                catch (error) { setUploadError((error as Error).message); }
+                finally { setUploading(false); }
+              }} /></F>
+              <F label="Logo URL" hint={str(b.logoUrl).startsWith('data:') ? 'Uploaded image ready. Enter a URL to replace it.' : 'Alternatively use an HTTPS URL or /path.'}><input className={aInput} disabled={uploading} value={str(b.logoUrl).startsWith('data:') ? '' : str(b.logoUrl)} onChange={(e) => brand.setDraft({ ...b, logoUrl: e.target.value })} data-testid="input-brand-logo" /></F>
+              <F label="Logo alt text"><input className={aInput} value={str(b.logoAlt)} onChange={(e) => brand.setDraft({ ...b, logoAlt: e.target.value })} data-testid="input-brand-logo-alt" /></F>
+              <div className="flex items-center justify-between gap-3 sm:col-span-2"><span className="text-sm">Show brand name next to logo</span><Switch on={b.showWordmark !== false} onChange={(v) => brand.setDraft({ ...b, showWordmark: v })} id="wordmark" /></div>
+            </> : null}
+            {uploading ? <p role="status" className="text-sm">Processing image...</p> : null}
+            {uploadError ? <p role="alert" className="text-sm text-red-500">{uploadError}</p> : null}
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
             <p className="mb-4 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Preview</p>
-            <BrandMark name={str(b.name, 'PeopleHub')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} showWordmark={b.showWordmark !== false} />
+            <BrandMark name={str(b.name, 'PeopleHub')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} logoMode={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} showWordmark={b.showWordmark !== false} />
             {b.tagline ? <p className="mt-3 text-sm text-muted-foreground">{str(b.tagline)}</p> : null}
           </div>
         </div>

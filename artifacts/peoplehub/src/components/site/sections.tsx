@@ -183,7 +183,7 @@ export function SuitesTabs() {
               <div className="mt-6 grid items-start gap-6 md:grid-cols-[1fr_minmax(0,260px)]">
                 <div>
                   <h3 className="font-display text-3xl font-bold text-foreground">{str(cur.title)}</h3>
-                  <p className="mt-3 max-w-2xl text-muted-foreground">{str(cur.description)}</p>
+                  <p className="mt-3 max-w-2xl text-pretty leading-relaxed text-muted-foreground">{str(cur.body, str(cur.description))}</p>
                 </div>
                 <SolutionImage item={cur} className="order-first rounded-xl md:order-none" />
               </div>

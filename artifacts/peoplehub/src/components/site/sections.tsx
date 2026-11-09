@@ -10,6 +10,7 @@ import { arr, cta, errMsg, formatINR, iconFor, str, useSection, type AnyObj } fr
 import { Aurora, Container, Counter, CtaLink, Eyebrow, FaqList, GlassCard, Marquee, Reveal, SectionHead, btnPrimary } from './primitives';
 import { cn } from '@/lib/utils';
 import {orbitAnimation} from '@/lib/lottie-data';
+import { SolutionImage } from './solution-image';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LottiePlayer = lazy(() => import('lottie-react').then((m) => ({ default: m.Lottie as ComponentType<any> })));
@@ -167,8 +168,13 @@ export function SuitesTabs() {
                 <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand"><Icon className="h-6 w-6 text-on-brand" /></span>
                 {cur.priority ? <span className={cn('rounded-full border px-3 py-1 font-mono text-[11px] uppercase tracking-wider', priorityTone(str(cur.priority)))}>{str(cur.priority)}</span> : null}
               </div>
-              <h3 className="font-display mt-6 text-3xl font-bold text-foreground">{str(cur.title)}</h3>
-              <p className="mt-3 max-w-2xl text-muted-foreground">{str(cur.description)}</p>
+              <div className="mt-6 grid items-start gap-6 md:grid-cols-[1fr_minmax(0,300px)]">
+                <div>
+                  <h3 className="font-display text-3xl font-bold text-foreground">{str(cur.title)}</h3>
+                  <p className="mt-3 max-w-2xl text-muted-foreground">{str(cur.description)}</p>
+                </div>
+                <SolutionImage item={cur} className="order-first rounded-2xl shadow-[0_24px_50px_-30px_var(--ph-indigo)] md:order-none md:-rotate-1" />
+              </div>
               <ul className="mt-8 flex flex-wrap gap-2">
                 {arr<string>(cur.modules).map((m, i) => (
                   <li key={i} className="rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-sm capitalize text-foreground/85">{m}</li>
@@ -200,6 +206,7 @@ export function ServiceGrid({ base = '/services', limit, head = true }: { base?:
               <Reveal key={i} delay={(i % 3) * 70} className={span}>
                 <Link href={`${base}/${str(s.slug)}`} className="block h-full" data-testid={`link-service-${str(s.slug)}`}>
                   <GlassCard className="h-full p-6">
+                    <SolutionImage item={s} className="-mx-2 -mt-2 mb-5 rounded-2xl" />
                     <div className="flex items-start justify-between">
                       <span className="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/[0.04]"><I className="h-5 w-5 text-[color:var(--ph-cyan)]" /></span>
                       <ArrowUpRight className="h-5 w-5 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-foreground" />

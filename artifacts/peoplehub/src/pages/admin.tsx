@@ -154,6 +154,7 @@ function ContentEditor() {
   const [draft, setDraft] = useState<any>(null);
   const [mode, setMode] = useState<'form' | 'raw' | 'history'>('form');
   const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const loadedFor = useMemo(() => ({ k: '' }), []);
   useEffect(() => {
     if (content.data && loadedFor.k !== key) { loadedFor.k = key; setDraft(structuredClone((content.data as AnyObj)[key] ?? {})); setSaved(false); }
@@ -170,19 +171,20 @@ function ContentEditor() {
       <h1 className="font-display text-3xl font-bold">Site content</h1>
       <div className="mt-6 grid gap-4 lg:grid-cols-[200px_1fr]">
         <div className="scrollbar-thin flex gap-1 overflow-x-auto lg:flex-col">
-          {keys.map((k) => <button key={k} type="button" onClick={() => setKey(k)} className={cn('shrink-0 rounded-lg px-3 py-2 text-left font-mono text-xs', k === key ? 'bg-brand text-on-brand' : 'text-muted-foreground hover:bg-white/5')} data-testid={`button-section-${k}`}>{k}</button>)}
+          {keys.map((k) => <button key={k} type="button" onClick={() => setKey(k)} disabled={uploading} className={cn('shrink-0 rounded-lg px-3 py-2 text-left font-mono text-xs', k === key ? 'bg-brand text-on-brand' : 'text-muted-foreground hover:bg-white/5')} data-testid={`button-section-${k}`}>{k}</button>)}
         </div>
         <Panel
           title={key}
           actions={<>
-            {(['form', 'raw', 'history'] as const).map((m) => <button key={m} type="button" className={cn(aBtn, mode === m && 'border-[color:var(--ph-indigo)] text-foreground')} onClick={() => setMode(m)} data-testid={`tab-content-${m}`}>{m === 'form' ? 'Form' : m === 'raw' ? 'Raw JSON' : <><History className="h-3 w-3" />History</>}</button>)}
-            <button type="button" className={aBtn} onClick={doReset} disabled={reset.isPending} data-testid="button-reset-content"><RotateCcw className="h-3 w-3" />Reset to default</button>
-            <button type="button" className={aBtnPrimary} onClick={doSave} disabled={save.isPending || draft === null} data-testid="button-save-content"><Save className="h-3.5 w-3.5" />{save.isPending ? 'Saving...' : saved ? 'Saved' : 'Save'}</button>
+            {(['form', 'raw', 'history'] as const).map((m) => <button key={m} type="button" className={cn(aBtn, mode === m && 'border-[color:var(--ph-indigo)] text-foreground')} onClick={() => setMode(m)} disabled={uploading} data-testid={`tab-content-${m}`}>{m === 'form' ? 'Form' : m === 'raw' ? 'Raw JSON' : <><History className="h-3 w-3" />History</>}</button>)}
+            <button type="button" className={aBtn} onClick={doReset} disabled={reset.isPending || uploading} data-testid="button-reset-content"><RotateCcw className="h-3 w-3" />Reset to default</button>
+            <button type="button" className={aBtnPrimary} onClick={doSave} disabled={save.isPending || draft === null || uploading} data-testid="button-save-content"><Save className="h-3.5 w-3.5" />{save.isPending ? 'Saving...' : saved ? 'Saved' : 'Save'}</button>
           </>}
         >
           {save.isError ? <p className="mb-3 text-sm text-red-300">{errMsg(save.error)}</p> : null}
           {key === 'theme' || key === 'brand' ? <p className="mb-3 text-xs text-muted-foreground">Tip: the <Link href={key === 'theme' ? '/admin/appearance' : '/admin/branding'} className="text-[color:var(--ph-cyan)] underline">{key === 'theme' ? 'Appearance' : 'Branding'}</Link> tab offers friendly controls with a preview.</p> : null}
-          {mode === 'form' && draft !== null ? <JsonForm value={draft} onChange={setDraft} path={key} /> : null}
+          {key === 'suites' || key === 'services' ? <p className="mb-3 text-xs text-muted-foreground">Each offering has its own illustration. Browse to replace it, preview your image, edit the image description for accessibility, then click Save. Removing an image hides it on the website.</p> : null}
+          {mode === 'form' && draft !== null ? <JsonForm value={draft} onChange={setDraft} path={key} onBusyChange={setUploading} /> : null}
           {mode === 'raw' ? <RawJson value={draft} onChange={setDraft} /> : null}
           {mode === 'history' ? (
             history.isLoading ? <SkeletonBlock className="h-40" /> : arr<AnyObj>(history.data).length ? (

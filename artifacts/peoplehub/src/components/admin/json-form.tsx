@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from 'react';
-import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { ArrowDown, ArrowUp, ImagePlus, Loader2, Plus, Trash2 } from 'lucide-react';
+import { encodeLogo } from '@/lib/logo-upload';
 import { cn } from '@/lib/utils';
 
 export const aInput = 'w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-sm text-foreground outline-none focus:border-[color:var(--ph-indigo)] focus:ring-2 focus:ring-[color:var(--ph-indigo)]/20';
@@ -35,11 +36,60 @@ const TEMPLATES: [RegExp, () => any][] = [
 export function templateFor(path: string, sample?: any): any {
   const t = TEMPLATES.find(([r]) => r.test(path));
   if (t) return t[1]();
+  if (/^(suites|services)-items$/.test(path)) return { ...(sample && typeof sample === 'object' ? blankLike(sample) : {}), imageUrl: '', imageAlt: '' };
   return sample !== undefined ? blankLike(sample) : '';
 }
 
+const IMAGE_PATH = /^(suites|services)-items-\d+-imageUrl$/;
+const BusyCtx = createContext<(delta: number) => void>(() => undefined);
+
+/** Browse + preview + remove for suite/service illustrations. Whole form is locked while encoding, so the result cannot land on a stale draft or a moved item. */
+function ImageField({ value, onChange, path }: { value: string; onChange: (v: string) => void; path: string }) {
+  const bump = useContext(BusyCtx);
+  const input = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [broken, setBroken] = useState(false);
+  useEffect(() => { setBroken(false); }, [value]);
+  const pick = async (file?: File) => {
+    if (!file) return;
+    setErr(null); setBusy(true); bump(1);
+    try { const url = await encodeLogo(file); setBroken(false); onChange(url); } catch (e) { setErr((e as Error).message); } finally { setBusy(false); bump(-1); if (input.current) input.current.value = ''; }
+  };
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+      <div className="solution-frame grid aspect-[331/246] w-40 place-items-center overflow-hidden rounded-xl">
+        {value && !broken ? <img src={value} alt="Current illustration" className="h-full w-full object-cover" onError={() => setBroken(true)} data-testid={`preview-${path}`} /> : <span className="px-2 text-center text-[11px] text-slate-500">{broken ? 'Image unavailable' : 'No image'}</span>}
+      </div>
+      <div className="flex flex-col gap-1.5">
+        <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => void pick(e.target.files?.[0])} data-testid={`file-${path}`} />
+        <button type="button" className={aBtn} onClick={() => input.current?.click()} disabled={busy} data-testid={`button-browse-${path}`}>{busy ? <Loader2 className="h-3 w-3 animate-spin" /> : <ImagePlus className="h-3 w-3" />}{busy ? 'Processing...' : value ? 'Replace image' : 'Browse image'}</button>
+        {value ? <button type="button" className={cn(aBtn, 'text-red-300')} onClick={() => { setBroken(false); onChange(''); }} disabled={busy} data-testid={`button-remove-image-${path}`}><Trash2 className="h-3 w-3" />Remove image</button> : null}
+        <span className="text-[11px] text-muted-foreground">PNG, JPEG or WebP, up to 150KB after processing. Removing hides the image on the site. Click Save to publish.</span>
+        {err ? <span className="text-[11px] text-red-300">{err}</span> : null}
+      </div>
+    </div>
+  );
+}
+
 /** Generic recursive editor for any JSON value. */
-export function JsonForm({ value, onChange, path = 'root', depth = 0 }: { value: any; onChange: (v: any) => void; path?: string; depth?: number }) {
+export function JsonForm(props: { value: any; onChange: (v: any) => void; path?: string; depth?: number; onBusyChange?: (busy: boolean) => void }) {
+  const [count, setCount] = useState(0);
+  const cb = useRef(props.onBusyChange);
+  cb.current = props.onBusyChange;
+  useEffect(() => { cb.current?.(count > 0); }, [count]);
+  if (props.depth) return <JsonNode {...props} />;
+  return (
+    <BusyCtx.Provider value={(d) => setCount((c) => c + d)}>
+      <fieldset disabled={count > 0} className={cn('min-w-0', count > 0 && 'opacity-80')} aria-busy={count > 0}>
+        <JsonNode {...props} />
+      </fieldset>
+    </BusyCtx.Provider>
+  );
+}
+
+function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; onChange: (v: any) => void; path?: string; depth?: number }) {
+  if (IMAGE_PATH.test(path) && (typeof value === 'string' || value == null)) return <ImageField value={value ?? ''} onChange={onChange} path={path} />;
   if (value === null || value === undefined) {
     return <input className={aInput} value="" placeholder="(empty)" onChange={(e) => onChange(e.target.value)} data-testid={`input-${path}`} />;
   }
@@ -73,7 +123,7 @@ export function JsonForm({ value, onChange, path = 'root', depth = 0 }: { value:
                 <button type="button" className={cn(aBtn, 'text-red-300')} onClick={() => onChange(value.filter((_, j) => j !== i))} aria-label="Remove" data-testid={`button-remove-${path}-${i}`}><Trash2 className="h-3 w-3" /></button>
               </div>
             </div>
-            <JsonForm value={item} onChange={(v) => { const n = [...value]; n[i] = v; onChange(n); }} path={`${path}-${i}`} depth={depth + 1} />
+            <JsonNode value={item} onChange={(v) => { const n = [...value]; n[i] = v; onChange(n); }} path={`${path}-${i}`} depth={depth + 1} />
           </div>
         ))}
         <button type="button" className={aBtn} onClick={() => onChange([...value, templateFor(path, value.length ? value[0] : undefined)])} data-testid={`button-add-${path}`}><Plus className="h-3 w-3" />Add item</button>
@@ -84,8 +134,8 @@ export function JsonForm({ value, onChange, path = 'root', depth = 0 }: { value:
     <div className={cn('grid gap-4', depth > 0 && 'border-l border-white/[0.07] pl-3')}>
       {Object.entries(value).map(([k, v]) => (
         <div key={k}>
-          <div className="mb-1.5 text-xs font-medium text-foreground/80">{humanize(k)}</div>
-          <JsonForm value={v} onChange={(nv) => onChange({ ...value, [k]: nv })} path={`${path}-${k}`} depth={depth + 1} />
+          <div className="mb-1.5 text-xs font-medium text-foreground/80">{IMAGE_PATH.test(`${path}-${k}`) ? 'Illustration' : humanize(k)}</div>
+          <JsonNode value={v} onChange={(nv) => onChange({ ...value, [k]: nv })} path={`${path}-${k}`} depth={depth + 1} />
         </div>
       ))}
     </div>

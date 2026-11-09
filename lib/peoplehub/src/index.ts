@@ -24,7 +24,7 @@ export function configureApp(app:Express) {
     },
   },crossOriginEmbedderPolicy:false,frameguard:false}));
   app.use(compression());
-  app.use(express.json({limit:"2mb"}));
+  app.use(express.json({limit:"3mb"}));
   app.use(cookieParser());
   // Same-origin API. Reject cross-origin cookie mutations (JWT cookies use SameSite=Lax).
   app.use("/api",(req:Request,res:Response,next:NextFunction)=>{

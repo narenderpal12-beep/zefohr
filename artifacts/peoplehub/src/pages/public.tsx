@@ -7,6 +7,7 @@ import {
   AiSection, ContactSection, CtaBand, FaqSection, Hero, Integrations, PricingTable, ServiceGrid, Stats, SuitesTabs, WhyUs, priorityTone,
 } from '@/components/site/sections';
 import { ClientsSection } from '@/components/site/clients';
+import { SolutionImage } from '@/components/site/solution-image';
 import { cn } from '@/lib/utils';
 
 export function HomePage() {
@@ -42,6 +43,7 @@ export function FeaturesPage() {
               <Reveal key={i} delay={(i % 2) * 80}>
                 <Link href={`/features/${str(s.slug)}`} className="block h-full" data-testid={`link-feature-${str(s.slug)}`}>
                   <GlassCard className="h-full p-7">
+                    <SolutionImage item={s} className="-mx-3 -mt-3 mb-6 rounded-2xl" />
                     <div className="flex items-center justify-between">
                       <span className="grid h-12 w-12 place-items-center rounded-2xl bg-white/[0.05] border border-white/10"><I className="h-5 w-5 text-[color:var(--ph-cyan)]" /></span>
                       <span className="font-mono text-xs text-muted-foreground">{String(i + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}</span>
@@ -84,6 +86,7 @@ function DetailPage({ kind }: { kind: 'suites' | 'services' }) {
           <CtaLink href="/register?mode=trial" testId="link-detail-trial">Start free trial <ArrowRight className="h-4 w-4" /></CtaLink>
           <CtaLink href="/contact" variant="ghost" testId="link-detail-contact">Talk to an expert</CtaLink>
         </div>
+        <SolutionImage item={item} eager className="mt-10 max-w-md rounded-3xl shadow-[0_30px_70px_-35px_var(--ph-indigo)]" />
       </PageHero>
       <Container className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         <Reveal className="glass border-gradient rounded-3xl p-7 sm:p-9">
@@ -112,7 +115,8 @@ function DetailPage({ kind }: { kind: 'suites' | 'services' }) {
         <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">More {label.toLowerCase()}</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {others.map((o) => (
-            <Link key={str(o.slug)} href={`${base}/${str(o.slug)}`} className="glass rounded-2xl p-4 text-sm text-foreground/90 hover:border-white/20" data-testid={`link-related-${str(o.slug)}`}>
+            <Link key={str(o.slug)} href={`${base}/${str(o.slug)}`} className="group glass rounded-2xl p-4 text-sm text-foreground/90 hover:border-white/20" data-testid={`link-related-${str(o.slug)}`}>
+              <SolutionImage item={o} className="mb-3 rounded-xl" />
               {str(o.title)} <ArrowRight className="mt-2 h-4 w-4 text-muted-foreground" />
             </Link>
           ))}

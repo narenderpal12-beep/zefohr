@@ -3,3 +3,4 @@
 
 # Local tool caches are not part of the published application.
 .local
+/generated-artifacts/

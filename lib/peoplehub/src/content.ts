@@ -12,7 +12,8 @@ import { clientsSchema, safeLogo } from "./clients";
 const uuid=z.string().uuid();
 function validateContent(key:string,value:Doc) {
   if(!value || typeof value!=="object" || Array.isArray(value))fail("A section must be a JSON object");
-  if(JSON.stringify(value).length>(key==="clients"?1500000:500000))fail(key==="clients"?"Client collection is too large. Use smaller logo images.":"Section is too large");
+  const sectionLimit=["suites","services"].includes(key)?2100000:key==="clients"?1500000:500000;
+  if(JSON.stringify(value).length>sectionLimit)fail(["clients","suites","services"].includes(key)?"Image collection is too large. Use smaller images or fewer uploads.":"Section is too large");
   if(key==="clients"){
     const result=clientsSchema.safeParse(value);
     if(!result.success)fail(result.error.issues[0]?.message??"Invalid client details");
@@ -24,6 +25,8 @@ function validateContent(key:string,value:Doc) {
       if(typeof item.key!=="string"||!item.key||keys.has(item.key))fail("Item keys must be non-empty and unique");
       if(typeof item.slug!=="string"||!/^[a-z0-9-]+$/.test(item.slug)||slugs.has(item.slug))fail("Item slugs must be unique lower-case URL slugs");
       if(!item.title||!Array.isArray(item.modules))fail("Each item needs a title and module list");
+      if(item.imageUrl!=null&&(typeof item.imageUrl!=="string"||item.imageUrl.length>200000||(item.imageUrl!==""&&!safeLogo(item.imageUrl))))fail("Choose a valid PNG, JPEG or WebP image up to 150KB");
+      if(item.imageAlt!=null&&(typeof item.imageAlt!=="string"||item.imageAlt.length>300))fail("Image descriptions must be text up to 300 characters");
       keys.add(item.key);slugs.add(item.slug);
     }
   }

@@ -555,3 +555,6 @@ body { background: var(--ph-bg); }
 .mega-panel[data-open='true'] { opacity: 1; transform: none; visibility: visible; }
 @keyframes wa-pulse { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(1.6); opacity: 0; } }
 .wa-pulse { animation: wa-pulse 2.4s ease-out infinite; }
+.solution-frame { position: relative; background: #f4efe6; border: 1px solid rgba(var(--ph-glass-rgb),.1); isolation: isolate; }
+.solution-frame::after { content: ''; position: absolute; inset-inline: 0; bottom: 0; height: 2px; pointer-events: none; background: linear-gradient(90deg, var(--ph-indigo), var(--ph-cyan) 55%, var(--ph-pink)); opacity: .85; }
+.group:hover .solution-frame img { transform: scale(1.04); }

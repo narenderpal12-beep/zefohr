@@ -15,6 +15,7 @@ const suiteData = [
 ];
 export const suites = suiteData.map(([key, slug, title, icon, modules], i) => ({
   key, slug, title, icon, modules: modules.split(", "), priority: i < 8 ? "Must have" : "Differentiator",
+  imageUrl: `/solution-images/${slug}.webp`, imageAlt: `Creative illustration of ${title.toLowerCase()}`,
   description: `Bring ${title.toLowerCase()} together in one connected workspace, built for the way Indian businesses work.`,
   benefits: ["Reduce repetitive administration", "Keep your people and records connected", "Scale at your own pace"],
   faq: [{question: `Is ${title} available in my plan?`, answer: "Choose the suites included in your plan, or speak to our team about a tailored package."}],
@@ -33,6 +34,7 @@ const serviceData = [
 ];
 export const services = serviceData.map(([slug,title,description,billing,icon]) => ({
   key:slug,slug,title,description,billing,icon,modules:description.split(", "),
+  imageUrl: `/solution-images/${slug}.webp`, imageAlt: `Creative illustration of ${title.toLowerCase()} services`,
   benefits:["Expert-led support for your business", "Clear records and coordinated workflows", "Flexible service packages"],
   faq:[{question:"How is this service priced?",answer:`This service is billed as ${billing}. Contact our team for a proposal.`}],
 }));

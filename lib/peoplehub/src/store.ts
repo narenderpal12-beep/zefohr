@@ -26,6 +26,15 @@ export async function getContent(): Promise<Doc> {
   const rows = await pool.query("SELECT key,value FROM site_content");
   const content = structuredClone(defaults);
   for(const row of rows.rows) content[row.key] = merge(content[row.key],row.value);
+  // Collections replace arrays when merging. Add imagery to older records by
+  // stable identity, without replacing copy, order, uploaded images or removals.
+  for(const key of ["suites","services"]){
+    for(const item of content[key]?.items ?? []){
+      const original=defaults[key].items.find((d:Doc)=>d.key===item.key || d.slug===item.slug);
+      if(item.imageUrl===undefined)item.imageUrl=original?.imageUrl ?? "";
+      if(item.imageAlt===undefined)item.imageAlt=`Creative illustration of ${item.title ?? key}`;
+    }
+  }
   const storedBrand=rows.rows.find(r=>r.key==="brand");
   if(!storedBrand && content.nav?.brand)content.brand.name=content.nav.brand;
   content.nav.brand=content.brand.name;

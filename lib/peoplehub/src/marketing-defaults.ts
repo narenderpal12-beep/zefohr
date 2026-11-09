@@ -35,6 +35,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       themeToggleLabel:"Switch colour mode",lightLabel:"Light",darkLabel:"Dark",
     },
     footer:{
+      adminLoginLabel:"Admin Panel",
       description:"People-first HR. Business-ready possibilities.\nBuilt for India. Built for you.",complianceNote,copyright:"All rights reserved.",
       columns:[
         {title:"Products",links:suites.slice(0,5).map(suiteLink)},

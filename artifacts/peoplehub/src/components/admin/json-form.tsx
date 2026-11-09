@@ -43,7 +43,7 @@ export function templateFor(path: string, sample?: any): any {
 const IMAGE_PATH = /^(suites|services)-items-\d+-imageUrl$/;
 const BusyCtx = createContext<(delta: number) => void>(() => undefined);
 
-/** Browse + preview + remove for suite/service illustrations. Whole form is locked while encoding, so the result cannot land on a stale draft or a moved item. */
+/** Browse + preview + remove for suite/service photos. Whole form is locked while encoding, so the result cannot land on a stale draft or a moved item. */
 function ImageField({ value, onChange, path }: { value: string; onChange: (v: string) => void; path: string }) {
   const bump = useContext(BusyCtx);
   const input = useRef<HTMLInputElement>(null);
@@ -58,8 +58,8 @@ function ImageField({ value, onChange, path }: { value: string; onChange: (v: st
   };
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <div className="solution-frame grid aspect-[331/246] w-40 place-items-center overflow-hidden rounded-xl">
-        {value && !broken ? <img src={value} alt="Current illustration" className="h-full w-full object-cover" onError={() => setBroken(true)} data-testid={`preview-${path}`} /> : <span className="px-2 text-center text-[11px] text-slate-500">{broken ? 'Image unavailable' : 'No image'}</span>}
+      <div className="solution-frame grid aspect-[4/3] w-40 place-items-center overflow-hidden rounded-xl">
+        {value && !broken ? <img src={value} alt="Current photo" className="h-full w-full object-cover" onError={() => setBroken(true)} data-testid={`preview-${path}`} /> : <span className="px-2 text-center text-[11px] text-slate-500">{broken ? 'Image unavailable' : 'No image'}</span>}
       </div>
       <div className="flex flex-col gap-1.5">
         <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={(e) => void pick(e.target.files?.[0])} data-testid={`file-${path}`} />
@@ -134,7 +134,7 @@ function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; o
     <div className={cn('grid gap-4', depth > 0 && 'border-l border-white/[0.07] pl-3')}>
       {Object.entries(value).map(([k, v]) => (
         <div key={k}>
-          <div className="mb-1.5 text-xs font-medium text-foreground/80">{IMAGE_PATH.test(`${path}-${k}`) ? 'Illustration' : humanize(k)}</div>
+          <div className="mb-1.5 text-xs font-medium text-foreground/80">{IMAGE_PATH.test(`${path}-${k}`) ? 'Photo' : humanize(k)}</div>
           <JsonNode value={v} onChange={(nv) => onChange({ ...value, [k]: nv })} path={`${path}-${k}`} depth={depth + 1} />
         </div>
       ))}

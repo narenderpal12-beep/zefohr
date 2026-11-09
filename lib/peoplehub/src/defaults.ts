@@ -1,6 +1,7 @@
 export const complianceNote = "The platform automates documentation and tracking. EOR, POSH, FRRO and labour-law compliance are supported by appropriate legal, statutory and operational expertise; software alone does not fulfil every statutory obligation.";
 import {marketingDefaults,additionalMarketingPages} from "./marketing-defaults";
 import {clientDefaults} from "./client-defaults";
+import {defaultSolutionPhoto} from "./solution-photos";
 const suiteData = [
   ["core_hrms", "core-hrms", "Core HRMS", "Users", "employee database, organisation structure, employee lifecycle, onboarding, confirmation, transfer, promotion, separation, document management, ESS, mobile app, HR policies"],
   ["time_workforce", "time-and-workforce-management", "Time & Workforce Management", "Clock", "attendance, biometric, face recognition, GPS, geo-fencing, shift, roster, leave, overtime, comp-off, timesheets, field-force tracking"],
@@ -15,7 +16,7 @@ const suiteData = [
 ];
 export const suites = suiteData.map(([key, slug, title, icon, modules], i) => ({
   key, slug, title, icon, modules: modules.split(", "), priority: i < 8 ? "Must have" : "Differentiator",
-  imageUrl: `/solution-images/${slug}.webp`, imageAlt: `Creative illustration of ${title.toLowerCase()}`,
+  ...defaultSolutionPhoto(slug),
   description: `Bring ${title.toLowerCase()} together in one connected workspace, built for the way Indian businesses work.`,
   benefits: ["Reduce repetitive administration", "Keep your people and records connected", "Scale at your own pace"],
   faq: [{question: `Is ${title} available in my plan?`, answer: "Choose the suites included in your plan, or speak to our team about a tailored package."}],
@@ -34,7 +35,7 @@ const serviceData = [
 ];
 export const services = serviceData.map(([slug,title,description,billing,icon]) => ({
   key:slug,slug,title,description,billing,icon,modules:description.split(", "),
-  imageUrl: `/solution-images/${slug}.webp`, imageAlt: `Creative illustration of ${title.toLowerCase()} services`,
+  ...defaultSolutionPhoto(slug),
   benefits:["Expert-led support for your business", "Clear records and coordinated workflows", "Flexible service packages"],
   faq:[{question:"How is this service priced?",answer:`This service is billed as ${billing}. Contact our team for a proposal.`}],
 }));

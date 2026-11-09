@@ -183,7 +183,7 @@ function ContentEditor() {
         >
           {save.isError ? <p className="mb-3 text-sm text-red-300">{errMsg(save.error)}</p> : null}
           {key === 'theme' || key === 'brand' ? <p className="mb-3 text-xs text-muted-foreground">Tip: the <Link href={key === 'theme' ? '/admin/appearance' : '/admin/branding'} className="text-[color:var(--ph-cyan)] underline">{key === 'theme' ? 'Appearance' : 'Branding'}</Link> tab offers friendly controls with a preview.</p> : null}
-          {key === 'suites' || key === 'services' ? <p className="mb-3 text-xs text-muted-foreground">Each offering has its own illustration. Browse to replace it, preview your image, edit the image description for accessibility, then click Save. Removing an image hides it on the website.</p> : null}
+          {key === 'suites' || key === 'services' ? <p className="mb-3 text-xs text-muted-foreground">Each offering has its own photo. Browse to replace it, preview your image, edit the image description for accessibility, then click Save. Removing an image hides it on the website.</p> : null}
           {mode === 'form' && draft !== null ? <JsonForm value={draft} onChange={setDraft} path={key} onBusyChange={setUploading} /> : null}
           {mode === 'raw' ? <RawJson value={draft} onChange={setDraft} /> : null}
           {mode === 'history' ? (

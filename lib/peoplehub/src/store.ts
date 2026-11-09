@@ -31,8 +31,9 @@ export async function getContent(): Promise<Doc> {
   for(const key of ["suites","services"]){
     for(const item of content[key]?.items ?? []){
       const original=defaults[key].items.find((d:Doc)=>d.key===item.key || d.slug===item.slug);
-      if(item.imageUrl===undefined)item.imageUrl=original?.imageUrl ?? "";
-      if(item.imageAlt===undefined)item.imageAlt=`Creative illustration of ${item.title ?? key}`;
+      const legacyArtwork=original && item.imageUrl===`/solution-images/${original.slug}.webp`;
+      if(item.imageUrl===undefined || legacyArtwork)item.imageUrl=original?.imageUrl ?? "";
+      if(item.imageAlt===undefined || (legacyArtwork && typeof item.imageAlt==="string" && item.imageAlt.startsWith("Creative illustration")))item.imageAlt=original?.imageAlt ?? String(item.title ?? key);
     }
   }
   const storedBrand=rows.rows.find(r=>r.key==="brand");

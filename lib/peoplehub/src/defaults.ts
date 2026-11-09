@@ -75,7 +75,7 @@ export const defaults: Record<string, any> = {
   },
   cta:{title:"Less admin.\nMore human.",description:"Give your team the space to do their best work.",button:"Start your free trial"},
   pages:{featuresTitle:"Ten suites. One connected journey.",featuresDescription:"Explore the PeopleHub platform, from core HR to specialist services.",servicesTitle:"Expertise that goes beyond software.",blogTitle:"Ideas for a better workday.",blogDescription:"Practical perspectives on people, payroll and the future of HR.",emptyBlog:"New perspectives are on their way.",notFoundTitle:"This page took a day off.",notFoundDescription:"We couldn't find that page. Let's get you back to your people.",backHome:"Back to home"},
-  preview:{label:"Illustrative product preview · HRMS modules coming in Phase 2",payrollLabel:"Payroll run",payrollPeriod:"Mar 26",payrollDetail:"248 payslips",statutoryLabel:"Statutory",statutoryTitle:"PF ECR filed",statutoryDetail:"ESI 12 / PT 4 states",approvalLabel:"WhatsApp approval",approvalTitle:"Leave request",approvalStatus:"Approved",approvalDetail:"2 days",attendanceLabel:"Attendance",attendanceValue:"96.4%",attendanceDetail:"Example workplace"},
+  preview:{label:"HRMS preview · People, payroll and attendance in one place.",payrollLabel:"Payroll run",payrollPeriod:"Mar 26",payrollDetail:"248 payslips",statutoryLabel:"Statutory",statutoryTitle:"PF ECR filed",statutoryDetail:"ESI 12 / PT 4 states",approvalLabel:"WhatsApp approval",approvalTitle:"Leave request",approvalStatus:"Approved",approvalDetail:"2 days",attendanceLabel:"Attendance",attendanceValue:"96.4%",attendanceDetail:"Example workplace"},
 };
 Object.assign(defaults,marketingDefaults(suites,services,complianceNote));
 defaults.clients=clientDefaults;

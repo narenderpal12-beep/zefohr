@@ -35,10 +35,12 @@ test("sample collection sizes and coverage labels are explicit", () => {
   assert.equal(samplePosts.length, 10);
   assert.equal(new Set(samplePosts.map((post) => post.slug)).size, 10);
   assert.equal(sampleMediaItems.length, 5);
-  assert.ok(sampleMediaItems.every((item) => item.sample && item.publication.includes("not verified")));
+  assert.ok(sampleMediaItems.every((item) => item.sample && item.publication === "Sample entry" && item.imageUrl && item.imageAlt));
   assert.equal(sampleUseCases.length, 6);
-  assert.ok(sampleUseCases.every((item) => item.sample && item.body.includes("not a customer story")));
+  assert.ok(sampleUseCases.every((item) => item.sample && item.title.startsWith("Sample workflow:") && item.body.includes("not a customer story")));
+  assert.ok(samplePosts.every((post) => !!post.cover_image_url && !!post.cover_image_alt));
   assert.ok(samplePosts.every((post) => post.body_md.split(/\s+/).length > 100));
+  assert.ok(sampleUseCases.every((item) => !item.title.includes("Illustrative use case") && !item.body.includes("Illustrative use case")));
 });
 
 test("legal drafts include review notices and operator-specific placeholders", () => {

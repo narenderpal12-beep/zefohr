@@ -232,11 +232,11 @@ export function BlogPage() {
         ) : (
           <div className="grid gap-5 md:grid-cols-2">
             {published.map((p, i) => (
-              <Reveal as="article" key={str(p.id ?? p.slug)} delay={(i % 2) * 80} className={cn(i === 0 && 'md:col-span-2')}>
+              <Reveal as="article" key={str(p.id ?? p.slug)} delay={(i % 2) * 80}>
                 <Link href={`/blog/${str(p.slug)}`} className="block h-full" data-testid={`link-post-${str(p.slug)}`}>
-                  <GlassCard tilt={false} className={cn('h-full', i === 0 && 'md:grid md:grid-cols-2')}>
+                  <GlassCard tilt={false} className="h-full">
                     <div className="relative aspect-[16/9] overflow-hidden bg-[radial-gradient(circle_at_30%_30%,var(--ph-indigo),transparent_60%),radial-gradient(circle_at_80%_70%,var(--ph-pink),transparent_55%)]">
-                      {p.cover_image_url ? <img src={str(p.cover_image_url)} alt={str(p.title)} loading="lazy" width={1200} height={675} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : null}
+                      {p.cover_image_url ? <img src={str(p.cover_image_url)} alt={str(p.cover_image_alt, str(p.title))} loading="lazy" width={1200} height={675} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : null}
                     </div>
                     <div className="p-6">
                       <div className="flex flex-wrap gap-2">{arr<string>(p.tags).slice(0, 3).map((t) => <span key={t} className="rounded-full bg-white/[0.05] px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-wider text-[color:var(--ph-cyan)]">{t}</span>)}</div>
@@ -280,7 +280,7 @@ export function BlogPostPage() {
         </div>
       </PageHero>
       <Container className="max-w-3xl">
-        {post.cover_image_url ? <img src={str(post.cover_image_url)} alt={str(post.title)} width={1200} height={675} loading="lazy" className="mb-10 w-full rounded-3xl border border-white/10" /> : null}
+        {post.cover_image_url ? <img src={str(post.cover_image_url)} alt={str(post.cover_image_alt, str(post.title))} width={1200} height={675} loading="lazy" className="mb-10 w-full rounded-3xl border border-white/10" /> : null}
         <Markdown source={str(post.body_md)} />
         <Link href="/blog" className="mt-12 inline-flex items-center gap-2 text-sm text-[color:var(--ph-cyan)]" data-testid="link-back-blog"><ArrowLeft className="h-4 w-4" />All articles</Link>
       </Container>

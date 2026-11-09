@@ -107,8 +107,8 @@ export async function seed(reset=false) {
       }
       for(const post of samplePosts){
         await client.query(
-          "INSERT INTO posts(slug,title,excerpt,body_md,author,tags,status,published_at) VALUES($1,$2,$3,$4,$5,$6,'published',$7) ON CONFLICT(slug) DO NOTHING",
-          [post.slug,post.title,post.excerpt,post.body_md,post.author,post.tags,post.published_at],
+          "INSERT INTO posts(slug,title,excerpt,body_md,cover_image_url,cover_image_alt,author,tags,status,published_at) VALUES($1,$2,$3,$4,$5,$6,$7,$8,'published',$9) ON CONFLICT(slug) DO NOTHING",
+          [post.slug,post.title,post.excerpt,post.body_md,post.cover_image_url,post.cover_image_alt,post.author,post.tags,post.published_at],
         );
       }
       await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v1','{\"seeded\":true}'::jsonb)");
@@ -156,6 +156,43 @@ export async function seed(reset=false) {
         }
       }
       await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v2','{\"seeded\":true}'::jsonb)");
+    }
+    const visualSeed=(await client.query("SELECT key FROM site_content WHERE key='sample_content_v3'")).rowCount;
+    if(!visualSeed){
+      for(const post of samplePosts){
+        await client.query(
+          "UPDATE posts SET cover_image_url=$1,cover_image_alt=$2,updated_at=now() WHERE slug=$3 AND tags @> ARRAY['Sample article']::text[] AND COALESCE(cover_image_url,'')=''",
+          [post.cover_image_url,post.cover_image_alt,post.slug],
+        );
+      }
+      const mediaRow=(await client.query("SELECT value FROM site_content WHERE key='media' FOR UPDATE")).rows[0];
+      if(mediaRow){
+        const media={...mediaRow.value};
+        media.items=(Array.isArray(media.items)?media.items:[]).map((item:Doc)=>{
+          const sample=sampleMediaItems.find((entry)=>entry.sampleId===item.sampleId);
+          if(!sample)return item;
+          return {...item,imageUrl:item.imageUrl||sample.imageUrl,imageAlt:item.imageAlt||sample.imageAlt};
+        });
+        await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='media'",[JSON.stringify(media)]);
+      }
+      const casesRow=(await client.query("SELECT value FROM site_content WHERE key='caseStudies' FOR UPDATE")).rows[0];
+      if(casesRow){
+        const cases={...casesRow.value};
+        if(cases.eyebrow==="ILLUSTRATIVE WORKFLOWS")cases.eyebrow=defaults.caseStudies.eyebrow;
+        cases.items=(Array.isArray(cases.items)?cases.items:[]).map((item:Doc)=>{
+          if(typeof item.sampleId!=="string"||!item.sampleId.startsWith("usecase-sample-"))return item;
+          const title=typeof item.title==="string"?item.title.replace(/^Illustrative use case:/,"Sample workflow:"):item.title;
+          const body=typeof item.body==="string"?item.body.replace(/^> Illustrative use case —/,"> Sample workflow —"):item.body;
+          return {...item,title,body};
+        });
+        await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='caseStudies'",[JSON.stringify(cases)]);
+      }
+      const page=defaultPages.find((entry)=>entry.slug==="case-studies")!;
+      await client.query(
+        "UPDATE pages SET content=jsonb_set(content,'{intro}',to_jsonb($1::text)),updated_at=now() WHERE slug='case-studies' AND content->>'intro'=$2",
+        [page.content.intro,"Illustrative workflows for different teams; not customer stories or performance claims."],
+      );
+      await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v3','{\"seeded\":true}'::jsonb)");
     }
     const content = await getContent();
     for(let i=0;i<content.suites.items.length;i++){

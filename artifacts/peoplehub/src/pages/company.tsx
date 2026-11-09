@@ -71,8 +71,12 @@ export function MediaPage() {
               const Tag = url ? 'a' : 'div';
               return (
                 <Reveal as="li" key={i} delay={(i % 4) * 60}>
-                  <Tag {...(url ? { href: url, target: '_blank', rel: 'noopener noreferrer' } : {})} className="group grid gap-3 py-7 sm:grid-cols-[180px_1fr_auto] sm:items-baseline" data-testid={`item-media-${i}`}>
-                    <div className="font-mono text-xs uppercase tracking-[0.14em] text-[color:var(--ph-pink)]">{str(it.publication)}<div className="mt-1 text-muted-foreground">{fmtDate(it.date) || str(it.date)}</div></div>
+                  <Tag {...(url ? { href: url, target: '_blank', rel: 'noopener noreferrer' } : {})} className="group grid gap-4 py-7 sm:grid-cols-[200px_1fr_auto] sm:items-center" data-testid={`item-media-${i}`}>
+                    <div>
+                      {it.imageUrl ? <img src={str(it.imageUrl)} alt={str(it.imageAlt, str(it.title))} loading="lazy" width={640} height={400} className="mb-3 aspect-[16/10] w-full rounded-xl object-cover" /> : null}
+                      <div className="font-mono text-xs uppercase tracking-[0.14em] text-[color:var(--ph-pink)]">{str(it.publication, 'Sample entry')}</div>
+                      {it.date ? <div className="mt-1 font-mono text-[11px] text-muted-foreground">{fmtDate(it.date) || str(it.date)}</div> : null}
+                    </div>
                     <div>
                       {it.sample ? <span className="inline-flex rounded-full border border-amber-300/30 bg-amber-300/[0.06] px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-amber-200">Sample — not verified coverage</span> : null}
                       <h2 className="font-display text-2xl font-bold leading-tight text-foreground group-hover:text-[color:var(--ph-cyan)]">{str(it.title)}</h2>
@@ -109,7 +113,7 @@ export function CaseStudiesPage() {
             {items.map((c, i) => (
               <Reveal key={i} delay={(i % 2) * 80} className={cn(i === 0 && items.length > 2 && 'md:col-span-2')}>
                 <Link href={`/case-studies/${caseSlug(c, i)}`} className="glass border-gradient group block h-full rounded-3xl p-7 sm:p-9" data-testid={`link-case-${caseSlug(c, i)}`}>
-                  {c.sample ? <span className="inline-flex rounded-full border border-amber-300/30 bg-amber-300/[0.06] px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-amber-200">Illustrative use case</span> : null}
+                  {c.sample ? <span className="inline-flex rounded-full border border-amber-300/30 bg-amber-300/[0.06] px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-amber-200">Sample workflow</span> : null}
                   {c.industry ? <span className="rounded-full border border-white/10 px-3 py-1 font-mono text-[10px] uppercase tracking-wider text-[color:var(--ph-cyan)]">{str(c.industry)}</span> : null}
                   <h2 className="font-display mt-5 text-2xl font-bold leading-tight sm:text-3xl">{str(c.title)}</h2>
                   <p className="mt-3 text-muted-foreground">{str(c.summary)}</p>
@@ -138,7 +142,7 @@ export function CaseStudyDetailPage() {
     <article>
       <PageHero crumbs={[{ label: 'Home', href: '/' }, { label: 'Use cases', href: '/case-studies' }, { label: str(c.title) }]} eyebrow={str(c.industry)} title={str(c.title)} description={str(c.summary)} />
       <Container className="max-w-3xl">
-        {c.sample ? <p className="mb-5 rounded-xl border border-amber-300/30 bg-amber-300/[0.06] px-4 py-3 text-sm text-amber-100" role="note">Illustrative use case only — this is not a customer story and does not describe a verified implementation or result.</p> : null}
+        {c.sample ? <p className="mb-5 rounded-xl border border-amber-300/30 bg-amber-300/[0.06] px-4 py-3 text-sm text-amber-100" role="note">Sample workflow only — this is not a customer story and does not describe a verified implementation or result.</p> : null}
         <div className="glass rounded-3xl p-7 sm:p-10"><Markdown source={str(c.body)} /></div>
         <Link href="/case-studies" className="mt-10 inline-flex items-center gap-2 text-sm text-[color:var(--ph-cyan)]" data-testid="link-back-cases"><ArrowLeft className="h-4 w-4" />{str(cs.backLabel, 'All use cases')}</Link>
       </Container>

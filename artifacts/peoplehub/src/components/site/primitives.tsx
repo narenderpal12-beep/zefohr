@@ -74,9 +74,9 @@ export function Counter({ value }: { value: string }) {
   return <span ref={ref}>{m[1]}{shown}{m[3]}</span>;
 }
 
-export function Eyebrow({ children, className }: { children: ReactNode; className?: string }) {
+export function Eyebrow({ children, className, style }: { children: ReactNode; className?: string; style?: CSSProperties }) {
   return (
-    <span className={cn('inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-mono uppercase tracking-[0.18em] text-[color:var(--ph-cyan)]', className)}>
+    <span className={cn('inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1 text-[11px] font-mono uppercase tracking-[0.18em] text-[color:var(--ph-cyan)]', className)} style={style}>
       <span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ph-cyan)] shadow-[0_0_12px_var(--ph-cyan)]" />
       {children}
     </span>

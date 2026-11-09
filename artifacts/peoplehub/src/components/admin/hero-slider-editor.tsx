@@ -8,7 +8,7 @@ import { SLIDER_VARIANTS, clampInterval } from '@/components/site/hero-slider';
 import { LinkPicker } from './link-picker';
 import { aBtn, aInput } from './json-form';
 
-const BLANK = { eyebrow: '', title: 'New slide headline', description: 'One or two lines on why this matters to your team.', imageUrl: '', imageAlt: '', ctaLabel: '', ctaHref: '', secondaryLabel: '', secondaryHref: '' };
+const BLANK = { eyebrow: '', title: 'New slide headline', description: 'One or two lines on why this matters to your team.', textColor: '', imageUrl: '', imageAlt: '', ctaLabel: '', ctaHref: '', secondaryLabel: '', secondaryHref: '' };
 const L = ({ t, children }: { t: string; children: React.ReactNode }) => <label className="block"><span className="mb-1 block text-xs font-medium text-foreground/80">{t}</span>{children}</label>;
 
 export function HeroSliderEditor({ value, onChange, onBusy, id }: { value: AnyObj; onChange: (v: AnyObj) => void; onBusy: (b: boolean) => void; id: string }) {
@@ -63,6 +63,7 @@ export function HeroSliderEditor({ value, onChange, onBusy, id }: { value: AnyOb
       <div className="space-y-3">
         {slides.map((s, i) => (
           <div key={i} className="rounded-xl border border-white/[0.08] bg-white/[0.015] p-3" data-testid={`slide-editor-${i}`}>
+            {/** Render the color input independently so every existing slide can use a theme default or its own explicit color. */}
             <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
               <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Slide {i + 1} of {slides.length}</span>
               <div className="flex gap-1">
@@ -75,6 +76,16 @@ export function HeroSliderEditor({ value, onChange, onBusy, id }: { value: AnyOb
               <L t="Eyebrow"><input className={aInput} value={str(s.eyebrow)} onChange={(e) => setSlide(i, { eyebrow: e.target.value })} data-testid={`input-slide-eyebrow-${i}`} /></L>
               <L t="Title"><input className={aInput} value={str(s.title)} onChange={(e) => setSlide(i, { title: e.target.value })} data-testid={`input-slide-title-${i}`} /></L>
               <div className="sm:col-span-2"><L t="Description"><textarea className={cn(aInput, 'min-h-[70px]')} value={str(s.description)} onChange={(e) => setSlide(i, { description: e.target.value })} data-testid={`input-slide-description-${i}`} /></L></div>
+              <div className="sm:col-span-2">
+                <L t="Text color for eyebrow, title and description">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <input type="color" value={/^#[\da-f]{6}$/i.test(str(s.textColor)) ? str(s.textColor) : '#5751b9'} onChange={(e) => setSlide(i, { textColor: e.target.value })} className="h-9 w-12 cursor-pointer rounded-md border border-white/10 bg-transparent p-1" aria-label={`Slide ${i + 1} text color`} data-testid={`input-slide-text-color-${i}`} />
+                    <span className="font-mono text-xs text-muted-foreground">{/^#[\da-f]{6}$/i.test(str(s.textColor)) ? str(s.textColor).toUpperCase() : 'Theme default'}</span>
+                    {s.textColor ? <button type="button" className={aBtn} onClick={() => setSlide(i, { textColor: '' })} data-testid={`button-reset-slide-text-color-${i}`}>Use theme default</button> : null}
+                  </div>
+                </L>
+                <p className="mt-1 text-[11px] text-muted-foreground">Leave blank for the standard theme text and gradient heading.</p>
+              </div>
               <div className="sm:col-span-2 flex flex-wrap items-center gap-3">
                 <div className="solution-frame grid aspect-[4/3] w-36 place-items-center overflow-hidden rounded-xl">
                   {str(s.imageUrl) ? <img src={str(s.imageUrl)} alt="" className="h-full w-full object-cover" data-testid={`preview-slide-image-${i}`} /> : <span className="text-[11px] text-muted-foreground">No image</span>}

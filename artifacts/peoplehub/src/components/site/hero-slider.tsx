@@ -26,24 +26,26 @@ function Ctas({ s, cover, i }: { s: AnyObj; cover: boolean; i: number }) {
 
 function Slide({ s, v, i }: { s: AnyObj; v: SliderVariant; i: number }) {
   const img = str(s.imageUrl);
-  const title = <h2 className={cn('font-display font-bold leading-[1.05] tracking-tight', v === 'centered' ? 'text-4xl sm:text-5xl lg:text-6xl' : 'text-3xl sm:text-5xl')}>{v === 'cover' ? str(s.title) : <span className="text-gradient">{str(s.title)}</span>}</h2>;
+  const textColor = /^#[\da-f]{6}$/i.test(str(s.textColor)) ? str(s.textColor) : undefined;
+  const textStyle = textColor ? { color: textColor, WebkitTextFillColor: textColor, background: 'none' } : undefined;
+  const title = <h2 className={cn('font-display font-bold leading-[1.05] tracking-tight', v === 'centered' ? 'text-4xl sm:text-5xl lg:text-6xl' : 'text-3xl sm:text-5xl')}><span className={textColor || v === 'cover' ? '' : 'text-gradient'} style={textStyle}>{str(s.title)}</span></h2>;
   if (v === 'cover') return (
     <div className="relative min-h-[460px] overflow-hidden rounded-[2rem] sm:min-h-[520px]">
       {img ? <img src={img} alt={str(s.imageAlt)} className="absolute inset-0 h-full w-full object-cover" /> : <div className="absolute inset-0 bg-[color:var(--ph-indigo)]/40" />}
       <div className="absolute inset-0 bg-gradient-to-r from-[#0b1020]/90 via-[#0b1020]/65 to-[#0b1020]/10" />
       <div className="relative flex min-h-[460px] max-w-2xl flex-col justify-end p-7 text-white sm:min-h-[520px] sm:p-12">
-        {s.eyebrow ? <Eyebrow className="w-fit !border-white/25 !bg-white/10 !text-white">{str(s.eyebrow)}</Eyebrow> : null}
+        {s.eyebrow ? <Eyebrow className={cn('w-fit !border-white/25 !bg-white/10', !textColor && '!text-white')} style={textColor ? { color: textColor } : undefined}>{str(s.eyebrow)}</Eyebrow> : null}
         <div className="mt-4">{title}</div>
-        {s.description ? <p className="mt-4 max-w-xl text-base leading-relaxed text-white/85 sm:text-lg">{str(s.description)}</p> : null}
+        {s.description ? <p className={cn('mt-4 max-w-xl text-base leading-relaxed sm:text-lg', textColor ? '' : 'text-white/85')} style={textColor ? { color: textColor } : undefined}>{str(s.description)}</p> : null}
         <Ctas s={s} cover i={i} />
       </div>
     </div>
   );
   if (v === 'centered') return (
     <div className="flex flex-col items-center text-center">
-      {s.eyebrow ? <Eyebrow>{str(s.eyebrow)}</Eyebrow> : null}
+      {s.eyebrow ? <Eyebrow style={textColor ? { color: textColor } : undefined}>{str(s.eyebrow)}</Eyebrow> : null}
       <div className="mt-5 max-w-3xl">{title}</div>
-      {s.description ? <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">{str(s.description)}</p> : null}
+      {s.description ? <p className={cn('mt-5 max-w-2xl text-base leading-relaxed sm:text-lg', !textColor && 'text-muted-foreground')} style={textColor ? { color: textColor } : undefined}>{str(s.description)}</p> : null}
       <div className="flex justify-center"><Ctas s={s} cover={false} i={i} /></div>
       <div className="solution-frame mt-10 aspect-[21/9] w-full overflow-hidden rounded-3xl">
         {img ? <img src={img} alt={str(s.imageAlt)} className="solution-photo h-full w-full object-cover" /> : null}
@@ -53,9 +55,9 @@ function Slide({ s, v, i }: { s: AnyObj; v: SliderVariant; i: number }) {
   return (
     <div className="grid items-center gap-10 md:grid-cols-[1.05fr_1fr]">
       <div>
-        {s.eyebrow ? <Eyebrow>{str(s.eyebrow)}</Eyebrow> : null}
+        {s.eyebrow ? <Eyebrow style={textColor ? { color: textColor } : undefined}>{str(s.eyebrow)}</Eyebrow> : null}
         <div className="mt-5">{title}</div>
-        {s.description ? <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">{str(s.description)}</p> : null}
+        {s.description ? <p className={cn('mt-5 max-w-xl text-base leading-relaxed sm:text-lg', !textColor && 'text-muted-foreground')} style={textColor ? { color: textColor } : undefined}>{str(s.description)}</p> : null}
         <Ctas s={s} cover={false} i={i} />
       </div>
       <div className="solution-frame relative aspect-[4/3] overflow-hidden rounded-3xl md:rotate-[0.6deg]">

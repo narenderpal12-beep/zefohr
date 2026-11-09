@@ -6,6 +6,7 @@ export const heroSlideSchema = z.object({
   eyebrow: z.string().max(150),
   title: z.string().trim().min(1).max(250),
   description: z.string().max(2000),
+  textColor: z.string().regex(/^$|^#[a-f0-9]{6}$/i).optional(),
   imageUrl: z.string().max(200000).refine(value => !value || /^(?:\/(?!\/)|https:\/\/|data:image\/(?:png|jpeg|webp);base64,)/i.test(value), "Choose a local image, HTTPS image or PNG/JPEG/WebP upload"),
   imageAlt: z.string().max(300),
   ctaLabel: z.string().max(100),
@@ -22,9 +23,9 @@ export const heroSliderSchema = z.object({
 export const heroSliderDefaults: z.infer<typeof heroSliderSchema> = {
   variant: "split", autoplay: false, intervalMs: 6000,
   slides: [
-    {eyebrow:"PEOPLE-FIRST HR",title:"Bring your people and processes together",description:"Manage employee records, everyday HR tasks and the employee journey from one connected workspace.",imageUrl:"/solution-photos/core-hrms.webp",imageAlt:"HR team collaborating in a workplace",ctaLabel:"Explore HRMS",ctaHref:"/features/core-hrms",secondaryLabel:"Request a demo",secondaryHref:"/request-demo"},
-    {eyebrow:"PAYROLL & COMPLIANCE",title:"Make every payroll run simpler",description:"Bring payroll inputs, reviews and statutory workflows into an organised process built for growing Indian businesses.",imageUrl:"/solution-photos/payroll-and-compliance.webp",imageAlt:"Finance professionals reviewing payroll information",ctaLabel:"Explore payroll",ctaHref:"/features/payroll-and-compliance",secondaryLabel:"View pricing",secondaryHref:"/pricing"},
-    {eyebrow:"TIME & ATTENDANCE",title:"A clearer view of every working day",description:"Keep attendance, leave and workforce planning connected so managers and employees can focus on their work.",imageUrl:"/solution-photos/time-and-workforce-management.webp",imageAlt:"Workforce team planning their day",ctaLabel:"Explore workforce tools",ctaHref:"/features/time-and-workforce-management",secondaryLabel:"Talk to us",secondaryHref:"/contact"},
+    {eyebrow:"PEOPLE-FIRST HR",title:"Bring your people and processes together",description:"Manage employee records, everyday HR tasks and the employee journey from one connected workspace.",textColor:"",imageUrl:"/solution-photos/core-hrms.webp",imageAlt:"HR team collaborating in a workplace",ctaLabel:"Explore HRMS",ctaHref:"/features/core-hrms",secondaryLabel:"Request a demo",secondaryHref:"/request-demo"},
+    {eyebrow:"PAYROLL & COMPLIANCE",title:"Make every payroll run simpler",description:"Bring payroll inputs, reviews and statutory workflows into an organised process built for growing Indian businesses.",textColor:"",imageUrl:"/solution-photos/payroll-and-compliance.webp",imageAlt:"Finance professionals reviewing payroll information",ctaLabel:"Explore payroll",ctaHref:"/features/payroll-and-compliance",secondaryLabel:"View pricing",secondaryHref:"/pricing"},
+    {eyebrow:"TIME & ATTENDANCE",title:"A clearer view of every working day",description:"Keep attendance, leave and workforce planning connected so managers and employees can focus on their work.",textColor:"",imageUrl:"/solution-photos/time-and-workforce-management.webp",imageAlt:"Workforce team planning their day",ctaLabel:"Explore workforce tools",ctaHref:"/features/time-and-workforce-management",secondaryLabel:"Talk to us",secondaryHref:"/contact"},
   ],
 };
 export const pageSectionSchema = z.object({

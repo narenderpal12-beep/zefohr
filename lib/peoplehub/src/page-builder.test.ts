@@ -17,6 +17,13 @@ test("layouts only target public paths", () => {
   assert(pageLayoutsSchema.safeParse({ routes: { "/": { sections: [original] } } }).success);
 });
 
+test("hero slider text color is optional but accepts only six-digit hex", () => {
+  const slide = heroSliderDefaults.slides[0];
+  assert(heroSliderSchema.safeParse({ ...heroSliderDefaults, slides: [{ ...slide, textColor: "" }] }).success);
+  assert(heroSliderSchema.safeParse({ ...heroSliderDefaults, slides: [{ ...slide, textColor: "#4455aa" }] }).success);
+  assert(!heroSliderSchema.safeParse({ ...heroSliderDefaults, slides: [{ ...slide, textColor: "red" }] }).success);
+});
+
 test("blocks enforce known types, unique IDs and a bounded section count", () => {
   assert(!pageSectionsSchema.safeParse([text, text]).success);
   assert(!pageSectionsSchema.safeParse([{ ...text, type: "html" }]).success);

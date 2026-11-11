@@ -22,37 +22,94 @@ const peopleOrbitAnimation = {
 
 const products = [
   {
-    key: "people",
+    key: "core-hrms",
     number: "01",
-    name: "People & records",
-    short: "A clearer home for the employee journey.",
-    description: "A planned workspace for employee records, onboarding, documents and self-service—designed to bring everyday people information together.",
+    name: "Core HRMS",
+    short: "People records, lifecycle and onboarding.",
+    description: "Bring core HRMS together in one connected workspace, built for the way Indian businesses work.",
     nav: ["Directory", "Onboarding", "Documents"],
   },
   {
     key: "time",
     number: "02",
-    name: "Time & attendance",
-    short: "Make time easier to understand.",
-    description: "A planned view of attendance, leave and workforce schedules, with room for the ways Indian teams work across locations.",
+    name: "Time & Workforce Management",
+    short: "Attendance, shifts and leave.",
+    description: "Bring time & workforce management together in one connected workspace, built for the way Indian businesses work.",
     nav: ["Attendance", "Leave", "Shifts"],
   },
   {
     key: "payroll",
     number: "03",
-    name: "Payroll & compliance",
-    short: "Bring important details into one view.",
-    description: "A planned payroll workspace for pay runs and statutory information. Requirements vary, so our specialists can help you understand what applies to your business.",
+    name: "Payroll & Compliance",
+    short: "Pay runs, reviews and records.",
+    description: "Bring payroll & compliance together in one connected workspace, built for the way Indian businesses work.",
     nav: ["Pay runs", "Statutory", "Reports"],
   },
   {
-    key: "talent",
+    key: "recruitment",
     number: "04",
-    name: "Hiring & growth",
-    short: "Support the people who move you forward.",
-    description: "Planned tools for recruitment, performance and employee experience—built to support a more connected talent journey.",
+    name: "Recruitment & ATS",
+    short: "Roles, candidates and hiring.",
+    description: "Bring recruitment & ATS together in one connected workspace, built for the way Indian businesses work.",
     nav: ["Open roles", "Candidates", "Growth"],
   },
+  {
+    key: "performance",
+    number: "05",
+    name: "Performance & Talent Management",
+    short: "Goals, feedback and growth.",
+    description: "Bring performance & talent management together in one connected workspace, built for the way Indian businesses work.",
+    nav: ["Goals", "Reviews", "Talent"],
+  },
+  {
+    key: "engagement",
+    number: "06",
+    name: "Employee Engagement",
+    short: "Listening, recognition and support.",
+    description: "Bring employee engagement together in one connected workspace, built for the way Indian businesses work.",
+    nav: ["Pulse", "Recognition", "Helpdesk"],
+  },
+  {
+    key: "learning",
+    number: "07",
+    name: "Learning & Development",
+    short: "Courses and development paths.",
+    description: "Bring learning & development together in one connected workspace, built for the way Indian businesses work.",
+    nav: ["Learning paths", "Courses", "Skills"],
+  },
+  {
+    key: "operations",
+    number: "08",
+    name: "HR Administration & Operations",
+    short: "Workplace services and requests.",
+    description: "Bring HR administration & operations together in one connected workspace, built for the way Indian businesses work.",
+    nav: ["Assets", "Requests", "Workplace"],
+  },
+  {
+    key: "governance",
+    number: "09",
+    name: "Governance & Specialised Compliance",
+    short: "Policies, records and reviews.",
+    description: "Bring governance & specialised compliance together in one connected workspace, built for the way Indian businesses work.",
+    nav: ["Policies", "Reviews", "Records"],
+  },
+  {
+    key: "extended-services",
+    number: "10",
+    name: "Extended HR Services",
+    short: "Specialist support for people teams.",
+    description: "Explore specialist HR services alongside planned software, with scope shaped around your organisation’s needs.",
+    nav: ["HR support", "Recruitment", "Compliance"],
+  },
+];
+const heroProducts = products.slice(0, 4);
+const extendedPreviews: { stats: [string, string, string][]; progressLabel: string; progress: number; rows: [string, string][] }[] = [
+  { stats: [["GOALS IN CYCLE", "184 active", "Across 6 teams"], ["CHECK-INS", "72%", "Review cycle completion"]], progressLabel: "Review cycle progress", progress: 72, rows: [["Goal check-ins", "In progress"], ["Feedback requests", "86% received"], ["Talent review", "3 teams scheduled"]] },
+  { stats: [["PULSE RESPONSE", "81.4%", "Current listening cycle"], ["FEEDBACK ITEMS", "36", "For team review"]], progressLabel: "Pulse response", progress: 81, rows: [["Team sentiment", "Illustrative trend"], ["Recognition notes", "14 this week"], ["Helpdesk queue", "8 to review"]] },
+  { stats: [["LEARNING PATHS", "24", "Across 5 groups"], ["COURSE PROGRESS", "68%", "Current quarter"]], progressLabel: "Learning progress", progress: 68, rows: [["Safety essentials", "68% complete"], ["Manager toolkit", "In progress"], ["Certifications", "12 due soon"]] },
+  { stats: [["ASSET REGISTER", "246", "Illustrative assigned items"], ["WORKPLACE REQUESTS", "18", "4 need review"]], progressLabel: "Request review", progress: 78, rows: [["Device allocation", "Ready to review"], ["Visitor access", "6 upcoming"], ["Transport requests", "12 scheduled"]] },
+  { stats: [["POLICY ACKNOWLEDGEMENTS", "92.1%", "Current review cycle"], ["REVIEWS", "7", "In progress"]], progressLabel: "Policy review", progress: 92, rows: [["Policy notices", "2 pending"], ["Audit records", "Ready to review"], ["Governance tasks", "5 open"]] },
+  { stats: [["SUPPORT WORKSTREAMS", "6", "Illustrative services"], ["REQUESTS", "12", "For team discussion"]], progressLabel: "Workstream overview", progress: 60, rows: [["Recruitment support", "Scope discussion"], ["Compliance support", "Specialist review"], ["HR operations", "In conversation"]] },
 ];
 
 const services = [
@@ -82,6 +139,9 @@ function Arrow() {
 
 function ProductSnapshot({ active }: { active: number }) {
   const product = products[active] ?? products[0];
+  const dashboardTitles = ["People overview", "Attendance overview", "Payroll overview", "Hiring pipeline", "Talent review", "Engagement pulse", "Learning dashboard", "Workplace operations", "Governance overview", "Service workstreams"];
+  const dashboardActions = ["Add person", "Review attendance", "Review run", "Add role", "Open review", "View pulse", "Explore courses", "View requests", "Review policies", "View services"];
+  const extendedPreview = extendedPreviews[active - 4] ?? extendedPreviews[0];
   const rows = [
     ["Aarav Mehta", "People & Culture", "Active"],
     ["Nisha Kapoor", "Operations", "Onboarding"],
@@ -102,7 +162,7 @@ function ProductSnapshot({ active }: { active: number }) {
         </aside>
         <div className="ph-window-content">
           <div className="ph-mock-breadcrumb">Workspace <span>/</span> {product.name}</div>
-          <div className="ph-mock-heading"><div><h3>{active === 0 ? "People overview" : active === 1 ? "Attendance overview" : active === 2 ? "Payroll overview" : "Hiring pipeline"}</h3><p>Illustrative workspace concept</p></div><span className="ph-mock-button">＋ {active === 3 ? "Add role" : active === 2 ? "Review run" : "View details"}</span></div>
+          <div className="ph-mock-heading"><div><h3>{dashboardTitles[active] ?? dashboardTitles[0]}</h3><p>Illustrative workspace concept</p></div><span className="ph-mock-button">＋ {dashboardActions[active] ?? "View details"}</span></div>
           {active === 0 ? (
             <>
               <div className="ph-mock-stats">
@@ -135,7 +195,7 @@ function ProductSnapshot({ active }: { active: number }) {
               <div className="ph-check-row"><span><b>✓</b> Attendance inputs matched</span><small>Ready</small></div>
               <div className="ph-check-row pending"><span><b>•</b> Statutory details review</span><small>In progress</small></div>
             </>
-          ) : (
+          ) : active === 3 ? (
             <>
               <div className="ph-mock-stats">
                 <div><small>OPEN ROLES</small><strong>16 positions</strong><span>Across 6 teams</span></div>
@@ -143,6 +203,21 @@ function ProductSnapshot({ active }: { active: number }) {
               </div>
               <div className="ph-hiring-pipeline">{[["Applied", 126], ["Review", 58], ["Interview", 24], ["Offer", 8]].map(([stage, count]) => <div className="ph-hiring-stage" key={stage}><span>{stage}</span><b>{count}</b><i style={{ width: `${Number(count) / 1.26}%` }} /></div>)}</div>
               <div className="ph-dashboard-row"><span><b>Product Designer</b><small>4 candidates · 2 interviews this week</small></span><strong>View role →</strong></div>
+            </>
+          ) : (
+            <>
+              <div className="ph-mock-stats">
+                {extendedPreview.stats.map(([label, value, note]) => <div key={label}><small>{label}</small><strong>{value}</strong><span>{note}</span></div>)}
+              </div>
+              <div className="ph-payroll-progress">
+                <div><span>{extendedPreview.progressLabel}</span><b>{extendedPreview.progress}%</b></div>
+                <i><span style={{ width: `${extendedPreview.progress}%` }} /></i>
+              </div>
+              {extendedPreview.rows.map(([label, status], index) => (
+                <div className={`ph-check-row ${index === 2 ? "pending" : ""}`} key={label}>
+                  <span><b>{index === 2 ? "•" : "✓"}</b>{label}</span><small>{status}</small>
+                </div>
+              ))}
             </>
           )}
           <div className="ph-preview-note"><span>PREVIEW CONCEPT</span> Illustrative only · Not an operational HRMS screen</div>
@@ -168,10 +243,10 @@ export function Alternate() {
   }, []);
   useEffect(() => {
     if (rotationPaused || prefersReducedMotion) return;
-    const timer = window.setInterval(() => setActiveDashboard((current) => (current + 1) % products.length), 6500);
+    const timer = window.setInterval(() => setActiveDashboard((current) => (current + 1) % heroProducts.length), 6500);
     return () => window.clearInterval(timer);
   }, [rotationPaused, prefersReducedMotion]);
-  const currentDashboard = products[activeDashboard] ?? products[0];
+  const currentDashboard = heroProducts[activeDashboard] ?? heroProducts[0];
   return (
     <main className="peoplehub-alt">
       <style>{`
@@ -202,6 +277,11 @@ export function Alternate() {
         @media(max-width:640px){.ph-tabs{grid-template-columns:repeat(4,minmax(180px,1fr));overflow-x:auto;padding-bottom:7px;scroll-snap-type:x proximity}.ph-tab{scroll-snap-align:start}}
         .ph-hero-kicker-row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:470px}.ph-hero-lottie{display:grid;width:68px;height:68px;place-items:center;flex:none;overflow:hidden;border:1px solid #e7ebf2;border-radius:50%;background:radial-gradient(circle,#f9faff 0%,#fff 72%);opacity:.92}.ph-hero-lottie>div,.ph-hero-lottie svg{width:100%!important;height:100%!important}.ph-tab>span:not(.ph-tab-indicator){z-index:1}
         @media(max-width:640px){.ph-hero-lottie{width:52px;height:52px}}
+        .ph-tabs{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:stretch;gap:9px;margin:28px 0 24px;padding:0 2px 9px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-padding-inline:2px;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#c4cedd transparent}
+        .ph-tabs::-webkit-scrollbar{height:5px}.ph-tabs::-webkit-scrollbar-track{background:transparent}.ph-tabs::-webkit-scrollbar-thumb{background:#c4cedd;border-radius:8px}
+        .ph-tabs .ph-tab{flex:0 0 clamp(210px,22vw,245px);min-width:0;min-height:78px;scroll-snap-align:start}.ph-thumb-recruitment .ph-thumb-chart{background:linear-gradient(90deg,#ced6fb,#566bda)!important}
+        @media(max-width:900px){.ph-tabs{display:flex;flex-wrap:nowrap}.ph-tabs .ph-tab{flex-basis:225px;min-height:76px}}
+        @media(max-width:640px){.ph-tabs{display:flex;flex-wrap:nowrap;gap:7px;margin:23px 0 20px;padding-bottom:8px}.ph-tabs .ph-tab{flex-basis:min(78vw,250px);min-width:200px;min-height:76px;padding:10px 11px}}
       `}</style>
       <div className="ph-topline" />
       <header className="ph-header">
@@ -257,14 +337,14 @@ export function Alternate() {
                 <p>{currentDashboard.short}</p>
               </div>
               <div className="ph-dashboard-tools">
-                <span className="ph-dashboard-count">{String(activeDashboard + 1).padStart(2, "0")} / {String(products.length).padStart(2, "0")}</span>
-                <button type="button" className="ph-dashboard-control" aria-label="Previous dashboard preview" onClick={() => { setRotationPaused(true); setActiveDashboard((current) => (current + products.length - 1) % products.length); }}>‹</button>
-                <button type="button" className="ph-dashboard-control" aria-label="Next dashboard preview" onClick={() => { setRotationPaused(true); setActiveDashboard((current) => (current + 1) % products.length); }}>›</button>
+                <span className="ph-dashboard-count">{String(activeDashboard + 1).padStart(2, "0")} / {String(heroProducts.length).padStart(2, "0")}</span>
+                <button type="button" className="ph-dashboard-control" aria-label="Previous dashboard preview" onClick={() => { setRotationPaused(true); setActiveDashboard((current) => (current + heroProducts.length - 1) % heroProducts.length); }}>‹</button>
+                <button type="button" className="ph-dashboard-control" aria-label="Next dashboard preview" onClick={() => { setRotationPaused(true); setActiveDashboard((current) => (current + 1) % heroProducts.length); }}>›</button>
                 <button type="button" className="ph-dashboard-control ph-play" aria-label={prefersReducedMotion ? "Automatic rotation disabled by motion preference" : rotationPaused ? "Resume dashboard rotation" : "Pause dashboard rotation"} aria-pressed={rotationPaused} disabled={prefersReducedMotion} onClick={() => setRotationPaused((paused) => !paused)}>{prefersReducedMotion ? "Auto off" : rotationPaused ? "Play" : "Pause"}</button>
               </div>
             </div>
             <div className="ph-dashboard-thumbnails" role="tablist" aria-label="Choose a dashboard preview">
-              {products.map((product, index) => <button type="button" role="tab" id={`hero-dashboard-tab-${product.key}`} aria-controls="hero-dashboard-panel" aria-selected={activeDashboard === index} aria-label={`Show ${product.name} dashboard`} className="ph-dashboard-thumb" key={product.key} onClick={() => { setRotationPaused(true); setActiveDashboard(index); }}>
+              {heroProducts.map((product, index) => <button type="button" role="tab" id={`hero-dashboard-tab-${product.key}`} aria-controls="hero-dashboard-panel" aria-selected={activeDashboard === index} aria-label={`Show ${product.name} dashboard`} className="ph-dashboard-thumb" key={product.key} onClick={() => { setRotationPaused(true); setActiveDashboard(index); }}>
                 <span className={`ph-thumb-screen ph-thumb-${product.key}`} aria-hidden="true">
                   <i className="ph-thumb-sidebar" />
                   <span className="ph-thumb-main"><i className="ph-thumb-heading" /><i className="ph-thumb-stat" /><i className="ph-thumb-stat" /><i className="ph-thumb-chart" /></span>
@@ -303,7 +383,7 @@ export function Alternate() {
             <div className="ph-kicker">Explore the product direction</div>
             <h2>People work,<br />in connected parts.</h2>
             <p>Move between the areas a growing team may need. Each screen is a code-built illustration of a planned product suite—not a live capability.</p>
-            <div className="ph-plan-alert"><strong>Planned HRMS suites</strong>Employee records, time, payroll and talent screens below are illustrative concepts. They do not process real employee data or transactions.</div>
+             <div className="ph-plan-alert"><strong>Planned HRMS suites</strong>The ten suite and service previews below are illustrative concepts. They do not process real employee data or transactions.</div>
           </div>
           <div className="ph-tabs" role="tablist" aria-orientation="horizontal" aria-label="Illustrative planned product areas">
             {products.map((product, index) => (

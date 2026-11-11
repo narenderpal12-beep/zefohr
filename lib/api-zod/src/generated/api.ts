@@ -131,7 +131,7 @@ export const createLeadBodyPhoneMax = 20;
 export const createLeadBodyOrganisationMax = 200;
 
 export const createLeadBodyMessageMin = 5;
-export const createLeadBodyMessageMax = 5000;
+export const createLeadBodyMessageMax = 6500;
 
 
 

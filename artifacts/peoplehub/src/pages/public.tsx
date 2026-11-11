@@ -322,6 +322,7 @@ export function BlogPage() {
           </>
         )}
       </Container>
+      <CtaBand />
     </>
   );
 }
@@ -367,6 +368,7 @@ function CmsPageView({ page, crumbs }: { page: AnyObj; crumbs: { label: string; 
       <>
         <PageHero crumbs={[...crumbs, { label: str(page.title) }]} title={str(page.title)} description={str(c.intro)} />
         <PageBlocks sections={c.sections} />
+        {!c.sections.some((section: AnyObj) => section.type === 'cta') ? <CtaBand /> : null}
       </>
     );
   }

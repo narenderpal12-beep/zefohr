@@ -56,7 +56,7 @@ export const BUILTIN_PAGE_PATHS = [
 ] as const;
 export function reservedPageSlug(slug: string) {
   return BUILTIN_PAGE_PATHS.some(path => path === `/${slug}`) ||
-    /^(api|admin|dashboard|login|register|features|services|blog|case-studies|industries|solutions|resources|integrations|customer-stories|compliance|assets|solution-photos|client-logos|__mockup)(\/|$)/.test(slug) ||
+    /^(api|admin|dashboard|login|register|features|services|blog|case-studies|industries|resources|integrations|customer-stories|compliance|assets|solution-photos|client-logos|__mockup)(\/|$)/.test(slug) ||
     /^(robots\.txt|sitemap(?:-\d+)?\.xml|favicon\.svg)$/.test(slug);
 }
 

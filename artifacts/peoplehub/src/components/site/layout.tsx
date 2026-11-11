@@ -86,7 +86,7 @@ function isActive(loc: string, href: string) {
 function MegaPanel({ item, open, id, onNavigate }: { item: MegaItem; open: boolean; id: string; onNavigate: () => void }) {
   const cols = Math.min(item.groups.length, 4);
   return (
-    <div id={id} className="mega-panel absolute left-1/2 top-full z-50 w-max max-w-[min(92vw,1040px)] -translate-x-1/2 pt-3" data-open={open ? 'true' : 'false'}>
+    <div id={id} aria-hidden={!open} className="mega-panel absolute left-1/2 top-full z-50 w-max max-w-[min(92vw,1040px)] -translate-x-1/2 pt-3" data-open={open ? 'true' : 'false'}>
       <div className="glass-strong rounded-2xl p-5 shadow-2xl shadow-black/30">
         <div className="grid gap-x-6 gap-y-5" style={{ gridTemplateColumns: `repeat(${cols}, minmax(210px, 1fr))` }}>
           {item.groups.map((g, gi) => (
@@ -172,29 +172,25 @@ function MobileNav({ items }: { items: MegaItem[] }) {
     <div className="flex flex-col">
       {items.map((it, i) => it.groups.length ? (
         <div key={i} className="border-b border-white/[0.06] last:border-0">
-          <button type="button" onClick={() => setOpenTop(openTop === i ? null : i)} aria-expanded={openTop === i} className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-base text-foreground" data-testid={`button-mobile-nav-${slugify(it.label)}`}>
+          <button type="button" onClick={() => setOpenTop(openTop === i ? null : i)} aria-expanded={openTop === i} aria-controls={`mobile-nav-${slugify(it.label)}`} className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-base text-foreground" data-testid={`button-mobile-nav-${slugify(it.label)}`}>
             {it.label}<ChevronDown className={cn('h-4 w-4 transition-transform', openTop === i && 'rotate-180')} />
           </button>
-          {openTop === i ? (
-            <div className="pb-2 pl-3">
+          <div id={`mobile-nav-${slugify(it.label)}`} hidden={openTop !== i} className="pb-2 pl-3">
               {it.groups.map((g, gi) => {
                 const k = `${i}-${gi}`;
                 return (
                   <div key={gi}>
-                    <button type="button" onClick={() => setOpenGroup(openGroup === k ? null : k)} aria-expanded={openGroup === k} className="flex w-full items-center justify-between px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[color:var(--ph-pink)]" data-testid={`button-mobile-group-${k}`}>
+                    <button type="button" onClick={() => setOpenGroup(openGroup === k ? null : k)} aria-expanded={openGroup === k} aria-controls={`mobile-group-${k}`} className="flex w-full items-center justify-between px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[color:var(--ph-pink)]" data-testid={`button-mobile-group-${k}`}>
                       {g.title}<ChevronDown className={cn('h-3.5 w-3.5 transition-transform', openGroup === k && 'rotate-180')} />
                     </button>
-                    {openGroup === k ? (
-                      <ul className="pb-1">
-                        {g.links.map((l, li) => <li key={li}><Link href={str(l.href, '/')} className="block rounded-lg px-6 py-2 text-sm text-foreground/85 hover:bg-white/5" data-testid={`link-mobile-${slugify(str(l.label))}`}>{str(l.label)}</Link></li>)}
-                      </ul>
-                    ) : null}
+                    <ul id={`mobile-group-${k}`} hidden={openGroup !== k} className="pb-1">
+                      {g.links.map((l, li) => <li key={li}><Link href={str(l.href, '/')} className="block rounded-lg px-6 py-2 text-sm text-foreground/85 hover:bg-white/5" data-testid={`link-mobile-${slugify(str(l.label))}`}>{str(l.label)}</Link></li>)}
+                    </ul>
                   </div>
                 );
               })}
               {it.href ? <Link href={it.href} className="block px-4 py-2 text-sm text-[color:var(--ph-cyan)]">View all {it.label.toLowerCase()}</Link> : null}
-            </div>
-          ) : null}
+          </div>
         </div>
       ) : (
         <Link key={i} href={it.href || '/'} className="rounded-xl px-4 py-3 text-base text-foreground/90 hover:bg-white/5" data-testid={`link-mobile-${i}`}>{it.label}</Link>
@@ -205,6 +201,7 @@ function MobileNav({ items }: { items: MegaItem[] }) {
 
 export function SiteHeader() {
   const nav = useSection('nav');
+  const demo = useSection('demo');
   const brand = useBrand();
   const items = useMenu();
   const me = useMe();
@@ -213,6 +210,12 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [loc] = useLocation();
   useEffect(() => setOpen(false), [loc]);
+  useEffect(() => {
+    if (!open) return;
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setOpen(false); };
+    window.addEventListener('keydown', closeOnEscape);
+    return () => window.removeEventListener('keydown', closeOnEscape);
+  }, [open]);
   useEffect(() => {
     const on = () => setScrolled(window.scrollY > 12);
     on();
@@ -236,31 +239,52 @@ export function SiteHeader() {
           ) : (
             <Link href="/login" className="rounded-full px-3 py-2 text-sm text-muted-foreground hover:text-foreground" data-testid="link-login">{str(nav.loginLabel, 'Log in')}</Link>
           )}
-          <Link href="/register?mode=trial" className={cn(btnPrimary, 'px-5 py-2.5')} data-testid="link-cta-header">
-            {str(nav.ctaLabel, 'Start free trial')} <ArrowUpRight className="h-4 w-4" />
+            <Link href="/request-demo" className="hidden rounded-full border border-white/15 px-3.5 py-2 text-sm text-foreground/90 transition hover:bg-white/[0.06] xl:inline-flex" data-testid="link-cta-header-demo" data-analytics-event="cta_click" data-analytics-id="header-demo">
+            {str(demo.button, 'Request a demo')}
+          </Link>
+          <Link href="/register?mode=trial" className={cn(btnPrimary, 'px-5 py-2.5')} data-testid="link-cta-header" data-analytics-event="cta_click" data-analytics-id="header-trial">
+            {str(nav.ctaLabel, 'Start free trial')}
+            <ArrowUpRight className="h-4 w-4" />
           </Link>
         </div>
         <div className="flex items-center gap-2 lg:hidden">
           <ModeToggle />
-          <button type="button" onClick={() => setOpen((o) => !o)} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10" aria-label="Toggle menu" aria-expanded={open} data-testid="button-menu">
+          <button type="button" onClick={() => setOpen((o) => !o)} className="grid h-10 w-10 place-items-center rounded-xl border border-white/10" aria-label="Toggle menu" aria-expanded={open} aria-controls="mobile-primary-menu" data-testid="button-menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
       </div>
       <AnimatePresence>
         {open ? (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="glass-strong scrollbar-thin mx-auto mt-2 max-h-[calc(100dvh-6rem)] w-full overflow-y-auto rounded-2xl p-3 lg:hidden" style={{ maxWidth: 'var(--ph-container-max, 72rem)' }}>
+          <motion.div id="mobile-primary-menu" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="glass-strong scrollbar-thin mx-auto mt-2 max-h-[calc(100dvh-6rem)] w-full overflow-y-auto rounded-2xl p-3 lg:hidden" style={{ maxWidth: 'var(--ph-container-max, 72rem)' }}>
             <nav aria-label="Mobile">
               <MobileNav items={items} />
               <div className="mt-2 grid grid-cols-2 gap-2 border-t border-white/10 pt-3">
                 <Link href={signedIn ? appHref : '/login'} className="rounded-full border border-white/15 px-4 py-3 text-center text-sm" data-testid="link-mobile-login">{signedIn ? 'Open app' : str(nav.loginLabel, 'Log in')}</Link>
-                <Link href="/register?mode=trial" className={cn(btnPrimary, 'py-3')} data-testid="link-mobile-cta">{str(nav.ctaLabel, 'Start free trial')}</Link>
+                <Link href="/register?mode=trial" className={cn(btnPrimary, 'py-3')} data-testid="link-mobile-cta" data-analytics-event="cta_click" data-analytics-id="mobile-menu-trial">{str(nav.ctaLabel, 'Start free trial')}</Link>
               </div>
             </nav>
           </motion.div>
         ) : null}
       </AnimatePresence>
     </header>
+  );
+}
+
+function MobileConversionBar() {
+  const [location] = useLocation();
+  const nav = useSection('nav');
+  const demo = useSection('demo');
+  if (/^\/(admin|dashboard|login|register)(\/|$)/.test(location)) return null;
+  return (
+    <nav aria-label="Quick actions" className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-2 border-t border-white/10 bg-[color:var(--ph-bg)]/95 px-3 pt-2 pb-[calc(.65rem+env(safe-area-inset-bottom))] shadow-2xl backdrop-blur-xl xl:hidden">
+      <Link href="/request-demo" className="inline-flex min-h-11 items-center justify-center rounded-full border border-white/20 px-3 text-center text-xs font-semibold text-foreground sm:text-sm" data-testid="link-mobile-sticky-demo" data-analytics-event="cta_click" data-analytics-id="mobile-sticky-demo">
+        {str(demo.button, 'Request a demo')}
+      </Link>
+      <Link href="/register?mode=trial" className="inline-flex min-h-11 items-center justify-center rounded-full bg-brand px-3 text-center text-xs font-semibold text-on-brand sm:text-sm" data-testid="link-mobile-sticky-trial" data-analytics-event="cta_click" data-analytics-id="mobile-sticky-trial">
+        {str(nav.ctaLabel, 'Start free trial')}
+      </Link>
+    </nav>
   );
 }
 
@@ -372,7 +396,7 @@ export function WhatsAppButton() {
   const digits = str(w.phone).replace(/[^\d]/g, '');
   const valid = digits.length >= 10 && digits.length <= 15;
   const label = valid ? str(w.label, 'Chat on WhatsApp') : str(w.unconfiguredLabel, 'Contact our team');
-  const cls = 'whatsapp-float group fixed bottom-5 right-5 z-[55] flex items-center gap-2 rounded-full bg-[#1f9d55] py-3 pl-3 pr-4 text-sm font-semibold text-on-brand shadow-[0_16px_40px_-12px_rgba(16,90,50,.7)] transition hover:-translate-y-0.5 sm:bottom-7 sm:right-7';
+  const cls = 'whatsapp-float group fixed bottom-24 right-5 z-[55] flex items-center gap-2 rounded-full bg-[#1f9d55] py-3 pl-3 pr-4 text-sm font-semibold text-on-brand shadow-[0_16px_40px_-12px_rgba(16,90,50,.7)] transition hover:-translate-y-0.5 sm:bottom-7 sm:right-7';
   const inner = (
     <>
       <span className="relative grid h-8 w-8 place-items-center rounded-full bg-white/15"><span className="wa-pulse absolute inset-0 rounded-full bg-white/30" /><FaWhatsapp className="relative h-5 w-5" aria-hidden="true" /></span>
@@ -392,7 +416,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
   useEffect(() => { setHydrated(true); }, []);
   useEffect(() => { if (typeof window !== 'undefined') window.scrollTo({ top: 0 }); }, [loc]);
   return (
-    <div className="relative flex min-h-[100dvh] flex-col overflow-x-clip">
+    <div className="relative flex min-h-[100dvh] flex-col overflow-x-clip pb-[calc(4.75rem+env(safe-area-inset-bottom))] xl:pb-0">
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[70] focus:rounded-lg focus:bg-card focus:px-4 focus:py-2">Skip to content</a>
       <SiteHeader />
       <motion.main id="main" key={loc} initial={hydrated ? { opacity: 0, y: 10 } : false} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.2, 0.7, 0.2, 1] }} className="flex-1">
@@ -400,6 +424,7 @@ export function PublicShell({ children }: { children: ReactNode }) {
       </motion.main>
       <SiteFooter />
       <WhatsAppButton />
+      <MobileConversionBar />
     </div>
   );
 }

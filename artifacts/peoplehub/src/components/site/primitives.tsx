@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type CSSProperties, type ReactNode, type MouseEvent } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { Link } from 'wouter';
 import { cn } from '@/lib/utils';
@@ -126,8 +126,9 @@ export const btnGhost =
 
 export function CtaLink({ href, children, variant = 'primary', className, style, testId }: { href: string; children: ReactNode; variant?: 'primary' | 'ghost'; className?: string; style?: CSSProperties; testId?: string }) {
   const cls = cn(variant === 'primary' ? btnPrimary : btnGhost, className);
-  if (/^(https?:|mailto:|tel:)/.test(href)) return <a href={href} className={cls} style={style} data-testid={testId}>{children}</a>;
-  return <Link href={href} className={cls} style={style} data-testid={testId}>{children}</Link>;
+  const analytics = { 'data-analytics-event': 'cta_click', 'data-analytics-id': testId ?? 'cta-link' };
+  if (/^(https?:|mailto:|tel:)/.test(href)) return <a href={href} className={cls} style={style} data-testid={testId} {...analytics}>{children}</a>;
+  return <Link href={href} className={cls} style={style} data-testid={testId} {...analytics}>{children}</Link>;
 }
 
 export function Aurora({ className, intense }: { className?: string; intense?: boolean }) {
@@ -148,12 +149,16 @@ export function FaqList({ items, idPrefix = 'faq' }: { items: { question?: strin
     <div className="divide-y divide-white/[0.07] rounded-3xl glass">
       {items.map((f, i) => {
         const isOpen = open === i;
+        const questionId = `${idPrefix}-question-${i}`;
+        const panelId = `${idPrefix}-panel-${i}`;
         return (
           <div key={i} className="px-5 sm:px-7">
             <h3>
               <button
                 type="button"
+                id={questionId}
                 aria-expanded={isOpen}
+                aria-controls={panelId}
                 onClick={() => setOpen(isOpen ? null : i)}
                 className="flex w-full items-center justify-between gap-6 py-5 text-left text-base font-medium text-foreground sm:text-lg"
                 data-testid={`button-${idPrefix}-${i}`}
@@ -164,16 +169,19 @@ export function FaqList({ items, idPrefix = 'faq' }: { items: { question?: strin
                 </span>
               </button>
             </h3>
-            {/* Answer kept in DOM for crawlers; collapsed visually */}
-            <AnimatePresence initial={false}>
-              {isOpen ? (
-                <motion.div key="a" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.35, ease: [0.2, 0.7, 0.2, 1] }} className="overflow-hidden">
-                  <p className="pb-6 pr-10 leading-relaxed text-muted-foreground">{f.answer}</p>
-                </motion.div>
-              ) : (
-                <p className="sr-only">{f.answer}</p>
-              )}
-            </AnimatePresence>
+            <motion.div
+              id={panelId}
+              role="region"
+              aria-labelledby={questionId}
+              aria-hidden={!isOpen}
+              inert={!isOpen}
+              initial={false}
+              animate={{ height: isOpen ? 'auto' : 0, opacity: isOpen ? 1 : 0 }}
+              transition={{ duration: 0.28, ease: [0.2, 0.7, 0.2, 1] }}
+              className="overflow-hidden"
+            >
+              <p className="pb-6 pr-10 leading-relaxed text-muted-foreground">{f.answer}</p>
+            </motion.div>
           </div>
         );
       })}

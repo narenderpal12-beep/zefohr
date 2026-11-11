@@ -28,6 +28,7 @@ for(const [path,type,title] of [
   ["/free-tools/:slug","free_tool","%title%"],
 ]) registerSeoRoute({path,type,titleFrom:title});
 export const appPath = (path:string)=>/^\/(admin|dashboard|login|register)(\/|$)/.test(path);
+const canonicalAliases:Record<string,string>={"/about-us":"/about","/career":"/careers","/our-support":"/support","/request-for-demo":"/request-demo"};
 const pathSchema = /^\/[a-zA-Z0-9/_:.-]*$/;
 export function cleanPath(path: unknown) {
   if(typeof path!=="string" || !pathSchema.test(path) || path.includes("..") || path.includes("//") || path.length>500) fail("Enter a valid local path starting with /");
@@ -119,17 +120,22 @@ export async function resolveSeo(path:string,data?:Doc,origin?:string) {
   const pageTitle=match?.title??"Page not found";
   const templatedTitle=(settings.default_title_template||"%page% | %site%").replace(/%page%/g,pageTitle).replace(/%site%/g,settings.site_name||d.content.nav.brand);
   const title=get("title",templatedTitle).replace(/%title%/g,pageTitle);
-  const description=get("meta_description",match?.description||settings.default_meta_description);
+  const descriptionBase=get("meta_description",match?.description||settings.default_meta_description);
+  const hasSeoDescriptionOverride=hasText(exact.meta_description)||hasText(inherited.meta_description);
+  const description=!hasSeoDescriptionOverride&&hasText(match?.description)&&descriptionBase.length<50
+    ? `${descriptionBase.trim().replace(/[.!?]+$/,"")}. Explore connected HR workflows and resources designed for growing teams.`.slice(0,160)
+    : descriptionBase;
   let robots=get("robots","index,follow");
   if((appPath(path) && !exact.explicit_index_override)||!match) robots="noindex,follow";
-  const canonical=get("canonical_url",base+path);
+  const canonicalPath=canonicalAliases[path]??path;
+  const canonical=get("canonical_url",base+canonicalPath);
   const image=get("og_image_url",settings.default_og_image_url||"/og-default.svg");
   const result:Doc={...inherited,...exact,path,title,meta_description:description,canonical_url:canonical,robots,
     og_title:get("og_title",title),og_description:get("og_description",description),
     og_image_url:image.startsWith("/")?base+image:image,twitter_card:get("twitter_card","summary_large_image"),
     focus_keyword:get("focus_keyword",""),h1:path==="/"?d.content.hero.title:pageTitle,
     schema_type:get("schema_type","WebPage"),page_type:match?.page_type??"static",
-    include_in_sitemap:!!match&&!appPath(path)&&!robots.includes("noindex")&&(exact.include_in_sitemap??true),
+    include_in_sitemap:!!match&&!appPath(path)&&canonicalPath===path&&!robots.includes("noindex")&&(exact.include_in_sitemap??true),
     sitemap_priority:exact.sitemap_priority??0.7,changefreq:exact.changefreq??"weekly",
     image_alt_ok:match?.page_type!=="blog"||!match.item.cover_image_url||!!match.item.cover_image_alt,found:!!match,settings,
   };
@@ -143,6 +149,7 @@ export async function resolveSeo(path:string,data?:Doc,origin?:string) {
   const faq=path==="/faq"?d.content.faq.items:match?.page_type==="free_tool"?(match.item.slug==="tax-regime"?d.content.freeTools?.taxToolFaq:d.content.freeTools?.faq):match?.item?.faq??match?.item?.content?.faq;
   if((result.schema_type==="FAQPage" || faq) && faq?.length) schema.push({"@context":"https://schema.org","@type":"FAQPage",mainEntity:faq.map((f:Doc)=>({"@type":"Question",name:f.question,acceptedAnswer:{"@type":"Answer",text:f.answer}}))});
   if(match?.page_type==="blog") schema.push({"@context":"https://schema.org","@type":"Article",headline:match.item.title,description:match.item.excerpt,datePublished:match.item.published_at,author:{"@type":"Person",name:match.item.author||d.content.nav.brand},image:match.item.cover_image_url||result.og_image_url});
+  if(match?.page_type==="suite") schema.push({"@context":"https://schema.org","@type":"Product",name:match.item.title,description:match.item.description,url:canonical,image:match.item.imageUrl?(/^https?:\/\//i.test(match.item.imageUrl)?match.item.imageUrl:`${base}${match.item.imageUrl.startsWith("/")?"":"/"}${match.item.imageUrl}`):result.og_image_url,brand:{"@type":"Brand",name:settings.site_name||d.content.nav.brand},category:"Human resource management software"});
   if(result.schema_type==="Service") schema.push({"@context":"https://schema.org","@type":"Service",name:pageTitle,description,provider:{"@type":"Organization",name:d.content.nav.brand}});
   const custom=exact.custom_jsonld??inherited.custom_jsonld;
   if(custom) schema.push(...(Array.isArray(custom)?custom:[custom]));
@@ -159,7 +166,7 @@ export function renderHead(seo:Doc) {
   head+=`<link rel="icon" href="${e(s.favicon_url||"/favicon.svg")}"><script type="application/ld+json">${JSON.stringify(seo.jsonld).replace(/</g,"\\u003c")}</script>`;
   if(s.gsc_verification) head+=`<meta name="google-site-verification" content="${e(s.gsc_verification)}">`;
   if(s.bing_verification) head+=`<meta name="msvalidate.01" content="${e(s.bing_verification)}">`;
-  if(/^G-[A-Z0-9]+$/.test(s.ga4_id||"")) head+=`<script async src="https://www.googletagmanager.com/gtag/js?id=${s.ga4_id}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${s.ga4_id}');</script>`;
+  if(/^G-[A-Z0-9]+$/.test(s.ga4_id||"")) head+=`<script async src="https://www.googletagmanager.com/gtag/js?id=${s.ga4_id}"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${s.ga4_id}',{send_page_view:false});</script>`;
   return head+sanitizeHead(s.extra_head_html||"");
 }
 export async function sitemap(origin:string,part?:number) {
@@ -169,7 +176,7 @@ export async function sitemap(origin:string,part?:number) {
   if(!settings.sitemap_enabled) return '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>';
   const catalog=(await routeCatalogue(data)).filter(r=>!r.pattern&&!appPath(r.path));
   const overrides=(await pool.query("SELECT * FROM seo_pages WHERE discovered=true")).rows;
-  const pages=catalog.filter(r=>{const s=overrides.find(s=>s.path===r.path);return s?.include_in_sitemap!==false&&!s?.robots?.includes("noindex");});
+  const pages=catalog.filter(r=>{const s=overrides.find(s=>s.path===r.path);return !canonicalAliases[r.path]&&s?.include_in_sitemap!==false&&!s?.robots?.includes("noindex");});
   if(pages.length>50000 && !part) return `<?xml version="1.0" encoding="UTF-8"?><sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${Array.from({length:Math.ceil(pages.length/50000)},(_,i)=>`<sitemap><loc>${escapeHtml(base)}/sitemap-${i+1}.xml</loc></sitemap>`).join("")}</sitemapindex>`;
   return `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${pages.slice(part?((part-1)*50000):0,part?part*50000:50000).map(r=>{const s=overrides.find(s=>s.path===r.path);return `<url><loc>${escapeHtml(base+r.path)}</loc><lastmod>${new Date(r.item?.updated_at??s?.updated_at??Date.now()).toISOString()}</lastmod><changefreq>${escapeHtml(s?.changefreq||"weekly")}</changefreq><priority>${Number(s?.sitemap_priority??0.7)}</priority></url>`;}).join("")}</urlset>`;
 }
@@ -184,7 +191,7 @@ export async function updateSeo(id:string,input:Doc,actor:string) {
   const next:Doc={...before};
   for(const k of seoFields) if(input[k]!==undefined) next[k]=input[k];
   next.custom_jsonld=validJsonLd(next.custom_jsonld);
-  if(!["WebPage","FAQPage","Article","SoftwareApplication","Service"].includes(next.schema_type))fail("Invalid schema type");
+  if(!["WebPage","FAQPage","Article","SoftwareApplication","Product","Service"].includes(next.schema_type))fail("Invalid schema type");
   if(!["index,follow","noindex,follow","index,nofollow","noindex,nofollow","index, follow","noindex, follow","index, nofollow","noindex, nofollow"].includes(next.robots))fail("Invalid robots setting");
   if(appPath(before.path)&&!next.explicit_index_override){next.robots="noindex,follow";next.include_in_sitemap=false;}
   if(!["always","hourly","daily","weekly","monthly","yearly","never"].includes(next.changefreq))fail("Invalid sitemap frequency");

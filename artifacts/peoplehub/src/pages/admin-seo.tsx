@@ -16,7 +16,7 @@ import { LField, Modal, Panel } from './admin';
 import { cn } from '@/lib/utils';
 
 const PAGE_TYPES = ['static', 'suite', 'service', 'blog', 'landing', 'legal', 'app_public'];
-const SCHEMA_TYPES = ['WebPage', 'FAQPage', 'Article', 'SoftwareApplication', 'Service'];
+const SCHEMA_TYPES = ['WebPage', 'FAQPage', 'Article', 'SoftwareApplication', 'Product', 'Service'];
 const ROBOTS = ['index,follow', 'index,nofollow', 'noindex,follow', 'noindex,nofollow'];
 const IMPORTANT = /^\/($|pricing|features|services)/;
 
@@ -29,10 +29,20 @@ export function SeoManager() {
     <div>
       <h1 className="font-display text-3xl font-bold">SEO Manager</h1>
       <p className="mt-1 text-sm text-muted-foreground">Every public URL is discovered automatically. Empty fields fall back to content-derived defaults, then global templates.</p>
-      <div className="scrollbar-thin mt-6 flex gap-1 overflow-x-auto border-b border-white/[0.07]">
-        {tabs.map(([k, l]) => <button key={k} type="button" onClick={() => setTab(k)} className={cn('relative shrink-0 px-4 py-2.5 text-sm', tab === k ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')} data-testid={`tab-seo-${k}`}>{l}{tab === k ? <span className="absolute inset-x-2 -bottom-px h-0.5 bg-brand" /> : null}</button>)}
+      <div role="tablist" aria-label="SEO manager sections" className="scrollbar-thin mt-6 flex gap-1 overflow-x-auto border-b border-white/[0.07]">
+        {tabs.map(([k, l], index) => {
+          const id = `seo-tab-${k || 'pages'}`;
+          return <button key={k} id={id} role="tab" aria-selected={tab === k} aria-controls="seo-panel" tabIndex={tab === k ? 0 : -1} type="button" onClick={() => setTab(k)} onKeyDown={(event) => {
+            const direction = event.key === 'ArrowRight' ? 1 : event.key === 'ArrowLeft' ? -1 : 0;
+            if (!direction) return;
+            event.preventDefault();
+            const next = (index + direction + tabs.length) % tabs.length;
+            setTab(tabs[next][0]);
+            document.getElementById(`seo-tab-${tabs[next][0] || 'pages'}`)?.focus();
+          }} className={cn('relative shrink-0 px-4 py-2.5 text-sm', tab === k ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')} data-testid={`tab-seo-${k}`}>{l}{tab === k ? <span className="absolute inset-x-2 -bottom-px h-0.5 bg-brand" /> : null}</button>;
+        })}
       </div>
-      <div className="mt-6">
+      <div id="seo-panel" role="tabpanel" aria-labelledby={`seo-tab-${tab || 'pages'}`} tabIndex={0} className="mt-6 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ph-cyan)]">
         {tab === 'pages' && <SeoPages />}
         {tab === 'settings' && <SeoSettings />}
         {tab === 'schema' && <SeoSchema />}
@@ -106,7 +116,7 @@ function SeoPages() {
       {msg ? <p className="mt-3 text-xs text-emerald-200" data-testid="text-seo-msg">{msg}</p> : null}
       {bulk.isError ? <p className="mt-3 text-xs text-red-300">{errMsg(bulk.error)}</p> : null}
       <div className="scrollbar-thin mt-4 overflow-x-auto">
-        {q.isLoading ? <SkeletonBlock className="h-64" /> : q.isError ? <p className="py-8 text-center text-sm text-red-300">{errMsg(q.error)} <button className="underline" onClick={() => q.refetch()}>Retry</button></p> : (
+        {q.isLoading ? <SkeletonBlock className="h-64" /> : q.isError ? <p role="alert" className="py-8 text-center text-sm text-red-300">{errMsg(q.error)} <button className="underline" onClick={() => q.refetch()}>Retry</button></p> : (
           <table className="w-full min-w-[860px] text-sm">
             <thead><tr className="border-b border-white/[0.07] text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               <th className="px-2 py-2"><input type="checkbox" checked={allSel} onChange={() => setSel(allSel ? [] : items.map((i) => String(i.id)))} data-testid="checkbox-seo-all" /></th>

@@ -172,6 +172,7 @@ export function ResourcesPage() {
       {items.length ? <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">{items.map((item, index) => <HubCard key={`${item.href}-${index}`} title={str(item.title)} description={str(item.description)} eyebrow={str(item.kind)} href={str(item.href)} index={index} />)}</div> : <NoResults>{str(section.emptyMessage, 'Resources will appear here as they are published.')}</NoResults>}
       <div className="mt-8 flex flex-wrap gap-3"><Link href="/blog" className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm transition hover:border-white/25"><BookOpen className="h-4 w-4" />Browse all articles</Link><Link href="/case-studies" className="inline-flex items-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-sm transition hover:border-white/25"><Building2 className="h-4 w-4" />Explore use cases</Link></div>
     </Container>
+    <CtaBand />
   </>;
 }
 

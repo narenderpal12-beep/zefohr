@@ -14,6 +14,7 @@ import { BrandMark } from '@/components/site/layout';
 import { Field, inputCls } from '@/components/site/sections';
 import { cn } from '@/lib/utils';
 import {SuccessLottie} from '@/components/site/success-lottie';
+import { trackEvent } from '@/lib/analytics';
 
 const INDUSTRIES = ['Manufacturing', 'IT & software services', 'Retail & e-commerce', 'Healthcare & pharma', 'Logistics & warehousing', 'Construction & real estate', 'Education', 'Financial services', 'Hospitality & food', 'Textiles & apparel', 'Automotive & engineering', 'Professional services', 'Other'];
 const SIZE_BANDS = ['1-10', '11-50', '51-200', '201-500', '501-1000', '1000+'];
@@ -92,6 +93,7 @@ export function RegisterPage() {
       },
       {
         onSuccess: (acc) => {
+          trackEvent('signup_completed', { plan_key: v.plan_key, signup_mode: v.mode });
           qc.setQueryData(getGetMeQueryKey(), acc);
           void qc.invalidateQueries({ queryKey: getGetMeQueryKey() });
           setAccount(acc);

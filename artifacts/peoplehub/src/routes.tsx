@@ -16,6 +16,7 @@ import {
 } from '@/pages/hubs';
 import { FreeToolsPage } from '@/pages/free-tools';
 import { siteContainerMaxWidth } from '@/lib/theme';
+import { trackEvent } from '@/lib/analytics';
 import { LoginPage, RegisterPage } from '@/pages/auth';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/toaster';
@@ -51,12 +52,69 @@ function SeoSync() {
     set('twitter:title', s.og_title ?? s.title);
     set('twitter:description', s.og_description ?? s.meta_description);
     set('twitter:image', s.og_image_url);
+    set('twitter:card', s.twitter_card ?? 'summary_large_image');
+    set('og:type', s.page_type === 'blog' ? 'article' : 'website', 'property');
+    set('og:site_name', s.settings?.site_name, 'property');
     let canonical=document.head.querySelector('link[rel="canonical"]');
     if(!canonical){canonical=document.createElement('link');canonical.setAttribute('rel','canonical');document.head.appendChild(canonical);}
     canonical.setAttribute('href',str(s.canonical_url));
     const ld=document.head.querySelector('script[type="application/ld+json"]');
     if(ld&&s.jsonld)ld.textContent=JSON.stringify(s.jsonld);
   }, [q.data]);
+  return null;
+}
+
+/** Small analytics layer: records only public-page identifiers and never form values. */
+function AnalyticsObserver() {
+  const [path] = useLocation();
+  const publicPath = !/^\/(admin|dashboard|login|register)(\/|$)/.test(path);
+
+  useEffect(() => {
+    if (publicPath) trackEvent('page_view', { page_path: path });
+  }, [path, publicPath]);
+
+  useEffect(() => {
+    if (!publicPath) return;
+    const onClick = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const control = target.closest<HTMLElement>('[data-analytics-event], [role="tab"]');
+      if (!control) return;
+      if (control.getAttribute('role') === 'tab') {
+        trackEvent('tab_changed', { tab_id: control.dataset.analyticsId ?? control.dataset.testid ?? 'tab' });
+        return;
+      }
+      const eventName = control.dataset.analyticsEvent;
+      if (eventName !== 'cta_click') return;
+      const rawHref = control instanceof HTMLAnchorElement ? control.getAttribute('href') : null;
+      let destination = '';
+      if (rawHref) {
+        try { destination = new URL(rawHref, window.location.origin).pathname.slice(0, 240); } catch { /* Ignore malformed links. */ }
+      }
+      trackEvent('cta_click', { cta_id: control.dataset.analyticsId ?? 'cta', destination });
+    };
+    document.addEventListener('click', onClick);
+    return () => document.removeEventListener('click', onClick);
+  }, [publicPath]);
+
+  useEffect(() => {
+    if (!publicPath) return;
+    const sent = new Set<number>();
+    const onScroll = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      if (scrollable <= 0) return;
+      const depth = Math.min(100, Math.round((window.scrollY / scrollable) * 100));
+      for (const threshold of [25, 50, 75, 100]) {
+        if (depth >= threshold && !sent.has(threshold)) {
+          sent.add(threshold);
+          trackEvent('scroll_depth', { depth_percent: threshold, page_path: path });
+        }
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [path, publicPath]);
+
   return null;
 }
 
@@ -110,6 +168,7 @@ export function PublicRoutes() {
   return (
     <ThemeRoot>
       <SeoSync />
+      <AnalyticsObserver />
       <Switch>
         <Route path="/" component={P.home} />
         <Route path="/features" component={P.features} />

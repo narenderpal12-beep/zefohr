@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -40,14 +40,34 @@ const TABS = [
 ];
 
 export function Modal({ title, onClose, children, wide }: { title: string; onClose: () => void; children: ReactNode; wide?: boolean }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef(onClose);
+  closeRef.current = onClose;
   useEffect(() => {
-    const k = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const dialog = dialogRef.current;
+    const focusable = () => Array.from(dialog?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? [])
+      .filter((element) => !element.hasAttribute('hidden') && element.getAttribute('aria-hidden') !== 'true');
+    (dialog?.querySelector<HTMLElement>('[data-testid="button-close-modal"]') ?? focusable()[0] ?? dialog)?.focus();
+    const k = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') { e.preventDefault(); closeRef.current(); return; }
+      if (e.key !== 'Tab' || !dialog) return;
+      const elements = focusable();
+      if (!elements.length) { e.preventDefault(); dialog.focus(); return; }
+      const first = elements[0];
+      const last = elements[elements.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    };
     window.addEventListener('keydown', k);
-    return () => window.removeEventListener('keydown', k);
-  }, [onClose]);
+    return () => {
+      window.removeEventListener('keydown', k);
+      if (previous?.isConnected) previous.focus();
+    };
+  }, []);
   return (
     <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center sm:p-6" onClick={onClose}>
-      <div role="dialog" aria-modal aria-label={title} onClick={(e) => e.stopPropagation()} className={cn('glass-strong max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl p-5 sm:rounded-3xl sm:p-7', wide ? 'max-w-5xl' : 'max-w-2xl')}>
+      <div ref={dialogRef} role="dialog" aria-modal="true" aria-label={title} tabIndex={-1} onClick={(e) => e.stopPropagation()} className={cn('glass-strong max-h-[92dvh] w-full overflow-y-auto rounded-t-3xl p-5 sm:rounded-3xl sm:p-7', wide ? 'max-w-5xl' : 'max-w-2xl')}>
         <div className="mb-5 flex items-center justify-between"><h2 className="font-display text-xl font-bold">{title}</h2><button type="button" onClick={onClose} className={aBtn} aria-label="Close" data-testid="button-close-modal"><X className="h-4 w-4" /></button></div>
         {children}
       </div>

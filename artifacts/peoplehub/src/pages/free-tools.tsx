@@ -1,10 +1,11 @@
-import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useParams } from 'wouter';
 import { ArrowLeft, ArrowRight, Check, Download, ExternalLink, FileText, Printer, Search, ShieldCheck } from 'lucide-react';
 import { useCreateLead } from '@workspace/api-client-react';
 import { arr, errMsg, formatINR, iconFor, str, useContent, useSection, type AnyObj } from '@/lib/content';
 import { Container, FaqList, PageHero, Reveal, SectionHead } from '@/components/site/primitives';
 import { CtaBand, inputCls } from '@/components/site/sections';
+import { trackEvent, withLeadAttribution } from '@/lib/analytics';
 
 type Values = Record<string, string>;
 const number = (value: unknown, fallback = 0) => {
@@ -364,10 +365,9 @@ function ToolLeadCapture({ section, slug }: { section: AnyObj; slug: string }) {
       setError('Enter your name and a valid email address.');
       return;
     }
-    const params = new URLSearchParams(window.location.search);
-    const tracking = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].map((key) => `${key}=${params.get(key) ?? ''}`).join('; ');
     try {
-      await lead.mutateAsync({ data: { name: name.trim(), email: email.trim(), message: `Requested an estimate report for ${slug}. Source page: ${window.location.pathname}. ${tracking}` } });
+      await lead.mutateAsync({ data: { name: name.trim(), email: email.trim(), message: withLeadAttribution(`Requested an estimate report for ${slug}.`) } });
+      trackEvent('lead_submitted', { form_id: 'tool_report', tool_slug: slug });
       setSent(true);
     } catch (reason) { setError(errMsg(reason)); }
   };
@@ -419,8 +419,35 @@ export function FreeToolsTeaser() {
 }
 
 function FreeToolDetail({ tool, section }: { tool: AnyObj; section: AnyObj }) {
+  const toolSlug = str(tool.slug);
   const faqs = str(tool.slug) === 'tax-regime' ? arr<AnyObj>(section.taxToolFaq) : arr<AnyObj>(section.faq);
   const isRoi = str(tool.slug) === 'roi-calculator';
+  useEffect(() => {
+    trackEvent('tool_used', { tool_slug: toolSlug });
+    if (toolSlug === 'public-holidays' || toolSlug === 'minimum-wage') return;
+    const root = document.querySelector<HTMLElement>('[data-testid="free-tool-calculator"]');
+    if (!root) return;
+    let timer = 0;
+    let completed = false;
+    const onInteract = (event: Event) => {
+      if (completed || !(event.target instanceof HTMLElement)) return;
+      if (!event.target.matches('input, textarea, select, button')) return;
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        completed = true;
+        trackEvent('calculator_completed', { tool_slug: toolSlug });
+      }, 900);
+    };
+    root.addEventListener('input', onInteract);
+    root.addEventListener('change', onInteract);
+    root.addEventListener('click', onInteract);
+    return () => {
+      window.clearTimeout(timer);
+      root.removeEventListener('input', onInteract);
+      root.removeEventListener('change', onInteract);
+      root.removeEventListener('click', onInteract);
+    };
+  }, [toolSlug]);
   return <>
     <PageHero crumbs={[{ label: 'Home', href: '/' }, { label: 'Free HR tools', href: '/free-tools' }, { label: str(tool.title) }]} eyebrow={str(tool.category, 'Free HR tool')} title={str(tool.title)} description={str(tool.description)} />
     <Container className="max-w-5xl">
@@ -429,7 +456,7 @@ function FreeToolDetail({ tool, section }: { tool: AnyObj; section: AnyObj }) {
         <section className="glass rounded-3xl p-5 sm:p-8">
           <h2 className="font-display text-2xl font-bold">{str(tool.formTitle, 'Enter your details')}</h2>
           <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{str(tool.howItWorks, 'Enter the relevant details to see an estimate or draft. Change the inputs to compare different scenarios.')}</p>
-          <div className="mt-6"><ToolBody tool={tool} section={section} /></div>
+          <div className="mt-6" data-testid="free-tool-calculator"><ToolBody tool={tool} section={section} /></div>
           <EstimateNotice text={str(section.estimateNotice)} />
           {isRoi ? <ToolLeadCapture section={section} slug={str(tool.slug)} /> : null}
         </section>

@@ -11,6 +11,7 @@ import { Container, CtaLink, FaqList, PageHero, Reveal, btnPrimary } from '@/com
 import { CtaBand, Field, inputCls } from '@/components/site/sections';
 import { NotFoundPage, PageSkeleton, fmtDate } from './public';
 import { cn } from '@/lib/utils';
+import { trackEvent, withLeadAttribution } from '@/lib/analytics';
 
 /** Finds the editable page record for any of the given slugs (published only). */
 function usePageRecord(slugs: string[]): AnyObj | undefined {
@@ -223,10 +224,10 @@ function EnquiryForm({ kind, title, successMessage, extraLabel, messageLabel }: 
   const [done, setDone] = useState(false);
   const form = useForm<Enquiry>({ resolver: zodResolver(enquirySchema), defaultValues: { name: '', email: '', phone: '', organisation: '', extra: '', message: '' } });
   const onSubmit = form.handleSubmit((v) => {
-    const message = [`[${kind}]`, v.extra ? `${extraLabel}: ${v.extra}` : '', v.message].filter(Boolean).join('\n');
+    const message = withLeadAttribution([`[${kind}]`, v.extra ? `${extraLabel}: ${v.extra}` : '', v.message].filter(Boolean).join('\n'));
     lead.mutate(
       { data: { name: v.name, email: v.email, message, ...(v.phone ? { phone: v.phone } : {}), ...(v.organisation ? { organisation: v.organisation } : {}) } },
-      { onSuccess: () => { setDone(true); form.reset(); } },
+      { onSuccess: () => { trackEvent('lead_submitted', { form_id: kind === 'Demo request' ? 'demo' : 'support' }); setDone(true); form.reset(); } },
     );
   });
   const e = form.formState.errors;
@@ -249,7 +250,7 @@ function EnquiryForm({ kind, title, successMessage, extraLabel, messageLabel }: 
       <Field label={`${str(contact.organisationLabel)} (${optional})`} error={e.organisation?.message}><input className={inputCls} {...form.register('organisation')} autoComplete="organization" data-testid={`input-${tid}-org`} /></Field>
       <div className="sm:col-span-2"><Field label={`${extraLabel} (${optional})`} error={e.extra?.message}><input className={inputCls} {...form.register('extra')} data-testid={`input-${tid}-extra`} /></Field></div>
       <div className="sm:col-span-2"><Field label={messageLabel} error={e.message?.message}><textarea rows={5} className={inputCls} {...form.register('message')} data-testid={`input-${tid}-message`} /></Field></div>
-      {lead.isError ? <p className="text-sm text-[hsl(var(--destructive))] sm:col-span-2">{errMsg(lead.error)}</p> : null}
+      {lead.isError ? <p role="alert" className="text-sm text-[hsl(var(--destructive))] sm:col-span-2">{errMsg(lead.error)}</p> : null}
       <div className="sm:col-span-2"><button type="submit" disabled={lead.isPending} className={cn(btnPrimary, 'w-full sm:w-auto')} data-testid={`button-${tid}-submit`}>{str(lead.isPending ? copy.sendingLabel : copy.button)} <Send className="h-4 w-4" /></button></div>
     </form>
   );

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, type ComponentType, type CSSProperties, type ReactNode } from 'react';
+import { cloneElement, isValidElement, lazy, Suspense, useEffect, useId, useState, type ComponentType, type CSSProperties, type ReactNode } from 'react';
 import { Link } from 'wouter';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
@@ -11,6 +11,7 @@ import { Aurora, Container, Counter, CtaLink, Eyebrow, FaqList, GlassCard, Marqu
 import { cn } from '@/lib/utils';
 import {orbitAnimation} from '@/lib/lottie-data';
 import { SolutionImage } from './solution-image';
+import { trackEvent, withLeadAttribution } from '@/lib/analytics';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const LottiePlayer = lazy(() => import('lottie-react').then((m) => ({ default: m.Lottie as ComponentType<any> })));
@@ -154,19 +155,29 @@ export function SuitesTabs() {
   const cur = items[active] ?? items[0];
   if (!cur) return null;
   const Icon = iconFor(cur.icon);
+  const tabId = (index: number) => `suite-tab-${str(items[index]?.key, String(index)).replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+  const handleTabKey = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const delta = ['ArrowRight', 'ArrowDown'].includes(event.key) ? 1 : ['ArrowLeft', 'ArrowUp'].includes(event.key) ? -1 : 0;
+    if (!delta) return;
+    event.preventDefault();
+    const next = (index + delta + items.length) % items.length;
+    setActive(next);
+    trackEvent('tab_changed', { tab_id: str(items[next]?.key, String(next)) });
+    document.getElementById(tabId(next))?.focus();
+  };
   return (
     <section id="suites" className="relative py-24 sm:py-32">
       <Container>
         <SectionHead eyebrow={str(suites.eyebrow)} title={str(suites.title)} description={str(suites.description)} />
         <div className="mt-12 grid gap-6 lg:grid-cols-[320px_1fr]">
-          <div role="tablist" aria-label="Suites" className="scrollbar-thin -mx-5 flex gap-2 overflow-x-auto px-5 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
+          <div role="tablist" aria-label="Product suites" className="scrollbar-thin -mx-5 flex gap-2 overflow-x-auto px-5 pb-2 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
             {items.map((s, i) => {
               const I = iconFor(s.icon);
               const on = i === active;
               return (
-                <button key={i} role="tab" type="button" aria-selected={on} onClick={() => setActive(i)}
+                <button key={i} id={tabId(i)} role="tab" type="button" aria-selected={on} aria-controls="suite-tabpanel" tabIndex={on ? 0 : -1} onClick={() => setActive(i)} onKeyDown={(event) => handleTabKey(event, i)}
                   className={cn('relative flex shrink-0 items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm transition-colors', on ? 'text-foreground' : 'text-muted-foreground hover:text-foreground')}
-                  data-testid={`tab-suite-${str(s.key, String(i))}`}>
+                  data-testid={`tab-suite-${str(s.key, String(i))}`} data-analytics-id={str(s.key, String(i))}>
                   {on ? <motion.span layoutId="suite-tab" className="absolute inset-0 -z-0 rounded-2xl border border-white/10 bg-white/[0.06]" transition={{ type: 'spring', stiffness: 380, damping: 32 }} /> : null}
                   <span className="relative grid h-8 w-8 place-items-center rounded-lg bg-white/5"><I className="h-4 w-4" /></span>
                   <span className="relative whitespace-nowrap lg:whitespace-normal">{str(s.title)}</span>
@@ -174,7 +185,7 @@ export function SuitesTabs() {
               );
             })}
           </div>
-          <div role="tabpanel" className="relative">
+          <div id="suite-tabpanel" role="tabpanel" aria-labelledby={tabId(active)} tabIndex={0} className="relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ph-cyan)]">
             <motion.div key={active} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: [0.2, 0.7, 0.2, 1] }} className="glass border-gradient h-full rounded-3xl p-6 sm:p-10">
               <div className="flex flex-wrap items-center gap-3">
                 <span className="grid h-12 w-12 place-items-center rounded-2xl bg-brand"><Icon className="h-6 w-6 text-on-brand" /></span>
@@ -415,12 +426,21 @@ type LeadForm = z.infer<typeof leadSchema>;
 export const inputCls = 'w-full rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/60 outline-none transition focus:border-[color:var(--ph-indigo)] focus:bg-white/[0.05] focus:ring-4 focus:ring-[color:var(--ph-indigo)]/15';
 
 export function Field({ label, error, children, hint }: { label: string; error?: string; children: ReactNode; hint?: string }) {
+  const id = useId();
+  const helpId = `${id}-help`;
+  const child = isValidElement(children)
+    ? cloneElement(children as React.ReactElement<Record<string, unknown>>, {
+      id: (children.props as { id?: string }).id ?? id,
+      'aria-invalid': error ? true : (children.props as { 'aria-invalid'?: boolean })['aria-invalid'],
+      'aria-describedby': [((children.props as { 'aria-describedby'?: string })['aria-describedby']), error || hint ? helpId : undefined].filter(Boolean).join(' ') || undefined,
+    })
+    : children;
   return (
-    <label className="block">
-      <span className="mb-1.5 block text-xs font-medium text-foreground/80">{label}</span>
-      {children}
-      {error ? <span className="mt-1 block text-xs text-[hsl(var(--destructive))]">{error}</span> : hint ? <span className="mt-1 block text-xs text-muted-foreground">{hint}</span> : null}
-    </label>
+    <div className="block">
+      <label htmlFor={isValidElement(child) ? (child.props as { id?: string }).id : undefined} className="mb-1.5 block text-xs font-medium text-foreground/80">{label}</label>
+      {child}
+      {error ? <span id={helpId} role="alert" className="mt-1 block text-xs text-[hsl(var(--destructive))]">{error}</span> : hint ? <span id={helpId} className="mt-1 block text-xs text-muted-foreground">{hint}</span> : null}
+    </div>
   );
 }
 
@@ -432,8 +452,8 @@ export function ContactSection({ h1 }: { h1?: boolean }) {
   const H = h1 ? 'h1' : 'h2';
   const onSubmit = form.handleSubmit((v) => {
     lead.mutate(
-      { data: { name: v.name, email: v.email, message: v.message, ...(v.phone ? { phone: v.phone } : {}), ...(v.organisation ? { organisation: v.organisation } : {}) } },
-      { onSuccess: () => { setDone(true); form.reset(); } },
+      { data: { name: v.name, email: v.email, message: withLeadAttribution(v.message), ...(v.phone ? { phone: v.phone } : {}), ...(v.organisation ? { organisation: v.organisation } : {}) } },
+      { onSuccess: () => { trackEvent('lead_submitted', { form_id: 'contact' }); setDone(true); form.reset(); } },
     );
   });
   return (
@@ -464,7 +484,7 @@ export function ContactSection({ h1 }: { h1?: boolean }) {
               <Field label="Phone (optional)" error={form.formState.errors.phone?.message}><input className={inputCls} {...form.register('phone')} autoComplete="tel" data-testid="input-lead-phone" /></Field>
               <Field label="Organisation (optional)" error={form.formState.errors.organisation?.message}><input className={inputCls} {...form.register('organisation')} autoComplete="organization" data-testid="input-lead-org" /></Field>
               <div className="sm:col-span-2"><Field label="How can we help?" error={form.formState.errors.message?.message}><textarea rows={5} className={inputCls} {...form.register('message')} data-testid="input-lead-message" /></Field></div>
-              {lead.isError ? <p className="sm:col-span-2 text-sm text-[hsl(var(--destructive))]">{errMsg(lead.error)}</p> : null}
+              {lead.isError ? <p role="alert" className="sm:col-span-2 text-sm text-[hsl(var(--destructive))]">{errMsg(lead.error)}</p> : null}
               <div className="sm:col-span-2">
                 <button type="submit" disabled={lead.isPending} className={cn(btnPrimary, 'w-full sm:w-auto')} data-testid="button-lead-submit">
                   {lead.isPending ? 'Sending...' : 'Send message'} <Send className="h-4 w-4" />

@@ -1,0 +1,86 @@
+.peoplehub-area-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin: 22px 0 20px;
+  border-bottom: 1px solid #e3e8ef;
+}
+
+.peoplehub-area-tabs__tab {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 4px 4px 0 0;
+  background: transparent;
+  color: #334155;
+  cursor: pointer;
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.peoplehub-area-tabs__tab:hover {
+  background: #f5f6fc;
+}
+
+.peoplehub-area-tabs__tab[aria-selected="true"] {
+  background: #f1f3ff;
+  color: #2f46be;
+}
+
+.peoplehub-area-tabs__tab[aria-selected="true"]::after {
+  position: absolute;
+  right: 12%;
+  bottom: -1px;
+  left: 12%;
+  height: 2px;
+  border-radius: 2px;
+  background: #354fd0;
+  content: "";
+}
+
+.peoplehub-area-tabs__label {
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 1.25;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.peoplehub-area-tabs__tab:focus-visible {
+  z-index: 1;
+  outline: 3px solid #8090ff;
+  outline-offset: 2px;
+}
+
+@media (max-width: 900px) {
+  .peoplehub-area-tabs {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .peoplehub-area-tabs__tab {
+    min-height: 44px;
+    padding: 7px 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .peoplehub-area-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 20px 0 18px;
+  }
+
+  .peoplehub-area-tabs__tab {
+    min-height: 42px;
+    padding: 7px 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .peoplehub-area-tabs__tab {
+    transition: none;
+  }
+}

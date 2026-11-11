@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Lottie } from "lottie-react";
+import { ProductAreaTabs } from "./ProductAreaTabs";
 
 const orbitTransform = (p: number[]) => ({
   o: { a: 0, k: 100 }, r: { a: 0, k: 0 }, p: { a: 0, k: p },
@@ -393,34 +394,18 @@ export function Alternate() {
             <p>Move between the areas a growing team may need. Each screen is a code-built illustration of a planned product suite—not a live capability.</p>
              <div className="ph-plan-alert"><strong>Planned HRMS suites</strong>The ten suite and service previews below are illustrative concepts. They do not process real employee data or transactions.</div>
           </div>
-          <div className="ph-tabs" role="tablist" aria-orientation="horizontal" aria-label="Illustrative planned product areas">
-            {products.map((product, index) => (
-              <button
-                key={product.key}
-                className="ph-tab"
-                role="tab"
-                id={`ph-tab-${product.key}`}
-                aria-selected={activeProduct === index}
-                aria-controls="ph-product-panel"
-                tabIndex={activeProduct === index ? 0 : -1}
-                onClick={() => setActiveProduct(index)}
-                onKeyDown={(event) => {
-                  const direction = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
-                  if (!direction) return;
-                  event.preventDefault();
-                  const next = (index + direction + products.length) % products.length;
-                  setActiveProduct(next);
-                  document.getElementById(`ph-tab-${products[next].key}`)?.focus();
-                }}
-              >
-                {activeProduct === index ? <motion.span layoutId="explore-tab-indicator" className="ph-tab-indicator" transition={{ type: "spring", stiffness: 380, damping: 32 }} aria-hidden="true" /> : null}
-                <span className="ph-tab-no">{product.number}</span>
-                <span><strong>{product.name}</strong><small>{product.short}</small></span>
-                <span className="ph-tab-chevron" aria-hidden="true">›</span>
-              </button>
-            ))}
-          </div>
-          <div className="ph-product-panel" id="ph-product-panel" role="tabpanel" aria-labelledby={`ph-tab-${products[activeProduct].key}`}>
+          <ProductAreaTabs
+            items={products}
+            selectedKey={products[activeProduct].key}
+            onSelect={(key) => {
+              const next = products.findIndex((product) => product.key === key);
+              if (next >= 0) setActiveProduct(next);
+            }}
+            idPrefix="peoplehub-product-area"
+            panelId="ph-product-panel"
+            ariaLabel="Illustrative planned product areas"
+          />
+          <div className="ph-product-panel" id="ph-product-panel" role="tabpanel" aria-labelledby={`peoplehub-product-area-tab-${products[activeProduct].key}`}>
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={products[activeProduct].key}

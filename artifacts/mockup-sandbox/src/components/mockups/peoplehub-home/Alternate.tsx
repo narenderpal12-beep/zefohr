@@ -177,6 +177,9 @@ export function Alternate() {
         @media(max-width:640px){.ph-container{width:min(100% - 36px,500px)}.ph-header{height:68px}.ph-navlinks,.ph-nav-actions .ph-login{display:none}.ph-nav-actions{gap:10px}.ph-nav-actions .ph-button{min-height:38px;padding:0 12px;font-size:10px}.ph-menu-toggle{display:grid;place-items:center}.ph-menu-toggle svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}.ph-mobile-menu{display:flex;position:absolute;top:67px;left:0;right:0;padding:16px 18px 20px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 16px 25px #22304b12;flex-direction:column;gap:2px}.ph-mobile-menu a{padding:11px 2px;font-size:13px;color:#4d5a6d;border-bottom:1px solid #f1f3f6}.ph-hero{padding:53px 0 43px}.ph-hero-grid{gap:33px}.ph-hero h1{font-size:48px;letter-spacing:-1.9px;margin:18px 0}.ph-hero-copy{font-size:14px}.ph-hero-actions{gap:17px;flex-wrap:wrap}.ph-button{min-height:43px;padding:0 15px;font-size:11px}.ph-current-note{font-size:10px}.ph-visual-caption{font-size:8px}.ph-window-body{grid-template-columns:90px 1fr;min-height:260px}.ph-window-side{padding:13px 6px}.ph-side-item{padding:8px 5px;gap:5px;font-size:7px}.ph-side-label{font-size:6px;padding:0 5px}.ph-window-content{padding:13px 10px 10px}.ph-mock-heading h3{font-size:14px}.ph-mock-heading p{font-size:7px}.ph-mock-button{font-size:7px;padding:6px}.ph-table-row,.ph-table-head{grid-template-columns:1.25fr .9fr .67fr;gap:3px;font-size:7px}.ph-person{gap:4px;font-size:7px}.ph-initial{width:18px;height:18px;font-size:6px}.ph-window-brand{font-size:9px}.ph-window-brand .ph-mark{height:22px;width:22px}.ph-preview-note{font-size:6px}.ph-reassure-inner{gap:14px 10px;min-height:0;padding:20px 0}.ph-reassure-intro{font-size:17px}.ph-reassure-item{font-size:9px;gap:7px}.ph-check{height:18px;width:18px}.ph-path,.ph-services,.ph-plans{padding:69px 0}.ph-section-head,.ph-services-head,.ph-plans-top{display:block}.ph-section-head h2,.ph-services-head h2,.ph-plans-top h2{font-size:40px}.ph-section-intro,.ph-services-head p,.ph-plans-top p{margin-top:17px;font-size:12px}.ph-path-steps{grid-template-columns:1fr;margin-top:34px}.ph-step,.ph-step:not(:first-child){padding:20px 0;border-left:0;border-bottom:1px solid var(--line)}.ph-step:first-child{padding-top:20px}.ph-step-tag{right:0;top:22px}.ph-step h3{font-size:23px;margin:9px 0 6px}.ph-step p{margin-bottom:11px}.ph-explore{padding:69px 0}.ph-explore-copy h2{font-size:42px}.ph-explore-copy>p{font-size:12px}.ph-tabs{margin-top:23px;gap:4px}.ph-tab{padding:10px 8px;grid-template-columns:22px 1fr 12px;gap:5px}.ph-tab strong{font-size:10px}.ph-tab small{font-size:8px}.ph-tab-no{font-size:8px}.ph-product-panel .ph-window-body{min-height:280px}.ph-product-detail{display:block}.ph-product-detail h3{font-size:22px}.ph-product-detail p{font-size:11px}.ph-planned-pill{display:inline-flex;margin-top:12px}.ph-services-grid{grid-template-columns:1fr 1fr;margin-top:27px}.ph-service{padding:17px 13px;min-height:155px}.ph-service h3{font-size:17px;margin:10px 0 6px}.ph-service p{font-size:10px}.ph-services-foot{align-items:flex-start;flex-direction:column;font-size:10px}.ph-guidance{padding:65px 0}.ph-guide-title h2,.ph-faq-title h2{font-size:39px}.ph-plans-box{grid-template-columns:1fr}.ph-plan-col{padding:23px 19px}.ph-plan-col+.ph-plan-col{border-left:0;border-top:1px solid var(--line)}.ph-faq{padding:66px 0}.ph-faq-q{font-size:11px;padding:14px 0}.ph-faq-a{font-size:10px}.ph-final{padding-bottom:56px}.ph-final-card{display:block;padding:27px 22px}.ph-final-card h2{font-size:33px}.ph-final-card p{font-size:11px}.ph-final-actions{margin-top:22px;flex-wrap:wrap;gap:15px}.ph-footer-top{display:block}.ph-footer-links{gap:16px;margin-top:25px}.ph-footer-bottom{gap:10px;flex-direction:column}.ph-kicker{font-size:9px}}
         @media(max-width:640px){.ph-dashboard-controls{align-items:flex-start;flex-direction:column;gap:9px}.ph-dashboard-tools{width:100%}.ph-dashboard-copy strong{font-size:15px}.ph-dashboard-disclosure{font-size:7px}.ph-hiring-pipeline{gap:4px}.ph-hiring-stage{padding:7px 5px 10px}}
         @media(prefers-reduced-motion:reduce){.peoplehub-alt *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
+        .ph-explore-layout{display:block}.ph-explore-copy{position:static;max-width:760px}.ph-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:28px 0 24px}.ph-tab{min-width:0;min-height:78px;grid-template-columns:24px minmax(0,1fr) 12px;gap:8px;padding:12px;background:#fff;border-color:#e3e8ef}.ph-tab:hover{border-color:#c9d2e2}.ph-tab[aria-selected=true]{border-color:#435bd0;background:#fff;box-shadow:0 6px 18px #25334a10}.ph-tab strong{font-size:11px}.ph-tab small{line-height:1.4}.ph-product-panel{margin-top:0}.ph-product-panel .ph-window-body{min-height:360px}
+        @media(max-width:900px){.ph-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.ph-tab{min-height:72px}}
+        @media(max-width:640px){.ph-tabs{grid-template-columns:repeat(4,minmax(180px,1fr));overflow-x:auto;padding-bottom:7px;scroll-snap-type:x proximity}.ph-tab{scroll-snap-align:start}}
       `}</style>
       <div className="ph-topline" />
       <header className="ph-header">
@@ -259,9 +262,32 @@ export function Alternate() {
             <h2>People work,<br />in connected parts.</h2>
             <p>Move between the areas a growing team may need. Each screen is a code-built illustration of a planned product suite—not a live capability.</p>
             <div className="ph-plan-alert"><strong>Planned HRMS suites</strong>Employee records, time, payroll and talent screens below are illustrative concepts. They do not process real employee data or transactions.</div>
-            <div className="ph-tabs" role="tablist" aria-label="Illustrative planned product areas">
-              {products.map((product, index) => <button key={product.key} className="ph-tab" role="tab" id={`ph-tab-${product.key}`} aria-selected={activeProduct === index} aria-controls="ph-product-panel" onClick={() => setActiveProduct(index)}><span className="ph-tab-no">{product.number}</span><span><strong>{product.name}</strong><small>{product.short}</small></span><span className="ph-tab-chevron" aria-hidden="true">›</span></button>)}
-            </div>
+          </div>
+          <div className="ph-tabs" role="tablist" aria-orientation="horizontal" aria-label="Illustrative planned product areas">
+            {products.map((product, index) => (
+              <button
+                key={product.key}
+                className="ph-tab"
+                role="tab"
+                id={`ph-tab-${product.key}`}
+                aria-selected={activeProduct === index}
+                aria-controls="ph-product-panel"
+                tabIndex={activeProduct === index ? 0 : -1}
+                onClick={() => setActiveProduct(index)}
+                onKeyDown={(event) => {
+                  const direction = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+                  if (!direction) return;
+                  event.preventDefault();
+                  const next = (index + direction + products.length) % products.length;
+                  setActiveProduct(next);
+                  document.getElementById(`ph-tab-${products[next].key}`)?.focus();
+                }}
+              >
+                <span className="ph-tab-no">{product.number}</span>
+                <span><strong>{product.name}</strong><small>{product.short}</small></span>
+                <span className="ph-tab-chevron" aria-hidden="true">›</span>
+              </button>
+            ))}
           </div>
           <div className="ph-product-panel" id="ph-product-panel" role="tabpanel" aria-labelledby={`ph-tab-${products[activeProduct].key}`}>
             <ProductSnapshot active={activeProduct} />

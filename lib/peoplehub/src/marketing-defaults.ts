@@ -61,16 +61,17 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       label:"Chat on WhatsApp",unconfiguredLabel:"Contact our team",fallbackHref:"/contact",
     },
     homepageV2:{
-      announcement:{enabled:true,label:"PEOPLEHUB",text:"A clearer way to explore people operations for growing Indian teams.",linkLabel:"Talk to our team"},
+      announcement:{enabled:true,label:"PEOPLEHUB",text:"A clearer way to explore people operations for growing Indian teams.",linkLabel:"Talk to our team",href:"/request-demo",dismissLabel:"Dismiss announcement"},
       hero:{
         eyebrow:"PEOPLE-FIRST HR, BUILT FOR INDIA",
         title:"Make room for people. We’ll help with the rest.",
         description:"People operations get more complex as your business grows. Explore modular HR software direction and specialist services, then choose a sensible next step.",
-        primaryLabel:"Start your free trial",secondaryLabel:"Find your starting point",
+        primaryLabel:"Start your free trial",primaryHref:"/register?mode=trial",secondaryLabel:"Find your starting point",secondaryHref:"#path",
         currentNote:"Available now: organisation creation and free-trial signup. HRMS suites shown here are illustrative previews of planned product direction.",
       },
       approach:{title:"One partner for the people work.",points:["Choose what fits your team","Software and specialist support","Made for growing Indian businesses"]},
       stats:{
+        ariaLabel:"Current PeopleHub content",
         items:[
           {key:"suites",label:"Product suites to explore"},
           {key:"services",label:"Specialist services"},
@@ -83,9 +84,9 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
         eyebrow:"A CLEARER WAY TO BEGIN",title:"Start with the work in front of you.",
         description:"You don’t need to choose an entire HR stack on day one. Start with the people challenge taking your team’s time, then take the next step that makes sense.",
         steps:[
-          {title:"See how PeopleHub fits",description:"Explore the product direction and specialist services. Product screens are illustrative, not an active HRMS.",label:"Explore"},
-          {title:"Create your organisation",description:"Start a free-trial signup and set up your organisation. Operational HRMS suites are planned, not currently live.",label:"Get started"},
-          {title:"Find the right support",description:"Discuss your team’s needs with our people—from HR operations to recruitment and compliance support.",label:"Talk it through"},
+          {title:"See how PeopleHub fits",description:"Explore the product direction and specialist services. Product screens are illustrative, not an active HRMS.",label:"Explore",linkLabel:"Explore the platform",href:"#explore"},
+          {title:"Create your organisation",description:"Start a free-trial signup and set up your organisation. Operational HRMS suites are planned, not currently live.",label:"Get started",linkLabel:"Start free trial",href:"/register?mode=trial"},
+          {title:"Find the right support",description:"Discuss your team’s needs with our people—from HR operations to recruitment and compliance support.",label:"Talk it through",linkLabel:"Talk to our team",href:"/request-demo"},
         ],
       },
       product:{
@@ -93,10 +94,14 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
         description:"Move between the areas a growing team may need. Each screen is a code-built illustration of a planned product suite—not a live capability.",
         disclosureTitle:"Planned HRMS suites",
         disclosure:"These employee, time, payroll and talent screens are illustrative concepts. They do not process real employee data or transactions.",
+        tabsLabel:"Explore product suites",plannedLabel:"Planned suite",learnMoreLabel:"Explore this suite",
+        emptyPreview:"Add product suites in Admin to show a product preview.",
+        visualCaption:"A considered view of what’s ahead",visualTag:"Illustrative product concept",
       },
       roles:{
         eyebrow:"MADE FOR THE WORK YOU DO",title:"Find your starting point.",
         description:"Choose a role to see which parts of the people journey may matter most to you.",
+        selectorLabel:"Choose a role",suiteLinksLabel:"Explore the planned suites that connect to this kind of work:",
         items:[
           {name:"People and HR",description:"Keep everyday people processes easier to understand and coordinate.",suiteKeys:["core_hrms","engagement","governance_compliance"]},
           {name:"Finance leaders",description:"Explore how payroll inputs, reviews and specialist support could connect.",suiteKeys:["payroll_compliance","time_workforce","extended_hr_services"]},
@@ -109,6 +114,8 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       lifecycle:{
         eyebrow:"FROM FIRST DAY TO WHAT’S NEXT",title:"Follow the employee journey.",
         description:"Explore planned capabilities across common people milestones. The screens are illustrative product direction, not live employee workflows.",
+        selectorLabel:"Employee journey stages",plannedLabel:"A planned capability",
+        disclosure:"Illustrative product direction, not an operational employee workflow.",linkPrefix:"Explore",
         phases:[
           {title:"Plan and hire",description:"Explore planned recruitment, candidate and joining workflows.",suiteKey:"recruitment_ats"},
           {title:"Welcome and organise",description:"Explore planned employee records, onboarding and self-service.",suiteKey:"core_hrms"},
@@ -130,6 +137,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
           {title:"Anticipate",description:"Bring upcoming milestones and reminders into view."},
         ],
         disclosure:"Illustrative assistant preview. No AI request is sent and no employee information is processed.",
+        assistantLabel:"Assistant concept",previewLabel:"Preview only",emptyPromptLabel:"Choose a question to explore",promptListLabel:"Example questions",
       },
       comparison:{
         eyebrow:"A MORE CONNECTED WAY TO EXPLORE",title:"Less chasing. More clarity.",
@@ -144,6 +152,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       industries:{
         eyebrow:"BUILT FOR GROWING TEAMS",title:"People operations for the way you work.",
         description:"Explore common operating contexts and discuss the right fit for your organisation.",
+        linkLabel:"Discuss your needs",linkHref:"/request-demo",
         items:[
           {title:"Retail and distribution",description:"Coordinate people across locations, shifts and customer-facing teams."},
           {title:"Manufacturing and logistics",description:"Explore workforce planning for teams working across sites and schedules."},
@@ -156,9 +165,14 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
           {title:"Construction and infrastructure",description:"Explore people coordination for project-based, multi-location teams."},
         ],
       },
+      services:{
+        contextNote:"Sometimes the right answer is a person, not another platform. Service scope is discussed with your team.",
+        itemLabel:"SERVICE",allLabel:"Explore specialist services",allHref:"/services",
+      },
       tools:{
         eyebrow:"PRACTICAL HR RESOURCES",title:"Clearer answers for everyday HR questions.",
         description:"Explore practical resources for common HR decisions. For organisation-specific guidance, our team can help you find the right next step.",
+        ctaLabel:"Talk through a question",ctaHref:"/request-demo",
         items:[
           {title:"People cost planning",description:"Understand the inputs behind a workforce budget."},
           {title:"Leave and exit planning",description:"Review the information teams commonly need to prepare."},
@@ -176,16 +190,19 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
         description:"Read practical perspectives on people operations, payroll and compliance.",
         emptyTitle:"Explore the PeopleHub blog",
         emptyDescription:"Visit the resource hub for the latest articles and guides.",
+        readLabel:"Read article",visitLabel:"Visit the resource hub",emptyLinkLabel:"Visit the blog",
       },
       pricing:{
         eyebrow:"A PRACTICAL FIRST STEP",title:"Choose how to continue.",
         description:"Current organisation signup is available for a free-trial journey. Product pricing and operational suite availability should be confirmed with PeopleHub.",
+        cycleLabel:"Billing cycle",noPriceLabel:"Talk to our team",unitLabel:"/ employee / month",
+        priceNote:"Plan details are managed by PeopleHub and can be confirmed with the team.",
       },
-      faq:{eyebrow:"GOOD QUESTIONS, CLEAR ANSWERS",title:"Before you take the next step."},
+      faq:{eyebrow:"GOOD QUESTIONS, CLEAR ANSWERS",title:"Before you take the next step.",supportPrompt:"Still deciding what fits?",supportLabel:"Talk to our team",supportHref:"/contact"},
       finalCta:{
         title:"Let’s find your people platform.",
         description:"Tell us where you are today. We’ll help you work out what comes next.",
-        primaryLabel:"Talk to our team",secondaryLabel:"Start free trial",
+        primaryLabel:"Talk to our team",primaryHref:"/request-demo",secondaryLabel:"Start free trial",secondaryHref:"/register?mode=trial",
       },
     },
     media:{

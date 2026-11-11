@@ -115,6 +115,7 @@ export function HomeAlternate() {
   const ai = (page.ai ?? {}) as AnyObj;
   const comparison = (page.comparison ?? {}) as AnyObj;
   const industries = (page.industries ?? {}) as AnyObj;
+  const serviceCopy = (page.services ?? {}) as AnyObj;
   const tools = (page.tools ?? {}) as AnyObj;
   const security = (page.security ?? {}) as AnyObj;
   const learning = (page.learning ?? {}) as AnyObj;
@@ -150,8 +151,8 @@ export function HomeAlternate() {
           <div className="hv-container hv-announcement-inner">
             <span className="hv-announcement-label">{str(announcement.label, brandName)}</span>
             <p>{str(announcement.text)}</p>
-            <SafeLink href="/request-demo" className="hv-announcement-link">{str(announcement.linkLabel, 'Talk to our team')} <ArrowUpRight aria-hidden="true" /></SafeLink>
-            <button type="button" className="hv-announcement-dismiss" aria-label="Dismiss announcement" onClick={() => setAnnouncementDismissed(true)}><X aria-hidden="true" /></button>
+            <SafeLink href={announcement.href ?? '/request-demo'} className="hv-announcement-link">{str(announcement.linkLabel, 'Talk to our team')} <ArrowUpRight aria-hidden="true" /></SafeLink>
+            <button type="button" className="hv-announcement-dismiss" aria-label={str(announcement.dismissLabel, 'Dismiss announcement')} onClick={() => setAnnouncementDismissed(true)}><X aria-hidden="true" /></button>
           </div>
         </div>
       ) : null}
@@ -169,16 +170,16 @@ export function HomeAlternate() {
             {hero.currentNote ? <p className="hv-availability"><span aria-hidden="true" />{str(hero.currentNote)}</p> : null}
           </div>
           <div className="hv-hero-visual">
-            <div className="hv-visual-caption"><span>A considered view of what’s ahead</span><span>Illustrative product concept</span></div>
+            <div className="hv-visual-caption"><span>{str(product.visualCaption, 'A considered view of what’s ahead')}</span><span>{str(product.visualTag, 'Illustrative product concept')}</span></div>
             {selectedSuite ? <ProductSnapshot suite={selectedSuite} brandName={brandName} /> : (
-              <div className="hv-empty-preview"><Layers3 aria-hidden="true" /><span>Add product suites in Admin to show a product preview.</span></div>
+              <div className="hv-empty-preview"><Layers3 aria-hidden="true" /><span>{str(product.emptyPreview)}</span></div>
             )}
           </div>
         </div>
       </section>
 
       {visibleStats.length ? (
-        <section className="hv-stats" aria-label="Current PeopleHub content">
+        <section className="hv-stats" aria-label={str(statsCopy.ariaLabel, 'Current PeopleHub content')}>
           <div className="hv-container hv-stats-inner">
             {visibleStats.map((item) => <div className="hv-stat" key={str(item.key)}><strong>{statValues[str(item.key)].toLocaleString('en-IN')}</strong><span>{str(item.label)}</span></div>)}
             {statsCopy.note ? <p className="hv-stats-note">{str(statsCopy.note)}</p> : null}
@@ -187,7 +188,7 @@ export function HomeAlternate() {
       ) : null}
 
       {arr(approach.points).length ? (
-        <section className="hv-approach" aria-label="PeopleHub approach">
+        <section className="hv-approach" aria-label={str(approach.title, 'PeopleHub approach')}>
           <div className="hv-container hv-approach-inner">
             <h2>{str(approach.title)}</h2>
             {arr<string>(approach.points).map((point, index) => <p key={`${point}-${index}`}><Check aria-hidden="true" />{point}</p>)}
@@ -206,8 +207,8 @@ export function HomeAlternate() {
                   <span className="hv-step-pill">{str(step.label, 'Explore')}</span>
                   <h3>{str(step.title)}</h3>
                   <p>{str(step.description)}</p>
-                  <SafeLink href={index === 1 ? '/register?mode=trial' : index === 2 ? '/request-demo' : '#explore'} className="hv-text-link">
-                    {index === 1 ? 'Start free trial' : index === 2 ? 'Talk to our team' : 'Explore the platform'} <ArrowRight aria-hidden="true" />
+                  <SafeLink href={step.href ?? '#explore'} className="hv-text-link">
+                    {str(step.linkLabel, 'Explore the platform')} <ArrowRight aria-hidden="true" />
                   </SafeLink>
                 </article>
               ))}
@@ -222,7 +223,7 @@ export function HomeAlternate() {
             <div className="hv-explore-intro">
               <HomeV2Heading eyebrow={product.eyebrow} title={product.title} description={product.description} />
               {product.disclosure ? <div className="hv-disclosure"><strong>{str(product.disclosureTitle, 'Illustrative product direction')}</strong><p>{str(product.disclosure)}</p></div> : null}
-              <div className="hv-suite-tabs" role="tablist" aria-label="Explore product suites">
+              <div className="hv-suite-tabs" role="tablist" aria-label={str(product.tabsLabel, 'Explore product suites')}>
                 {suites.map((suite, index) => (
                   <button
                     key={str(suite.key, str(suite.slug, String(index)))}
@@ -247,8 +248,8 @@ export function HomeAlternate() {
             <div className="hv-suite-detail" id="hv-suite-panel" role="tabpanel" aria-labelledby={`hv-suite-tab-${activeSuite}`}>
               <ProductSnapshot suite={selectedSuite} brandName={brandName} />
               <div className="hv-suite-description">
-                <div><span className="hv-status"><i /> Planned suite</span><h3>{str(selectedSuite.title)}</h3><p>{str(selectedSuite.body, str(selectedSuite.description))}</p></div>
-                <SafeLink href={`/features/${str(selectedSuite.slug)}`} className="hv-text-link">Explore this suite <ArrowRight aria-hidden="true" /></SafeLink>
+                <div><span className="hv-status"><i /> {str(product.plannedLabel, 'Planned suite')}</span><h3>{str(selectedSuite.title)}</h3><p>{str(selectedSuite.body, str(selectedSuite.description))}</p></div>
+                <SafeLink href={`/features/${str(selectedSuite.slug)}`} className="hv-text-link">{str(product.learnMoreLabel, 'Explore this suite')} <ArrowRight aria-hidden="true" /></SafeLink>
               </div>
               {arr<string>(selectedSuite.modules).length ? <ul className="hv-module-list" aria-label={`${str(selectedSuite.title)} areas`}>{arr<string>(selectedSuite.modules).slice(0, 8).map((module) => <li key={module}>{module}</li>)}</ul> : null}
             </div>
@@ -260,7 +261,7 @@ export function HomeAlternate() {
         <section className="hv-roles">
           <div className="hv-container hv-roles-layout">
             <div><HomeV2Heading eyebrow={roles.eyebrow} title={roles.title} description={roles.description} />
-              <div className="hv-role-switcher" role="group" aria-label="Choose a role">
+              <div className="hv-role-switcher" role="group" aria-label={str(roles.selectorLabel, 'Choose a role')}>
                 {roleItems.map((role, index) => <button type="button" key={`${str(role.name)}-${index}`} aria-pressed={activeRole === index} onClick={() => setActiveRole(index)}>{str(role.name)}</button>)}
               </div>
             </div>
@@ -268,7 +269,7 @@ export function HomeAlternate() {
               <div className="hv-role-panel" aria-live="polite">
                 <span className="hv-eyebrow">{str(selectedRole.name)}</span>
                 <h3>{str(selectedRole.description)}</h3>
-                <p>Explore the planned suites that connect to this kind of work:</p>
+                <p>{str(roles.suiteLinksLabel)}</p>
                 <div className="hv-role-links">
                   {arr<string>(selectedRole.suiteKeys).map((key) => {
                     const suite = suites.find((item) => str(item.key) === key);
@@ -286,7 +287,7 @@ export function HomeAlternate() {
           <div className="hv-container">
             <HomeV2Heading eyebrow={lifecycle.eyebrow} title={lifecycle.title} description={lifecycle.description} />
             <div className="hv-lifecycle-layout">
-              <div className="hv-phase-list" role="tablist" aria-label="Employee journey stages">
+              <div className="hv-phase-list" role="tablist" aria-label={str(lifecycle.selectorLabel, 'Employee journey stages')}>
                 {phases.map((phase, index) => (
                   <button type="button" id={`hv-phase-tab-${index}`} role="tab" aria-selected={activePhase === index} aria-controls="hv-phase-panel" tabIndex={activePhase === index ? 0 : -1} key={`${str(phase.title)}-${index}`} onClick={() => setActivePhase(index)} onKeyDown={(event) => suiteTabsKeyDown(event, index, phases.length, setActivePhase, 'hv-phase-tab-')} className="hv-phase-button">
                     <span>{String(index + 1).padStart(2, '0')}</span><strong>{str(phase.title)}</strong><ChevronRight aria-hidden="true" />
@@ -296,14 +297,14 @@ export function HomeAlternate() {
               {selectedPhase ? (
                 <div className="hv-phase-panel" id="hv-phase-panel" role="tabpanel" aria-labelledby={`hv-phase-tab-${activePhase}`}>
                   <span className="hv-phase-orbit" aria-hidden="true"><Layers3 /></span>
-                  <p className="hv-eyebrow">A planned capability</p>
+                  <p className="hv-eyebrow">{str(lifecycle.plannedLabel, 'A planned capability')}</p>
                   <h3>{str(selectedPhase.title)}</h3>
                   <p>{str(selectedPhase.description)}</p>
                   {(() => {
                     const suite = suites.find((item) => str(item.key) === str(selectedPhase.suiteKey));
-                    return suite ? <SafeLink href={`/features/${str(suite.slug)}`} className="hv-text-link">Explore {str(suite.title)} <ArrowRight aria-hidden="true" /></SafeLink> : null;
+                    return suite ? <SafeLink href={`/features/${str(suite.slug)}`} className="hv-text-link">{str(lifecycle.linkPrefix, 'Explore')} {str(suite.title)} <ArrowRight aria-hidden="true" /></SafeLink> : null;
                   })()}
-                  <p className="hv-small-note">Illustrative product direction, not an operational employee workflow.</p>
+                  <p className="hv-small-note">{str(lifecycle.disclosure)}</p>
                 </div>
               ) : null}
             </div>
@@ -318,12 +319,12 @@ export function HomeAlternate() {
               {arr<AnyObj>(ai.items).length ? <ul className="hv-ai-capabilities">{arr<AnyObj>(ai.items).slice(0, 4).map((item, index) => <li key={`${str(item.title)}-${index}`}><Sparkles aria-hidden="true" /><span>{str(item.title)}</span></li>)}</ul> : null}
             </div>
             <div className="hv-chat-preview">
-              <div className="hv-chat-top"><span><Sparkles aria-hidden="true" />Assistant concept</span><span>Preview only</span></div>
+              <div className="hv-chat-top"><span><Sparkles aria-hidden="true" />{str(ai.assistantLabel, 'Assistant concept')}</span><span>{str(ai.previewLabel, 'Preview only')}</span></div>
               <div className="hv-chat-thread" aria-live="polite">
-                <div className="hv-chat-message hv-chat-user">{selectedPrompt ? str(selectedPrompt.prompt) : 'Choose a question to explore'}</div>
+                <div className="hv-chat-message hv-chat-user">{selectedPrompt ? str(selectedPrompt.prompt) : str(ai.emptyPromptLabel)}</div>
                 <div className="hv-chat-message hv-chat-answer"><span className="hv-chat-mark"><Sparkles aria-hidden="true" /></span>{selectedPrompt ? str(selectedPrompt.answer) : str(ai.disclosure)}</div>
               </div>
-              {prompts.length ? <div className="hv-prompt-list" aria-label="Example questions">{prompts.map((item, index) => <button key={`${str(item.prompt)}-${index}`} type="button" aria-pressed={activePrompt === index} onClick={() => setActivePrompt(index)}>{str(item.prompt)}</button>)}</div> : null}
+              {prompts.length ? <div className="hv-prompt-list" aria-label={str(ai.promptListLabel, 'Example questions')}>{prompts.map((item, index) => <button key={`${str(item.prompt)}-${index}`} type="button" aria-pressed={activePrompt === index} onClick={() => setActivePrompt(index)}>{str(item.prompt)}</button>)}</div> : null}
               {ai.disclosure ? <p className="hv-small-note">{str(ai.disclosure)}</p> : null}
             </div>
           </div>
@@ -346,7 +347,7 @@ export function HomeAlternate() {
         <section className="hv-industries">
           <div className="hv-container">
             <HomeV2Heading eyebrow={industries.eyebrow} title={industries.title} description={industries.description} />
-            <div className="hv-industry-grid">{arr<AnyObj>(industries.items).map((item, index) => <article className="hv-industry-card" key={`${str(item.title)}-${index}`}><span>{String(index + 1).padStart(2, '0')}</span><h3>{str(item.title)}</h3><p>{str(item.description)}</p><SafeLink href="/request-demo" className="hv-text-link">Discuss your needs <ArrowRight aria-hidden="true" /></SafeLink></article>)}</div>
+            <div className="hv-industry-grid">{arr<AnyObj>(industries.items).map((item, index) => <article className="hv-industry-card" key={`${str(item.title)}-${index}`}><span>{String(index + 1).padStart(2, '0')}</span><h3>{str(item.title)}</h3><p>{str(item.description)}</p><SafeLink href={industries.linkHref ?? '/request-demo'} className="hv-text-link">{str(industries.linkLabel, 'Discuss your needs')} <ArrowRight aria-hidden="true" /></SafeLink></article>)}</div>
           </div>
         </section>
       ) : null}
@@ -354,9 +355,9 @@ export function HomeAlternate() {
       {services.length ? (
         <section className="hv-services">
           <div className="hv-container">
-            <div className="hv-services-head"><HomeV2Heading eyebrow={str(servicesSection.eyebrow)} title={str(servicesSection.title)} description={str(servicesSection.description)} /><p className="hv-side-note">Sometimes the right answer is a person, not another platform. Service scope is discussed with your team.</p></div>
-            <div className="hv-service-grid">{services.slice(0, 6).map((service, index) => <SafeLink key={str(service.slug, String(index))} href={`/services/${str(service.slug)}`} className="hv-service-card"><span>{String(index + 1).padStart(2, '0')} / SERVICE</span><h3>{str(service.title)}</h3><p>{str(service.description)}</p><ArrowUpRight aria-hidden="true" /></SafeLink>)}</div>
-            <SafeLink href="/services" className="hv-text-link">Explore specialist services <ArrowRight aria-hidden="true" /></SafeLink>
+            <div className="hv-services-head"><HomeV2Heading eyebrow={str(servicesSection.eyebrow)} title={str(servicesSection.title)} description={str(servicesSection.description)} />{serviceCopy.contextNote ? <p className="hv-side-note">{str(serviceCopy.contextNote)}</p> : null}</div>
+            <div className="hv-service-grid">{services.slice(0, 6).map((service, index) => <SafeLink key={str(service.slug, String(index))} href={`/services/${str(service.slug)}`} className="hv-service-card"><span>{String(index + 1).padStart(2, '0')} / {str(serviceCopy.itemLabel, 'SERVICE')}</span><h3>{str(service.title)}</h3><p>{str(service.description)}</p><ArrowUpRight aria-hidden="true" /></SafeLink>)}</div>
+            <SafeLink href={serviceCopy.allHref ?? '/services'} className="hv-text-link">{str(serviceCopy.allLabel, 'Explore specialist services')} <ArrowRight aria-hidden="true" /></SafeLink>
           </div>
         </section>
       ) : null}
@@ -366,7 +367,7 @@ export function HomeAlternate() {
           <div className="hv-container hv-tools-layout">
             <HomeV2Heading eyebrow={tools.eyebrow} title={tools.title} description={tools.description} />
             <div className="hv-tools-grid">{arr<AnyObj>(tools.items).map((item, index) => <article key={`${str(item.title)}-${index}`}><span className="hv-tool-icon"><CircleHelp aria-hidden="true" /></span><h3>{str(item.title)}</h3><p>{str(item.description)}</p></article>)}</div>
-            <SafeLink href="/request-demo" className="hv-button hv-button-secondary">Talk through a question <ArrowRight aria-hidden="true" /></SafeLink>
+            <SafeLink href={tools.ctaHref ?? '/request-demo'} className="hv-button hv-button-secondary">{str(tools.ctaLabel, 'Talk through a question')} <ArrowRight aria-hidden="true" /></SafeLink>
           </div>
         </section>
       ) : null}
@@ -377,7 +378,7 @@ export function HomeAlternate() {
             <div><HomeV2Heading eyebrow={security.eyebrow} title={security.title} description={security.description} /></div>
             <div className="hv-security-content">
               {arr<string>(security.points).length ? <ul className="hv-security-list">{arr<string>(security.points).map((point, index) => <li key={`${point}-${index}`}><ShieldCheck aria-hidden="true" />{point}</li>)}</ul> : null}
-              {arr(integrationsSection.items).length ? <div className="hv-integrations"><h3>{str(integrationsSection.title, 'Tools and systems to discuss')}</h3><ul>{arr<string>(integrationsSection.items).map((item) => <li key={item}>{item}</li>)}</ul></div> : null}
+              {arr(integrationsSection.items).length ? <div className="hv-integrations"><h3>{str(integrationsSection.title)}</h3><ul>{arr<string>(integrationsSection.items).map((item) => <li key={item}>{item}</li>)}</ul></div> : null}
             </div>
           </div>
         </section>
@@ -386,7 +387,7 @@ export function HomeAlternate() {
       {clientsSection.enabled !== false && clients.length ? (
         <section className="hv-clients">
           <div className="hv-container">
-            <HomeV2Heading eyebrow={str(clientsSection.eyebrow, 'CLIENTS')} title={str(clientsSection.title)} description={str(clientsSection.description)} />
+            <HomeV2Heading eyebrow={str(clientsSection.eyebrow)} title={str(clientsSection.title)} description={str(clientsSection.description)} />
             <ul className="hv-client-list">{clients.map((client, index) => {
               const url = /^https?:\/\//i.test(str(client.website)) ? str(client.website) : '';
               const logo = <span className="hv-client-logo"><img src={str(client.logoUrl)} alt={str(client.alt, str(client.name))} loading="lazy" decoding="async" /></span>;
@@ -400,13 +401,13 @@ export function HomeAlternate() {
         <section className="hv-learning">
           <div className="hv-container">
             <HomeV2Heading eyebrow={learning.eyebrow} title={learning.title} description={learning.description} />
-            <div className="hv-learning-grid">{publishedPosts.map((post, index) => <SafeLink href={`/blog/${str(post.slug)}`} className="hv-learning-card" key={str(post.id, `${str(post.slug)}-${index}`)}>{post.cover_image_url ? <img src={str(post.cover_image_url)} alt={str(post.cover_image_alt, str(post.title))} loading="lazy" /> : <span className="hv-learning-art" aria-hidden="true"><Layers3 /></span>}<span className="hv-learning-meta">{str(post.author)}{post.published_at ? ` · ${new Date(String(post.published_at)).toLocaleDateString('en-IN', { month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })}` : ''}</span><h3>{str(post.title)}</h3><p>{str(post.excerpt)}</p><span className="hv-text-link">Read article <ArrowRight aria-hidden="true" /></span></SafeLink>)}</div>
-            <SafeLink href="/blog" className="hv-text-link">Visit the resource hub <ArrowRight aria-hidden="true" /></SafeLink>
+            <div className="hv-learning-grid">{publishedPosts.map((post, index) => <SafeLink href={`/blog/${str(post.slug)}`} className="hv-learning-card" key={str(post.id, `${str(post.slug)}-${index}`)}>{post.cover_image_url ? <img src={str(post.cover_image_url)} alt={str(post.cover_image_alt, str(post.title))} loading="lazy" /> : <span className="hv-learning-art" aria-hidden="true"><Layers3 /></span>}<span className="hv-learning-meta">{str(post.author)}{post.published_at ? ` · ${new Date(String(post.published_at)).toLocaleDateString('en-IN', { month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' })}` : ''}</span><h3>{str(post.title)}</h3><p>{str(post.excerpt)}</p><span className="hv-text-link">{str(learning.readLabel, 'Read article')} <ArrowRight aria-hidden="true" /></span></SafeLink>)}</div>
+            <SafeLink href="/blog" className="hv-text-link">{str(learning.visitLabel, 'Visit the resource hub')} <ArrowRight aria-hidden="true" /></SafeLink>
           </div>
         </section>
       ) : (
         <section className="hv-learning hv-learning-empty">
-          <div className="hv-container hv-learning-empty-inner"><div><HomeV2Heading eyebrow={learning.eyebrow} title={str(learning.emptyTitle, str(learning.title))} description={str(learning.emptyDescription, str(learning.description))} /></div><SafeLink href="/blog" className="hv-text-link">Visit the blog <ArrowRight aria-hidden="true" /></SafeLink></div>
+          <div className="hv-container hv-learning-empty-inner"><div><HomeV2Heading eyebrow={learning.eyebrow} title={str(learning.emptyTitle, str(learning.title))} description={str(learning.emptyDescription, str(learning.description))} /></div><SafeLink href="/blog" className="hv-text-link">{str(learning.emptyLinkLabel, 'Visit the blog')} <ArrowRight aria-hidden="true" /></SafeLink></div>
         </section>
       )}
 
@@ -414,8 +415,8 @@ export function HomeAlternate() {
         <section className="hv-pricing" id="plans">
           <div className="hv-container">
             <div className="hv-pricing-heading"><HomeV2Heading eyebrow={priceCopy.eyebrow} title={priceCopy.title} description={priceCopy.description} />
-              <div className="hv-billing-toggle" role="radiogroup" aria-label="Billing cycle">
-                {(['monthly', 'annual'] as const).map((cycle) => <button type="button" aria-pressed={billingCycle === cycle} key={cycle} onClick={() => setBillingCycle(cycle)}>{cycle}</button>)}
+              <div className="hv-billing-toggle" role="group" aria-label={str(priceCopy.cycleLabel, 'Billing cycle')}>
+                {(['monthly', 'annual'] as const).map((cycle) => <button type="button" aria-pressed={billingCycle === cycle} key={cycle} onClick={() => setBillingCycle(cycle)}>{cycle === 'monthly' ? str(pricing.monthlyLabel, 'Monthly') : str(pricing.annualLabel, 'Annually')}</button>)}
               </div>
             </div>
             <div className="hv-plan-grid">{plans.slice(0, 3).map((plan, index) => {
@@ -424,12 +425,12 @@ export function HomeAlternate() {
               const enterprise = /enterprise|custom|contact/i.test(str(plan.key) + str(plan.button));
               return <article className={`hv-plan-card ${plan.highlighted ? 'is-highlighted' : ''}`} key={str(plan.key, String(index))}>
                 <span className="hv-plan-label">{str(plan.name)}</span><h3>{str(plan.description)}</h3>
-                <div className="hv-plan-price">{hasPrice ? formatINR(price) : 'Talk to our team'}{hasPrice ? <small>/ employee / month</small> : null}</div>
+                <div className="hv-plan-price">{hasPrice ? formatINR(price) : str(priceCopy.noPriceLabel, 'Talk to our team')}{hasPrice ? <small>{str(priceCopy.unitLabel, '/ employee / month')}</small> : null}</div>
                 <ul>{arr<string>(plan.features).slice(0, 4).map((feature) => <li key={feature}><Check aria-hidden="true" />{feature}</li>)}</ul>
-                <SafeLink href={enterprise ? '/contact' : `/register?plan=${encodeURIComponent(str(plan.key))}&mode=trial`} className={plan.highlighted ? 'hv-button hv-button-primary' : 'hv-text-link'}>{enterprise ? 'Discuss your needs' : 'Start free trial'} <ArrowRight aria-hidden="true" /></SafeLink>
+                <SafeLink href={enterprise ? '/contact' : `/register?plan=${encodeURIComponent(str(plan.key))}&mode=trial`} className={plan.highlighted ? 'hv-button hv-button-primary' : 'hv-text-link'}>{str(plan.button, enterprise ? 'Talk to our team' : 'Start free trial')} <ArrowRight aria-hidden="true" /></SafeLink>
               </article>;
             })}</div>
-            <p className="hv-price-note">{trialDaysLabel}. Plan details are managed by PeopleHub and can be confirmed with the team.</p>
+            <p className="hv-price-note">{trialDaysLabel}. {str(priceCopy.priceNote)}</p>
           </div>
         </section>
       ) : null}
@@ -437,7 +438,7 @@ export function HomeAlternate() {
       {faqItems.length ? (
         <section className="hv-faq" id="faq">
           <div className="hv-container hv-faq-grid">
-            <div><HomeV2Heading eyebrow={faqCopy.eyebrow} title={faqCopy.title} /><p className="hv-side-note">Still deciding what fits? <SafeLink href="/contact" className="hv-inline-link">Talk to our team <ArrowRight aria-hidden="true" /></SafeLink></p></div>
+            <div><HomeV2Heading eyebrow={faqCopy.eyebrow} title={faqCopy.title} /><p className="hv-side-note">{str(faqCopy.supportPrompt)} <SafeLink href={faqCopy.supportHref ?? '/contact'} className="hv-inline-link">{str(faqCopy.supportLabel, 'Talk to our team')} <ArrowRight aria-hidden="true" /></SafeLink></p></div>
             <div className="hv-faq-list">{faqItems.map((item, index) => <div className="hv-faq-item" key={`${str(item.question)}-${index}`}><h3><button type="button" aria-expanded={openFaq === index} aria-controls={`hv-faq-answer-${index}`} onClick={() => setOpenFaq(openFaq === index ? null : index)}>{str(item.question)}<span aria-hidden="true">{openFaq === index ? '−' : '+'}</span></button></h3><p id={`hv-faq-answer-${index}`} hidden={openFaq !== index}>{str(item.answer)}</p></div>)}</div>
           </div>
         </section>
@@ -447,8 +448,8 @@ export function HomeAlternate() {
         <div className="hv-container hv-final-card">
           <div><p className="hv-eyebrow">{brandName}</p><h2>{str(finalCta.title)}</h2><p>{str(finalCta.description)}</p></div>
           <div className="hv-final-actions">
-            <SafeLink href="/request-demo" className="hv-button hv-button-primary">{str(finalCta.primaryLabel, 'Talk to our team')} <ArrowRight aria-hidden="true" /></SafeLink>
-            <SafeLink href="/register?mode=trial" className="hv-text-link">{str(finalCta.secondaryLabel, 'Start free trial')} <ArrowRight aria-hidden="true" /></SafeLink>
+            <SafeLink href={finalCta.primaryHref ?? '/request-demo'} className="hv-button hv-button-primary">{str(finalCta.primaryLabel, 'Talk to our team')} <ArrowRight aria-hidden="true" /></SafeLink>
+            <SafeLink href={finalCta.secondaryHref ?? '/register?mode=trial'} className="hv-text-link">{str(finalCta.secondaryLabel, 'Start free trial')} <ArrowRight aria-hidden="true" /></SafeLink>
           </div>
         </div>
       </section>

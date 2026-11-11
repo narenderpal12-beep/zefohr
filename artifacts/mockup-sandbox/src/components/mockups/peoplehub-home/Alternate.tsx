@@ -277,11 +277,19 @@ export function Alternate() {
         @media(max-width:640px){.ph-tabs{grid-template-columns:repeat(4,minmax(180px,1fr));overflow-x:auto;padding-bottom:7px;scroll-snap-type:x proximity}.ph-tab{scroll-snap-align:start}}
         .ph-hero-kicker-row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:470px}.ph-hero-lottie{display:grid;width:68px;height:68px;place-items:center;flex:none;overflow:hidden;border:1px solid #e7ebf2;border-radius:50%;background:radial-gradient(circle,#f9faff 0%,#fff 72%);opacity:.92}.ph-hero-lottie>div,.ph-hero-lottie svg{width:100%!important;height:100%!important}.ph-tab>span:not(.ph-tab-indicator){z-index:1}
         @media(max-width:640px){.ph-hero-lottie{width:52px;height:52px}}
-        .ph-tabs{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:stretch;gap:4px;margin:22px 0 20px;padding:0 2px 6px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-padding-inline:2px;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#c4cedd transparent}
-        .ph-tabs::-webkit-scrollbar{height:4px}.ph-tabs::-webkit-scrollbar-track{background:transparent}.ph-tabs::-webkit-scrollbar-thumb{background:#c4cedd;border-radius:8px}
-        .ph-tabs .ph-tab{flex:1 1 0;grid-template-columns:14px minmax(0,1fr);gap:5px;min-width:0;min-height:58px;padding:7px 6px;scroll-snap-align:start}.ph-tabs .ph-tab-no{font-size:7px}.ph-tabs .ph-tab strong{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:3;font-size:9px;line-height:1.2;overflow-wrap:anywhere}.ph-tabs .ph-tab small,.ph-tabs .ph-tab-chevron{display:none}.ph-thumb-recruitment .ph-thumb-chart{background:linear-gradient(90deg,#ced6fb,#566bda)!important}
-        @media(max-width:900px){.ph-tabs{display:flex;flex-wrap:nowrap;gap:7px}.ph-tabs .ph-tab{flex:0 0 154px;grid-template-columns:18px minmax(0,1fr) 10px;min-height:58px;padding:8px 9px}.ph-tabs .ph-tab-no{font-size:8px}.ph-tabs .ph-tab strong{font-size:10px;line-height:1.25;-webkit-line-clamp:2}.ph-tabs .ph-tab small{display:block;overflow:hidden;margin-top:1px;font-size:8px;line-height:1.2;text-overflow:ellipsis;white-space:nowrap}.ph-tabs .ph-tab-chevron{display:block;font-size:13px}}
-        @media(max-width:640px){.ph-tabs{display:flex;flex-wrap:nowrap;gap:6px;margin:20px 0 18px;padding-bottom:6px}.ph-tabs .ph-tab{flex-basis:min(44vw,170px);min-width:140px;min-height:56px;padding:7px 8px}}
+        .ph-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;margin:22px 0 20px;padding:0;overflow:visible;border-bottom:1px solid #e3e8ef}
+        .ph-tabs::-webkit-scrollbar{display:none}
+        .ph-tabs .ph-tab{display:flex;position:relative;flex:initial;align-items:center;justify-content:center;min-width:0;min-height:46px;padding:8px 10px;border:0;border-bottom:2px solid transparent;border-radius:4px 4px 0 0;background:transparent;box-shadow:none;scroll-snap-align:unset}
+        .ph-tabs .ph-tab:hover{border-color:transparent;background:#f5f6fc}
+        .ph-tabs .ph-tab[aria-selected=true]{border-color:transparent;border-bottom-color:#435bd0;background:#f1f3ff;box-shadow:none}
+        .ph-tabs .ph-tab-no,.ph-tabs .ph-tab small,.ph-tabs .ph-tab-chevron{display:none}
+        .ph-tabs .ph-tab>span:not(.ph-tab-indicator){position:relative;z-index:1}
+        .ph-tabs .ph-tab>span:nth-of-type(2){min-width:0}
+        .ph-tabs .ph-tab strong{display:block;font-size:10px;line-height:1.25;text-align:center;font-weight:650;overflow-wrap:anywhere}
+        .ph-tabs .ph-tab-indicator{top:auto;bottom:0;left:12%;width:76%;height:2px;border-radius:2px;background:#354fd0}
+        .ph-thumb-recruitment .ph-thumb-chart{background:linear-gradient(90deg,#ced6fb,#566bda)!important}
+        @media(max-width:900px){.ph-tabs{grid-template-columns:repeat(4,minmax(0,1fr))}.ph-tabs .ph-tab{min-height:44px;padding:7px 8px}}
+        @media(max-width:640px){.ph-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:2px;margin:20px 0 18px}.ph-tabs .ph-tab{min-height:42px;padding:7px 8px}.ph-tabs .ph-tab strong{font-size:10px}}
       `}</style>
       <div className="ph-topline" />
       <header className="ph-header">

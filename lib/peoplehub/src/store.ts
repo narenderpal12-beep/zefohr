@@ -36,7 +36,9 @@ export async function getContent(): Promise<Doc> {
       const legacyArtwork=original && item.imageUrl===`/solution-images/${original.slug}.webp`;
       if(item.imageUrl===undefined || legacyArtwork)item.imageUrl=original?.imageUrl ?? "";
       if(item.imageAlt===undefined || (legacyArtwork && typeof item.imageAlt==="string" && item.imageAlt.startsWith("Creative illustration")))item.imageAlt=original?.imageAlt ?? String(item.title ?? key);
-      if(key==="suites" && item.body===undefined && original?.body)item.body=original.body;
+      if(original)for(const [field,value] of Object.entries(original)){
+        if(field!=="imageUrl" && field!=="imageAlt" && item[field]===undefined)item[field]=structuredClone(value);
+      }
     }
   }
   const storedBrand=rows.rows.find(r=>r.key==="brand");

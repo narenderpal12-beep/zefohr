@@ -344,8 +344,8 @@ function NativeWorkspace({ entry, content, onEditRecord }: { entry: PageEntry; c
         <p className="mb-3 text-xs text-muted-foreground">{entry.path === '/' ? 'Each homepage section reads shared site content. Saving here changes every page that uses those same shared sections.' : 'Content shown by the original block. These are shared: saving here updates every page listed on each card.'}</p>
         <div className="space-y-3">
           {entry.path === '/' ? <SharedSectionEditor contentKey="homepageV2" title="New homepage content" scopeNote="Homepage-only copy and interactive content shown when the new homepage is selected." /> : null}
-          {entry.kind === 'feature' ? <SharedSectionEditor contentKey="suites" sub={['items', entry.index ?? 0]} title={`${entry.label} (feature)`} scopeNote="Only this feature item. Also appears in the Features page, Home and Pricing." /> : null}
-          {entry.kind === 'service' ? <SharedSectionEditor contentKey="services" sub={['items', entry.index ?? 0]} title={`${entry.label} (service)`} scopeNote="Only this service item. Also appears in the Services page and Home." /> : null}
+          {entry.kind === 'feature' ? <SharedSectionEditor contentKey="suites" sub={['items', entry.index ?? 0]} title={`${entry.label} (feature)`} scopeNote="Edit this product’s image, summary and overview shown beside the hero image, plus its workflows, benefits, audiences and FAQs. It also appears on Features, Home and Pricing." /> : null}
+          {entry.kind === 'service' ? <SharedSectionEditor contentKey="services" sub={['items', entry.index ?? 0]} title={`${entry.label} (service)`} scopeNote="Edit this service’s image, summary and overview shown beside the hero image, plus scope areas, engagement steps, benefits and FAQs. It also appears on Services and Home." /> : null}
           {entry.kind === 'legal' ? <SharedSectionEditor contentKey="legal" sub={[entry.slug ?? '']} title={entry.label} scopeNote="Only this legal page." /> : null}
           {keys.map((k) => <SharedSectionEditor key={k} contentKey={k} />)}
           {entry.record && !isNativePath(entry.path) ? (

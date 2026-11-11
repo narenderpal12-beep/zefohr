@@ -51,6 +51,10 @@ const serviceData = [
 ];
 export const services = serviceData.map(([slug,title,description,billing,icon]) => ({
   key:slug,slug,title,description:`${title} support scoped around your organisation’s processes, responsibilities and operational needs.`,billing,icon,modules:description.split(", "),
+  moduleDetails:description.split(", ").map((area:string) => ({
+    title:area,
+    description:`Agree the key records, responsibilities and handoffs for ${area.toLowerCase()} before the engagement begins.`,
+  })),
   ...defaultSolutionPhoto(slug),
   body:`Work with our team to define the scope, responsibilities and handoffs for ${title.toLowerCase()}. We will discuss your organisation's current process, the support required and the next practical steps before agreeing an engagement.`,
   engagementSteps:[

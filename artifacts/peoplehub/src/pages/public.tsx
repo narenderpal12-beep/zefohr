@@ -88,28 +88,90 @@ function DetailPage({ kind }: { kind: 'suites' | 'services' }) {
   const others = items.filter((s) => s !== item).slice(0, 4);
   const moduleDetails = arr<AnyObj>(item.moduleDetails);
   const processSteps = arr<AnyObj>(kind === 'suites' ? item.workflowSteps : item.engagementSteps);
+  const focusAreas = arr<string>(item.modules);
+  const hasImage = Boolean(str(item.imageUrl));
+  const primaryHref = kind === 'suites' ? '/register?mode=trial' : '/request-demo';
+  const primaryLabel = kind === 'suites' ? 'Start free trial' : 'Discuss this service';
   return (
     <>
-      <PageHero crumbs={[{ label: 'Home', href: '/' }, { label, href: base }, { label: str(item.title) }]} eyebrow={str(item.priority || item.billing || label)} title={str(item.title)} description={str(item.description)}>
-        <div className="mt-8 flex flex-wrap gap-3">
-          <CtaLink href="/register?mode=trial" testId="link-detail-trial">Start free trial <ArrowRight className="h-4 w-4" /></CtaLink>
-          <CtaLink href="/contact" variant="ghost" testId="link-detail-contact">Talk to an expert</CtaLink>
-        </div>
-        <SolutionImage item={item} eager className="mt-10 max-w-md rounded-2xl" />
-      </PageHero>
-      {item.body ? <Container className="max-w-4xl"><div className="glass rounded-3xl p-7 sm:p-10"><Markdown source={str(item.body)} /></div></Container> : null}
+      <section className="relative overflow-hidden pb-14 pt-28 sm:pb-16 sm:pt-36">
+        <Aurora />
+        <Container>
+          <nav aria-label="Breadcrumb" className="relative mb-7 text-xs font-mono uppercase tracking-[0.14em] text-muted-foreground">
+            <ol className="flex flex-wrap items-center gap-2">
+              <li><Link href="/" className="hover:text-foreground">Home</Link></li>
+              <li aria-hidden="true" className="text-white/25">/</li>
+              <li><Link href={base} className="hover:text-foreground">{label}</Link></li>
+              <li aria-hidden="true" className="text-white/25">/</li>
+              <li aria-current="page" className="text-foreground/80">{str(item.title)}</li>
+            </ol>
+          </nav>
+          <div className={cn('grid items-center gap-8 lg:gap-12', hasImage && 'lg:grid-cols-2')}>
+            {hasImage ? (
+              <Reveal className="order-1">
+                <div className="relative">
+                  <SolutionImage item={item} eager className="aspect-[4/3] w-full rounded-3xl border border-white/10" />
+                  <span className="absolute bottom-4 left-4 rounded-full border border-white/15 bg-background/85 px-3 py-1.5 font-mono text-[10px] uppercase tracking-wider text-foreground/85 backdrop-blur">
+                    {kind === 'suites' ? 'Product direction' : 'Service overview'}
+                  </span>
+                </div>
+              </Reveal>
+            ) : null}
+            <Reveal delay={80} className="order-2">
+              <p className="font-mono text-xs uppercase tracking-[0.18em] text-[color:var(--ph-cyan)]">
+                {kind === 'suites' ? 'Product suite' : 'People services'}
+              </p>
+              <h1 id="offer-detail-title" className="font-display mt-4 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">{str(item.title)}</h1>
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">{str(item.description)}</p>
+              {item.body ? <div className="mt-5 max-w-xl text-sm leading-relaxed text-muted-foreground sm:text-base"><Markdown source={str(item.body)} /></div> : null}
+              {kind === 'suites' ? (
+                <p role="note" className="mt-5 max-w-xl rounded-xl border border-[color:var(--ph-cyan)]/20 bg-[color:var(--ph-cyan)]/[0.06] px-4 py-3 text-xs leading-relaxed text-foreground/75">
+                  Planned HRMS suite: product screens and workflows describe product direction; operational HRMS functionality is planned for Phase 2.
+                </p>
+              ) : null}
+              {focusAreas.length ? (
+                <div className="mt-5">
+                  <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">{kind === 'suites' ? 'Workflows to explore' : 'Areas to scope'}</p>
+                  <ul className="flex flex-wrap gap-2" aria-label={kind === 'suites' ? 'Key workflows' : 'Service scope areas'}>
+                    {focusAreas.slice(0, 4).map((area) => <li key={area} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-1.5 text-xs capitalize text-foreground/80">{area}</li>)}
+                    {focusAreas.length > 4 ? <li className="rounded-full border border-white/10 px-3 py-1.5 text-xs text-muted-foreground">+{focusAreas.length - 4} more</li> : null}
+                  </ul>
+                </div>
+              ) : null}
+              <div className="mt-7 flex flex-wrap gap-3">
+                <CtaLink href={primaryHref} testId="link-detail-trial">{primaryLabel} <ArrowRight className="h-4 w-4" /></CtaLink>
+                <CtaLink href="/contact" variant="ghost" testId="link-detail-contact">{kind === 'suites' ? 'Talk to an expert' : 'Contact the team'}</CtaLink>
+              </div>
+            </Reveal>
+          </div>
+        </Container>
+      </section>
       <Container className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         <Reveal className="glass border-gradient rounded-3xl p-7 sm:p-9">
           <div className="flex items-center gap-3">
             <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand"><I className="h-5 w-5 text-on-brand" /></span>
             <h2 className="font-display text-2xl font-bold">{kind === 'suites' ? 'Modules and workflows' : 'Service scope'}</h2>
           </div>
+          <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+            {kind === 'suites'
+              ? 'Explore the records and handoffs a team can plan before adopting a connected HR workflow.'
+              : 'Review the responsibilities and handoffs for each area, then agree the scope before an engagement begins.'}
+          </p>
           {moduleDetails.length ? (
             <ul className="mt-7 grid gap-3 sm:grid-cols-2">
               {moduleDetails.map((m, i) => (
                 <li key={`${str(m.title)}-${i}`} className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
                   <h3 className="font-semibold capitalize text-foreground">{str(m.title)}</h3>
                   <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{str(m.description)}</p>
+                </li>
+              ))}
+            </ul>
+          ) : kind === 'services' && focusAreas.length ? (
+            <ul className="mt-7 grid gap-3 sm:grid-cols-2">
+              {focusAreas.map((area) => (
+                <li key={area} className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
+                  <h3 className="font-semibold capitalize text-foreground">{area}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">Confirm the responsibilities, records and handoffs for {area.toLowerCase()} before work begins.</p>
                 </li>
               ))}
             </ul>
@@ -139,7 +201,7 @@ function DetailPage({ kind }: { kind: 'suites' | 'services' }) {
       ) : null}
       {arr(item.faq).length ? <FaqSection items={arr<AnyObj>(item.faq)} title={`${str(item.title)}: questions`} /> : null}
       <Container className="mt-8">
-        <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">More {label.toLowerCase()}</h2>
+        <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">{kind === 'suites' ? 'Related products' : 'Related services'}</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {others.map((o) => (
             <Link key={str(o.slug)} href={`${base}/${str(o.slug)}`} className="group glass rounded-2xl p-4 text-sm text-foreground/90 hover:border-white/20" data-testid={`link-related-${str(o.slug)}`}>

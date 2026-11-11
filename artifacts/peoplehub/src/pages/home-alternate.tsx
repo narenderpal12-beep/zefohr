@@ -1,7 +1,7 @@
-import { useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useState, type KeyboardEvent, type ReactNode } from 'react';
 import { Link } from 'wouter';
 import {
-  ArrowRight, ArrowUpRight, Check, CheckCircle2, ChevronRight, CircleHelp, Layers3,
+  ArrowRight, ArrowUpRight, Check, CheckCircle2, ChevronLeft, ChevronRight, CircleHelp, Layers3,
   ShieldCheck, Sparkles, UsersRound, X,
 } from 'lucide-react';
 import { arr, formatINR, str, usePublicPosts, useSection, type AnyObj } from '@/lib/content';
@@ -94,9 +94,13 @@ export function HomeAlternate() {
   const pricing = useSection('pricing') as AnyObj;
   const faq = useSection('faq') as AnyObj;
   const suites = arr<AnyObj>(suitesSection.items);
+  const heroSlides = suites.slice(0, 4);
   const services = arr<AnyObj>(servicesSection.items);
   const clients = clientsSection.enabled === false ? [] : arr<AnyObj>(clientsSection.items).filter((item) => item && item.visible !== false && str(item.name) && str(item.logoUrl));
   const [activeSuite, setActiveSuite] = useState(0);
+  const [activeHeroSlide, setActiveHeroSlide] = useState(0);
+  const [heroAutoplayPaused, setHeroAutoplayPaused] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [activeRole, setActiveRole] = useState(0);
   const [activePhase, setActivePhase] = useState(0);
   const [activePrompt, setActivePrompt] = useState(0);
@@ -104,6 +108,18 @@ export function HomeAlternate() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly');
   const [announcementDismissed, setAnnouncementDismissed] = useState(false);
   const { posts } = usePublicPosts();
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const syncMotionPreference = () => setPrefersReducedMotion(media.matches);
+    syncMotionPreference();
+    media.addEventListener('change', syncMotionPreference);
+    return () => media.removeEventListener('change', syncMotionPreference);
+  }, []);
+  useEffect(() => {
+    if (heroAutoplayPaused || prefersReducedMotion || heroSlides.length < 2) return;
+    const timer = window.setInterval(() => setActiveHeroSlide((current) => (current + 1) % heroSlides.length), 6500);
+    return () => window.clearInterval(timer);
+  }, [heroAutoplayPaused, prefersReducedMotion, heroSlides.length]);
 
   const announcement = (page.announcement ?? {}) as AnyObj;
   const hero = (page.hero ?? {}) as AnyObj;
@@ -129,6 +145,7 @@ export function HomeAlternate() {
   const faqItems = arr<AnyObj>(faq.items);
   const plans = arr<AnyObj>(pricing.plans);
   const selectedSuite = suites[activeSuite] ?? suites[0];
+  const currentHeroSlide = heroSlides[activeHeroSlide] ?? heroSlides[0];
   const selectedRole = roleItems[activeRole] ?? roleItems[0];
   const selectedPhase = phases[activePhase] ?? phases[0];
   const selectedPrompt = prompts[activePrompt] ?? prompts[0];
@@ -171,7 +188,54 @@ export function HomeAlternate() {
           </div>
           <div className="hv-hero-visual">
             <div className="hv-visual-caption"><span>{str(product.visualCaption, 'A considered view of what’s ahead')}</span><span>{str(product.visualTag, 'Illustrative product concept')}</span></div>
-            {selectedSuite ? <ProductSnapshot suite={selectedSuite} brandName={brandName} /> : (
+            {currentHeroSlide ? (
+              <>
+                <div id="hv-hero-dashboard-panel" role="tabpanel" aria-labelledby={`hv-hero-dashboard-tab-${activeHeroSlide}`}>
+                  <ProductSnapshot key={str(currentHeroSlide.key, str(currentHeroSlide.slug, String(activeHeroSlide)))} suite={currentHeroSlide} brandName={brandName} />
+                </div>
+                {heroSlides.length > 1 ? (
+                  <div className="hv-hero-carousel" data-testid="home-v2-hero-slider">
+                    <div className="hv-carousel-toolbar">
+                      <div className="hv-carousel-copy" aria-live={heroAutoplayPaused || prefersReducedMotion ? 'polite' : 'off'} aria-atomic="true">
+                        <strong>{str(currentHeroSlide.title)}</strong>
+                        <span>{str(currentHeroSlide.description)}</span>
+                      </div>
+                      <div className="hv-carousel-actions">
+                        <span className="hv-carousel-count" aria-label={`${activeHeroSlide + 1} of ${heroSlides.length} dashboard previews`}>{String(activeHeroSlide + 1).padStart(2, '0')} / {String(heroSlides.length).padStart(2, '0')}</span>
+                        <button type="button" className="hv-carousel-control" aria-label="Previous dashboard preview" onClick={() => { setHeroAutoplayPaused(true); setActiveHeroSlide((current) => (current + heroSlides.length - 1) % heroSlides.length); }}><ChevronLeft aria-hidden="true" /></button>
+                        <button type="button" className="hv-carousel-control" aria-label="Next dashboard preview" onClick={() => { setHeroAutoplayPaused(true); setActiveHeroSlide((current) => (current + 1) % heroSlides.length); }}><ChevronRight aria-hidden="true" /></button>
+                        <button type="button" className="hv-carousel-control hv-carousel-toggle" aria-label={prefersReducedMotion ? 'Automatic rotation disabled by motion preference' : heroAutoplayPaused ? 'Resume dashboard rotation' : 'Pause dashboard rotation'} aria-pressed={heroAutoplayPaused} disabled={prefersReducedMotion} onClick={() => setHeroAutoplayPaused((paused) => !paused)}>{prefersReducedMotion ? 'Auto off' : heroAutoplayPaused ? 'Play' : 'Pause'}</button>
+                      </div>
+                    </div>
+                    <div className="hv-carousel-thumbnails" role="tablist" aria-label="Choose a dashboard preview">
+                      {heroSlides.map((suite, index) => (
+                        <button
+                          key={str(suite.key, str(suite.slug, String(index)))}
+                          type="button"
+                          id={`hv-hero-dashboard-tab-${index}`}
+                          role="tab"
+                          aria-selected={activeHeroSlide === index}
+                          aria-controls="hv-hero-dashboard-panel"
+                          tabIndex={activeHeroSlide === index ? 0 : -1}
+                          className="hv-carousel-thumb"
+                          data-testid={`button-home-v2-dashboard-${index}`}
+                          onClick={() => { setHeroAutoplayPaused(true); setActiveHeroSlide(index); }}
+                          onKeyDown={(event) => suiteTabsKeyDown(event, index, heroSlides.length, (next) => { setHeroAutoplayPaused(true); setActiveHeroSlide(next); }, 'hv-hero-dashboard-tab-')}
+                        >
+                          <span className={`hv-thumbnail-art hv-thumbnail-art-${index % 4}`} aria-hidden="true">
+                            <i className="hv-thumbnail-sidebar" />
+                            <b className="hv-thumbnail-heading" />
+                            <span className="hv-thumbnail-content"><i /><i /><i /><i /></span>
+                          </span>
+                          <span className="hv-thumbnail-label">{str(suite.title)}</span>
+                        </button>
+                      ))}
+                    </div>
+                    <p className="hv-carousel-disclosure">Illustrative dashboard concepts. HRMS suites shown here are planned product direction, not live software.</p>
+                  </div>
+                ) : null}
+              </>
+            ) : (
               <div className="hv-empty-preview"><Layers3 aria-hidden="true" /><span>{str(product.emptyPreview)}</span></div>
             )}
           </div>

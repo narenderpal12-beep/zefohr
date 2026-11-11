@@ -41,6 +41,12 @@
 .hv-hero h1,.hv-section-heading h2,.hv-final-card h2 { margin: 20px 0 0; font-family: var(--hv-serif); font-size: clamp(42px, 5vw, 70px); font-weight: 400; letter-spacing: -.045em; line-height: 1.03; text-wrap: balance; }
 .hv-hero h1 { max-width: 620px; }
 .hv-lede { max-width: 500px; margin: 22px 0 0; color: var(--hv-muted); font-size: 16px; line-height: 1.85; }
+.hv-hero-slide-copy { max-width: 500px; margin-top: 13px; border-left: 2px solid var(--ph-cyan); border-radius: 0 7px 7px 0; padding: 10px 12px; background: var(--hv-wash); animation: hv-slide-copy-in .24s ease both; }
+.hv-hero-slide-copy>div { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.hv-hero-slide-copy strong { color: var(--hv-ink); font-size: 10px; }
+.hv-hero-slide-copy span { color: var(--hv-muted); font-size: 7px; letter-spacing: .08em; text-transform: uppercase; }
+.hv-hero-slide-copy p { display: -webkit-box; overflow: hidden; margin: 5px 0 0; color: var(--hv-muted); font-size: 9px; line-height: 1.65; -webkit-box-orient: vertical; -webkit-line-clamp: 4; }
+@keyframes hv-slide-copy-in { from { opacity: .35; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 .hv-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-top: 29px; }
 .hv-button { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 45px; border: 1px solid transparent; border-radius: 7px; padding: 0 18px; font-size: 12px; font-weight: 750; transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
 .hv-button:hover { transform: translateY(-2px); }
@@ -323,6 +329,8 @@
   .hv-hero-grid { gap: 30px; }
   .hv-hero h1 { font-size: clamp(39px, 11vw, 53px); }
   .hv-lede { font-size: 13px; }
+  .hv-hero-slide-copy { margin-top: 10px; padding: 9px 10px; }
+  .hv-hero-slide-copy p { font-size: 8px; -webkit-line-clamp: 3; }
   .hv-actions { gap: 15px; }
   .hv-availability { font-size: 9px; }
   .hv-announcement-dismiss { margin-left: auto; }

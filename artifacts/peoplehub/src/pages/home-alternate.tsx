@@ -119,7 +119,7 @@ export function HomeAlternate() {
     if (heroAutoplayPaused || prefersReducedMotion || heroSlides.length < 2) return;
     const timer = window.setInterval(() => setActiveHeroSlide((current) => (current + 1) % heroSlides.length), 6500);
     return () => window.clearInterval(timer);
-  }, [heroAutoplayPaused, prefersReducedMotion, heroSlides.length]);
+  }, [activeHeroSlide, heroAutoplayPaused, prefersReducedMotion, heroSlides.length]);
 
   const announcement = (page.announcement ?? {}) as AnyObj;
   const hero = (page.hero ?? {}) as AnyObj;
@@ -180,6 +180,12 @@ export function HomeAlternate() {
             <p className="hv-eyebrow">{str(hero.eyebrow)}</p>
             <h1>{str(hero.title)}</h1>
             <p className="hv-lede">{str(hero.description)}</p>
+            {currentHeroSlide ? (
+              <div key={str(currentHeroSlide.key, str(currentHeroSlide.slug, String(activeHeroSlide)))} className="hv-hero-slide-copy" aria-live={heroAutoplayPaused || prefersReducedMotion ? 'polite' : 'off'} aria-atomic="true">
+                <div><strong>{str(currentHeroSlide.title)}</strong><span>{str(product.plannedLabel, 'Planned suite')}</span></div>
+                <p>{str(currentHeroSlide.body, str(currentHeroSlide.description, str(hero.description)))}</p>
+              </div>
+            ) : null}
             <div className="hv-actions">
               <SafeLink href={hero.primaryHref ?? '/register?mode=trial'} className="hv-button hv-button-primary" testId="link-home-v2-primary">{str(hero.primaryLabel, 'Start your free trial')} <ArrowRight aria-hidden="true" /></SafeLink>
               <SafeLink href={hero.secondaryHref ?? '#path'} className="hv-text-link">{str(hero.secondaryLabel, 'Find your starting point')} <ArrowRight aria-hidden="true" /></SafeLink>
@@ -202,8 +208,8 @@ export function HomeAlternate() {
                       </div>
                       <div className="hv-carousel-actions">
                         <span className="hv-carousel-count" aria-label={`${activeHeroSlide + 1} of ${heroSlides.length} dashboard previews`}>{String(activeHeroSlide + 1).padStart(2, '0')} / {String(heroSlides.length).padStart(2, '0')}</span>
-                        <button type="button" className="hv-carousel-control" aria-label="Previous dashboard preview" onClick={() => { setHeroAutoplayPaused(true); setActiveHeroSlide((current) => (current + heroSlides.length - 1) % heroSlides.length); }}><ChevronLeft aria-hidden="true" /></button>
-                        <button type="button" className="hv-carousel-control" aria-label="Next dashboard preview" onClick={() => { setHeroAutoplayPaused(true); setActiveHeroSlide((current) => (current + 1) % heroSlides.length); }}><ChevronRight aria-hidden="true" /></button>
+                        <button type="button" className="hv-carousel-control" aria-label="Previous dashboard preview" onClick={() => setActiveHeroSlide((current) => (current + heroSlides.length - 1) % heroSlides.length)}><ChevronLeft aria-hidden="true" /></button>
+                        <button type="button" className="hv-carousel-control" aria-label="Next dashboard preview" onClick={() => setActiveHeroSlide((current) => (current + 1) % heroSlides.length)}><ChevronRight aria-hidden="true" /></button>
                         <button type="button" className="hv-carousel-control hv-carousel-toggle" aria-label={prefersReducedMotion ? 'Automatic rotation disabled by motion preference' : heroAutoplayPaused ? 'Resume dashboard rotation' : 'Pause dashboard rotation'} aria-pressed={heroAutoplayPaused} disabled={prefersReducedMotion} onClick={() => setHeroAutoplayPaused((paused) => !paused)}>{prefersReducedMotion ? 'Auto off' : heroAutoplayPaused ? 'Play' : 'Pause'}</button>
                       </div>
                     </div>
@@ -219,8 +225,8 @@ export function HomeAlternate() {
                           tabIndex={activeHeroSlide === index ? 0 : -1}
                           className="hv-carousel-thumb"
                           data-testid={`button-home-v2-dashboard-${index}`}
-                          onClick={() => { setHeroAutoplayPaused(true); setActiveHeroSlide(index); }}
-                          onKeyDown={(event) => suiteTabsKeyDown(event, index, heroSlides.length, (next) => { setHeroAutoplayPaused(true); setActiveHeroSlide(next); }, 'hv-hero-dashboard-tab-')}
+                          onClick={() => setActiveHeroSlide(index)}
+                          onKeyDown={(event) => suiteTabsKeyDown(event, index, heroSlides.length, setActiveHeroSlide, 'hv-hero-dashboard-tab-')}
                         >
                           <span className={`hv-thumbnail-art hv-thumbnail-art-${index % 4}`} aria-hidden="true">
                             <i className="hv-thumbnail-sidebar" />

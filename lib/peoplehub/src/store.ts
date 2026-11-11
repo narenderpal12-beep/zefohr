@@ -287,6 +287,109 @@ export async function seed(reset=false) {
       }
       await client.query("INSERT INTO site_content(key,value) VALUES('sample_content_v7','{\"seeded\":true}'::jsonb)");
     }
+    const marketingHubCopySeed=(await client.query("SELECT key FROM site_content WHERE key='marketing_hub_copy_v1'")).rowCount;
+    if(!marketingHubCopySeed){
+      const updateLegacySection=(async(key:string,field:string,legacy:string[])=>{
+        const row=(await client.query("SELECT value FROM site_content WHERE key=$1 FOR UPDATE",[key])).rows[0];
+        if(!row||!legacy.includes(row.value?.[field]))return;
+        const value={...row.value,[field]:defaults[key]?.[field]};
+        await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key=$2",[JSON.stringify(value),key]);
+      });
+      await updateLegacySection("media","description",[
+        "Editorial topics are shown for layout illustration only. They are not verified third-party coverage.",
+        "News, announcements and independent perspectives about PeopleHub.",
+      ]);
+      await updateLegacySection("caseStudies","description",[
+        "These use cases describe possible workflows, not actual customers, implementations or measured results.",
+        "Workflows for different teams; not customer stories or performance claims.",
+      ]);
+      const mediaPage=defaultPages.find((entry)=>entry.slug==="media-coverage");
+      const casesPage=defaultPages.find((entry)=>entry.slug==="case-studies");
+      if(mediaPage)await client.query(
+        "UPDATE pages SET content=jsonb_set(content,'{intro}',to_jsonb($1::text)),updated_at=now() WHERE slug='media-coverage' AND content->>'intro'=ANY($2::text[])",
+        [mediaPage.content.intro,["Editorial topics are clearly marked until verified coverage is available.","Sample editorial topics are clearly marked until verified coverage is available.","News, announcements and independent perspectives about PeopleHub."]],
+      );
+      if(casesPage)await client.query(
+        "UPDATE pages SET content=jsonb_set(content,'{intro}',to_jsonb($1::text)),updated_at=now() WHERE slug='case-studies' AND content->>'intro'=ANY($2::text[])",
+        [casesPage.content.intro,["Illustrative workflows for different teams; not customer stories or performance claims.","Sample workflows for different teams; not customer stories or performance claims.","Workflows for different teams; not customer stories or performance claims."]],
+      );
+      await client.query("INSERT INTO site_content(key,value) VALUES('marketing_hub_copy_v1','{\"seeded\":true}'::jsonb)");
+    }
+    const marketingHubNavSeed=(await client.query("SELECT key FROM site_content WHERE key='marketing_hub_navigation_v1'")).rowCount;
+    if(!marketingHubNavSeed){
+      const navRow=(await client.query("SELECT value FROM site_content WHERE key='nav' FOR UPDATE")).rows[0];
+      if(navRow){
+        const nav={...navRow.value};
+        let changed=false;
+        const addLink=(list:Doc[],link:Doc)=>{
+          if(!list.some((entry)=>entry.href===link.href)){list.push(link);changed=true;}
+        };
+        const links=Array.isArray(nav.links)?nav.links:[];
+        for(const link of links)if(link.label==="Resources"&&link.href==="/blog"){link.href="/resources";changed=true;}
+        addLink(links,{label:"AI",href:"/ai"});
+        addLink(links,{label:"Solutions",href:"/solutions"});
+        nav.links=links;
+        const menus=Array.isArray(nav.megaMenu)?nav.megaMenu:[];
+        let resources=menus.find((menu:Doc)=>menu.label==="Resources");
+        if(!resources){resources={label:"Resources",href:"/resources",groups:[]};menus.push(resources);changed=true;}
+        if(resources.href==="/blog"){resources.href="/resources";changed=true;}
+        const resourceGroups=Array.isArray(resources.groups)?resources.groups:[];
+        let explore=resourceGroups.find((group:Doc)=>group.title==="Explore & learn")??resourceGroups[0];
+        if(!explore){explore={title:"Explore & learn",links:[]};resourceGroups.push(explore);changed=true;}
+        const resourceMenuLinks=Array.isArray(explore.links)?explore.links:[];
+        for(const link of [
+          {label:"Resource hub",href:"/resources"},
+          {label:"Customer stories",href:"/customer-stories"},
+          {label:"Integrations",href:"/integrations"},
+          {label:"Compliance references",href:"/compliance"},
+        ])addLink(resourceMenuLinks,link);
+        explore.links=resourceMenuLinks;
+        resources.groups=resourceGroups;
+        if(!menus.some((menu:Doc)=>menu.label==="AI")){
+          menus.push({label:"AI",href:"/ai",groups:[{title:"Explore AI capabilities",links:[{label:"AI overview",href:"/ai",description:"Planned AI-assisted ideas for people teams.",icon:"Sparkles"}]}]});
+          changed=true;
+        }
+        if(!menus.some((menu:Doc)=>menu.label==="Solutions")){
+          menus.push({label:"Solutions",href:"/solutions",groups:[
+            {title:"By industry",links:[{label:"Explore industries",href:"/industries",description:"Browse people-operation needs by industry.",icon:"Building2"}]},
+            {title:"By team",links:[{label:"Company size and roles",href:"/solutions",description:"Find a starting point by company size or role.",icon:"Users"}]},
+          ]});
+          changed=true;
+        }
+        nav.megaMenu=menus;
+        if(changed)await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='nav'",[JSON.stringify(nav)]);
+      }
+      const footerRow=(await client.query("SELECT value FROM site_content WHERE key='footer' FOR UPDATE")).rows[0];
+      if(footerRow){
+        const footer={...footerRow.value};
+        const columns=Array.isArray(footer.columns)?footer.columns:[];
+        const addFooterLink=(list:Doc[],link:Doc)=>{
+          if(!list.some((entry)=>entry.href===link.href))list.push(link);
+        };
+        let solutions=columns.find((column:Doc)=>column.title==="Solutions");
+        if(!solutions){solutions={title:"Solutions",links:[]};columns.splice(Math.min(3,columns.length),0,solutions);}
+        const solutionLinks=Array.isArray(solutions.links)?solutions.links:[];
+        for(const link of [
+          {label:"Industries",href:"/industries"},
+          {label:"Company size and roles",href:"/solutions"},
+          {label:"AI capabilities",href:"/ai"},
+        ])addFooterLink(solutionLinks,link);
+        solutions.links=solutionLinks;
+        let resources=columns.find((column:Doc)=>column.title==="Resources");
+        if(!resources){resources={title:"Resources",links:[]};columns.push(resources);}
+        const resourceLinks=Array.isArray(resources.links)?resources.links:[];
+        for(const link of [
+          {label:"Resource hub",href:"/resources"},
+          {label:"Customer stories",href:"/customer-stories"},
+          {label:"Integrations",href:"/integrations"},
+          {label:"Compliance references",href:"/compliance"},
+        ])addFooterLink(resourceLinks,link);
+        resources.links=resourceLinks;
+        footer.columns=columns;
+        await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key='footer'",[JSON.stringify(footer)]);
+      }
+      await client.query("INSERT INTO site_content(key,value) VALUES('marketing_hub_navigation_v1','{\"seeded\":true}'::jsonb)");
+    }
     const content = await getContent();
     for(let i=0;i<content.suites.items.length;i++){
       const s=content.suites.items[i];

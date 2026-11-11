@@ -1,8 +1,8 @@
 import { lazy, Suspense, useState, useEffect, type CSSProperties, type ReactElement, type ReactNode } from 'react';
-import { Route, Switch, useLocation, Router as WouterRouter } from 'wouter';
+import { Route, Switch, useLocation, useParams, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useResolveSeo, getResolveSeoQueryKey } from '@workspace/api-client-react';
-import { BootstrapProvider, ContentProvider, ModeProvider, str, useSection, type AnyObj, type Bootstrap } from '@/lib/content';
+import { BootstrapProvider, ContentProvider, ModeProvider, arr, str, useSection, type AnyObj, type Bootstrap } from '@/lib/content';
 import { PageBlocks } from '@/components/site/page-blocks';
 import { PublicShell } from '@/components/site/layout';
 import {
@@ -10,6 +10,10 @@ import {
   PricingPage, ServiceDetailPage, ServicesPage, SolutionPage,
 } from '@/pages/public';
 import { CareersPage, CaseStudiesPage, CaseStudyDetailPage, DemoPage, MediaPage, SupportPage } from '@/pages/company';
+import {
+  AiHubPage, CompliancePage, CustomerStoriesPage, CustomerStoryDetailPage, IndustriesPage, IndustryDetailPage,
+  IntegrationsPage, ResourceDetailPage, ResourcesPage, SegmentDetailPage, SegmentsPage,
+} from '@/pages/hubs';
 import { siteContainerMaxWidth } from '@/lib/theme';
 import { LoginPage, RegisterPage } from '@/pages/auth';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -84,12 +88,20 @@ function RouteLayout({ C }: { C: () => ReactElement | null }) {
   if (!Array.isArray(sections)) return <C />;
   return <PageBlocks sections={sections} original={<C />} />;
 }
+function SolutionDetailRoute() {
+  const { slug = '' } = useParams<{ slug: string }>();
+  const segments = arr<AnyObj>(useSection('segments').items);
+  return segments.some((entry) => str(entry.slug) === slug) ? <SegmentDetailPage /> : <SolutionPage />;
+}
 const pub = (C: () => ReactElement | null) => function PublicPage() { return <PublicShell><RouteLayout C={C} /></PublicShell>; };
 const P = {
   home: pub(HomePage), features: pub(FeaturesPage), feature: pub(FeatureDetailPage), services: pub(ServicesPage), service: pub(ServiceDetailPage),
   solution: pub(SolutionPage), pricing: pub(PricingPage), about: pub(AboutPage), contact: pub(ContactPage), faq: pub(FaqPage), blog: pub(BlogPage),
   post: pub(BlogPostPage), media: pub(MediaPage), cases: pub(CaseStudiesPage), caseDetail: pub(CaseStudyDetailPage), careers: pub(CareersPage),
   support: pub(SupportPage), demo: pub(DemoPage), dynamic: pub(DynamicPage), notFound: pub(NotFoundPage),
+  industries: pub(IndustriesPage), industry: pub(IndustryDetailPage), segments: pub(SegmentsPage), solutionDetail: pub(SolutionDetailRoute),
+  ai: pub(AiHubPage), resources: pub(ResourcesPage), resource: pub(ResourceDetailPage), integrations: pub(IntegrationsPage),
+  compliance: pub(CompliancePage), customerStories: pub(CustomerStoriesPage), customerStory: pub(CustomerStoryDetailPage),
 };
 
 /** The full route table, shared by client App and SSR PublicApp so markup is identical. */
@@ -103,7 +115,17 @@ export function PublicRoutes() {
         <Route path="/features/:slug" component={P.feature} />
         <Route path="/services" component={P.services} />
         <Route path="/services/:slug" component={P.service} />
-        <Route path="/solutions/:slug" component={P.solution} />
+        <Route path="/industries" component={P.industries} />
+        <Route path="/industries/:slug" component={P.industry} />
+        <Route path="/solutions" component={P.segments} />
+        <Route path="/solutions/:slug" component={P.solutionDetail} />
+        <Route path="/ai" component={P.ai} />
+        <Route path="/resources" component={P.resources} />
+        <Route path="/resources/:slug" component={P.resource} />
+        <Route path="/integrations" component={P.integrations} />
+        <Route path="/compliance" component={P.compliance} />
+        <Route path="/customer-stories" component={P.customerStories} />
+        <Route path="/customer-stories/:slug" component={P.customerStory} />
         <Route path="/pricing" component={P.pricing} />
         <Route path="/about" component={P.about} />
         <Route path="/contact" component={P.contact} />

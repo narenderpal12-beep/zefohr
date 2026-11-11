@@ -51,11 +51,12 @@ export const pageLayoutsSchema = z.object({
 export const BUILTIN_PAGE_PATHS = [
   "/","/features","/services","/pricing","/about","/about-us","/contact","/faq","/blog",
   "/media-coverage","/case-studies","/careers","/career","/support","/our-support",
-  "/request-demo","/request-for-demo","/privacy-policy","/terms","/refund-policy",
+  "/request-demo","/request-for-demo","/industries","/solutions","/ai","/resources","/integrations",
+  "/compliance","/customer-stories","/privacy-policy","/terms","/refund-policy",
 ] as const;
 export function reservedPageSlug(slug: string) {
   return BUILTIN_PAGE_PATHS.some(path => path === `/${slug}`) ||
-    /^(api|admin|dashboard|login|register|features|services|blog|case-studies|assets|solution-photos|client-logos|__mockup)(\/|$)/.test(slug) ||
+    /^(api|admin|dashboard|login|register|features|services|blog|case-studies|industries|solutions|resources|integrations|customer-stories|compliance|assets|solution-photos|client-logos|__mockup)(\/|$)/.test(slug) ||
     /^(robots\.txt|sitemap(?:-\d+)?\.xml|favicon\.svg)$/.test(slug);
 }
 

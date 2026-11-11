@@ -20,6 +20,20 @@ export const suites = suiteData.map(([key, slug, title, icon, modules, body], i)
   ...defaultSolutionPhoto(slug),
   description: `Bring ${title.toLowerCase()} together in one connected workspace, built for the way Indian businesses work.`,
   body,
+  moduleDetails: modules.split(", ").map((module:string) => ({
+    title:module,
+    description:`Discuss the records, owners and review steps your organisation needs for ${module.toLowerCase()}.`,
+  })),
+  workflowSteps:[
+    {title:"Map the current process",description:"List the people, handoffs and information involved today."},
+    {title:"Assign clear ownership",description:"Decide who maintains records, reviews changes and supports employees."},
+    {title:"Plan a practical rollout",description:"Choose a team or workflow to start with, then review what should change next."},
+  ],
+  audiences:[
+    {title:"HR teams",description:"Coordinate people records and lifecycle responsibilities."},
+    {title:"Managers",description:"Make team handoffs and routine approvals easier to understand."},
+    {title:"Employees",description:"Give people a clearer path to find information and complete tasks."},
+  ],
   benefits: ["Reduce repetitive administration", "Keep your people and records connected", "Scale at your own pace"],
   faq: [{question: `Is ${title} available in my plan?`, answer: "Choose the suites included in your plan, or speak to our team about a tailored package."}],
 }));
@@ -36,8 +50,14 @@ const serviceData = [
   ["manpower-planning", "Manpower Planning", "budgeting, sanctioned strength, vacancy planning, workforce cost analysis", "subscription / consulting", "Users"],
 ];
 export const services = serviceData.map(([slug,title,description,billing,icon]) => ({
-  key:slug,slug,title,description,billing,icon,modules:description.split(", "),
+  key:slug,slug,title,description:`${title} support scoped around your organisation’s processes, responsibilities and operational needs.`,billing,icon,modules:description.split(", "),
   ...defaultSolutionPhoto(slug),
+  body:`Work with our team to define the scope, responsibilities and handoffs for ${title.toLowerCase()}. We will discuss your organisation's current process, the support required and the next practical steps before agreeing an engagement.`,
+  engagementSteps:[
+    {title:"Understand your requirements",description:"Share the current process, locations, team size and the responsibilities you want support with."},
+    {title:"Agree the scope",description:"Confirm deliverables, owners, timelines, dependencies and any specialist advice needed."},
+    {title:"Review the engagement",description:"Set a check-in cadence and agree how questions, changes and outcomes will be reviewed."},
+  ],
   benefits:["Expert-led support for your business", "Clear records and coordinated workflows", "Flexible service packages"],
   faq:[{question:"How is this service priced?",answer:`This service is billed as ${billing}. Contact our team for a proposal.`}],
 }));
@@ -54,7 +74,7 @@ export const defaults: Record<string, any> = {
   ai:{eyebrow:"A SMARTER WAY TO WORK",title:"Your HR team, with superpowers.",description:"Make room for meaningful work with AI-assisted tools and connected workflows.",items:aiFeatures.map((title,i)=>({title,description:"Designed to simplify everyday HR and help your team make informed decisions.",icon:["Sparkles","Bot","Zap","Target"][i%4]}))},
   whyUs:{eyebrow:"BUILT FOR YOUR NEXT CHAPTER",title:"Big possibilities.\nBuilt for your business.",items:["Simple, fast implementation for MSMEs","Affordable entry packages","HR software, compliance support and outsourcing under one roof","Mobile-first UX","AI-assisted hiring","Modular, so customers buy only what they need"],complianceNote},
   integrations:{title:"Works with the tools you already love",items:["WhatsApp","Tally","Biometric devices","ERP systems","Job portals","Accounting tools"]},
-  pricing:{eyebrow:"GROW YOUR TEAM, NOT YOUR COSTS",title:"Simple plans. Room to grow.",description:"Start with what you need. Add more as your people and possibilities grow.",trialDays:14,monthlyLabel:"Monthly",annualLabel:"Annually",savingLabel:"Save up to 21%",plans:[
+  pricing:{eyebrow:"GROW YOUR TEAM, NOT YOUR COSTS",title:"Simple plans. Room to grow.",description:"Start with what you need. Add more as your people and possibilities grow.",comparisonTitle:"Compare the available suites",comparisonDescription:"Plan inclusions are managed by PeopleHub. Confirm current availability and implementation needs with our team.",trialDays:14,monthlyLabel:"Monthly",annualLabel:"Annually",savingLabel:"Save up to 21%",plans:[
     {key:"starter",name:"Starter",description:"The essentials to get your HR in order.",monthly:49,annual:39,highlighted:false,badge:"",button:"Start free trial",modules:starter,features:["Core HRMS","Time & Workforce Management","Payroll & Compliance","Employee self-service","Mobile access"]},
     {key:"growth",name:"Growth",description:"More possibilities for ambitious teams.",monthly:99,annual:79,highlighted:true,badge:"Most popular",button:"Start free trial",modules:growth,features:["Everything in Starter","Recruitment & ATS","Performance & Talent Management","Employee Engagement","AI-assisted hiring"]},
     {key:"enterprise",name:"Enterprise",description:"The complete platform, tailored to you.",monthly:null,annual:null,highlighted:false,badge:"",button:"Talk to sales",modules:suites.map(s=>s.key),features:["All 10 integrated suites","Specialised services","Advanced governance & compliance","Tailored implementation","Dedicated support"]},
@@ -73,7 +93,7 @@ export const defaults: Record<string, any> = {
   register:{title:"Great teams start here.",description:"Give your people a better workday. Set up your organisation in just a few minutes.",successTitle:"Welcome to PeopleHub.",successDescription:"Your organisation is ready. Explore your dashboard and enabled suites.",trialLabel:"Free trial",subscribeLabel:"Subscribe",button:"Create organisation",termsLabel:"I agree to the terms and privacy policy."},
   dashboard:{title:"Your people platform.",description:"Manage your organisation and subscription in one place.",comingSoon:"HRMS app coming soon",upgradeLabel:"Upgrade / subscribe"},
   roadmap:{title:"What's coming next",items:[{title:"Connected employee workspace",description:"Employee records, self-service and onboarding.",status:"Planned"},{title:"Time and payroll",description:"Attendance, leave and India-ready payroll workflows.",status:"Planned"},{title:"Talent and intelligence",description:"Recruitment, performance and AI-assisted tools.",status:"Planned"}]},
-  about:{title:"Better work starts with people.",description:"PeopleHub brings HR software, compliance support and specialised services together so Indian businesses can spend less time on administration and more time helping their people thrive.",values:["People before processes","Simple by design","Built for Indian businesses","Grow at your own pace"]},
+  about:{title:"Better work starts with people.",description:"PeopleHub brings HR software, compliance support and specialised services together so Indian businesses can spend less time on administration and more time helping their people thrive.",focusTitle:"What we focus on",focusDescription:"Practical systems for the people processes that keep a business moving.",focusAreas:["Connected employee workflows","Clear ownership and handoffs","Support shaped around your organisation"],values:["People before processes","Simple by design","Built for Indian businesses","Grow at your own pace"]},
   legal:{
      "privacy-policy":privacyDraft,
      terms:termsDraft,

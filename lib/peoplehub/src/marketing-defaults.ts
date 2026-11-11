@@ -1,13 +1,19 @@
 import type {Doc} from "./store";
-import {sampleMediaItems, sampleUseCases} from "./sample-content";
+import {sampleUseCases} from "./sample-content";
 
 const companyLinks=[
   {label:"About us",href:"/about"},{label:"Careers",href:"/careers"},
   {label:"Our support",href:"/support"},{label:"Request a demo",href:"/request-demo"},
 ];
 const resourceLinks=[
-  {label:"Blog",href:"/blog"},{label:"Media coverage",href:"/media-coverage"},
-  {label:"Use cases",href:"/case-studies"},{label:"FAQs",href:"/faq"},
+  {label:"Resource hub",href:"/resources"},{label:"Blog",href:"/blog"},
+  {label:"Use cases",href:"/case-studies"},{label:"Customer stories",href:"/customer-stories"},
+  {label:"Media coverage",href:"/media-coverage"},{label:"Integrations",href:"/integrations"},
+  {label:"Compliance",href:"/compliance"},{label:"FAQs",href:"/faq"},
+];
+const solutionLinks=[
+  {label:"Industries",href:"/industries"},
+  {label:"Company size and roles",href:"/solutions"},
 ];
 export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:string):Doc{
   const suiteLink=(s:Doc)=>({label:s.title,href:`/features/${s.slug}`,description:s.description,icon:s.icon});
@@ -17,7 +23,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
     theme:{preset:"aurora",defaultMode:"dark",allowModeToggle:true,customColors:false,primary:"#8b5cf6",cyan:"#22d3ee",pink:"#ec4899",background:"#090b13",containerLayout:"standard",customContainerWidth:1440},
     nav:{
       brand:"PeopleHub",loginLabel:"Log in",ctaLabel:"Start free trial",
-      links:[{label:"Products",href:"/features"},{label:"Services",href:"/services"},{label:"Pricing",href:"/pricing"},{label:"Resources",href:"/blog"},{label:"Company",href:"/about"}],
+      links:[{label:"Products",href:"/features"},{label:"Services",href:"/services"},{label:"AI",href:"/ai"},{label:"Solutions",href:"/solutions"},{label:"Pricing",href:"/pricing"},{label:"Resources",href:"/resources"},{label:"Company",href:"/about"}],
       megaMenu:[
         {label:"Products",href:"/features",groups:[
           {title:"HR, time & payroll",links:suites.slice(0,3).map(suiteLink)},
@@ -29,8 +35,13 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
           {title:"People & outsourcing",links:services.slice(4,7).map(serviceLink)},
           {title:"Learning & growth",links:services.slice(7).map(serviceLink)},
         ]},
+        {label:"AI",href:"/ai",groups:[{title:"Explore AI capabilities",links:[{label:"AI overview",href:"/ai",description:"Planned AI-assisted ideas for people teams.",icon:"Sparkles"}]}]},
+        {label:"Solutions",href:"/solutions",groups:[
+          {title:"By industry",links:[{label:"Explore industries",href:"/industries",description:"Browse people-operation needs by industry.",icon:"Building2"}]},
+          {title:"By team",links:solutionLinks.map(link=>({...link,description:link.label==="Industries"?"Explore industry-specific contexts.":"Find a starting point by company size or role.",icon:"Users"}))},
+        ]},
         {label:"Pricing",href:"/pricing",groups:[]},
-        {label:"Resources",href:"/blog",groups:[{title:"Explore & learn",links:resourceLinks}]},
+        {label:"Resources",href:"/resources",groups:[{title:"Explore & learn",links:resourceLinks}]},
         {label:"Company",href:"/about",groups:[{title:"PeopleHub",links:companyLinks}]},
       ],
       themeToggleLabel:"Switch colour mode",lightLabel:"Light",darkLabel:"Dark",
@@ -42,6 +53,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
         {title:"Products",links:suites.slice(0,5).map(suiteLink)},
         {title:"More suites",links:suites.slice(5).map(suiteLink)},
         {title:"Services",links:services.map(serviceLink)},
+        {title:"Solutions",links:solutionLinks},
         {title:"Company",links:companyLinks},
         {title:"Resources",links:resourceLinks},
       ],
@@ -207,16 +219,104 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
     },
     media:{
       eyebrow:"IN THE CONVERSATION",title:"PeopleHub in the media.",
-      description:"Editorial topics are shown for layout illustration only. They are not verified third-party coverage.",
-      emptyMessage:"Verified media coverage will be published here when available.",
-      items:sampleMediaItems,linkLabel:"Read coverage",
+      description:"News, interviews and updates featuring PeopleHub.",
+      emptyMessage:"Media coverage will appear here.",
+      items:[],linkLabel:"Read coverage",
       pressTitle:"Press enquiries",pressDescription:"For interviews, company information or press enquiries, contact our team.",pressButton:"Contact our team",
     },
     caseStudies:{
       eyebrow:"WORKFLOWS",title:"Use cases for people-first teams.",
-      description:"These use cases describe possible workflows, not actual customers, implementations or measured results.",
+      description:"Explore workflows for hiring, onboarding, payroll preparation and day-to-day people operations.",
       emptyMessage:"Use cases will appear here as they are prepared.",
       items:sampleUseCases,linkLabel:"Explore the use case",backLabel:"All use cases",ctaLabel:"Request a demo",
+    },
+    industryHub:{
+      eyebrow:"SOLUTIONS BY INDUSTRY",title:"People operations shaped around your work.",
+      description:"Explore common people-operation priorities by industry, then choose the workflows that fit your organisation.",
+      searchLabel:"Search industries",searchPlaceholder:"Try healthcare, retail or technology",
+      emptyMessage:"No industries match your search.",ctaLabel:"Discuss your requirements",
+      detailTitle:"People workflows to consider",detailDescription:"Start with your organisation’s current process, team responsibilities and local requirements. Use these areas to guide a conversation about what should be configured first.",
+      detailGuidance:["Confirm which teams, locations and roles need a shared process.","Identify local variations and the people responsible for reviewing them.","Choose the first people workflow to document and improve."],
+      items:[
+        {slug:"technology",title:"Technology",description:"Coordinate hiring, onboarding and employee information as teams and roles evolve.",focus:["Core HRMS","Recruitment","Onboarding"]},
+        {slug:"manufacturing",title:"Manufacturing",description:"Bring people processes together across teams, shifts and work locations.",focus:["Core HRMS","Attendance","Payroll"]},
+        {slug:"healthcare",title:"Healthcare",description:"Organise workforce records, joining steps and schedule-related handoffs.",focus:["Core HRMS","Attendance","Onboarding"]},
+        {slug:"retail",title:"Retail",description:"Support distributed teams with clear employee records and repeatable people workflows.",focus:["Core HRMS","Attendance","Recruitment"]},
+        {slug:"hospitality",title:"Hospitality",description:"Coordinate recruitment, onboarding and routine team processes across locations.",focus:["Recruitment","Onboarding","Attendance"]},
+        {slug:"logistics",title:"Logistics",description:"Keep workforce information and people-process ownership visible across operations.",focus:["Core HRMS","Attendance","Payroll"]},
+        {slug:"professional-services",title:"Professional services",description:"Give growing teams a shared structure for employee records, hiring and development.",focus:["Core HRMS","Recruitment","Performance"]},
+        {slug:"education",title:"Education",description:"Organise staff information, joining workflows and ongoing learning activities.",focus:["Core HRMS","Onboarding","Learning"]},
+        {slug:"growing-businesses",title:"Growing businesses",description:"Establish consistent people processes while your organisation and responsibilities change.",focus:["Core HRMS","Recruitment","Payroll"]},
+      ],
+    },
+    segments:{
+      eyebrow:"SOLUTIONS BY TEAM",title:"Start with the needs of your organisation.",
+      description:"Browse starting points by company size or the role coordinating people operations.",
+      sizeLabel:"Company size",roleLabel:"Your role",searchLabel:"Find a solution",searchPlaceholder:"Search by size or role",
+      emptyMessage:"No solutions match your search.",ctaLabel:"Talk through your needs",
+      items:[
+        {slug:"small-business",group:"size",title:"Small business",description:"Keep essential employee information and recurring people processes organised as you grow.",needs:["A shared employee record","A clear onboarding checklist","Simple ownership for routine updates"],focus:["Core HRMS","Onboarding"]},
+        {slug:"growing-business",group:"size",title:"Growing business",description:"Create repeatable workflows as new roles, teams and responsibilities are added.",needs:["Consistent hiring and joining steps","Visible process ownership","A structure that can expand"],focus:["Core HRMS","Recruitment","Onboarding"]},
+        {slug:"mid-market",group:"size",title:"Mid-market organisation",description:"Coordinate people processes across departments while keeping responsibilities clear.",needs:["Shared processes across teams","Role-based access planning","A consistent source for people information"],focus:["Core HRMS","Payroll","Performance"]},
+        {slug:"enterprise",group:"size",title:"Enterprise",description:"Map complex people workflows and local ownership across a larger organisation.",needs:["Defined process and data owners","Clear handoffs between functions","A planned rollout by team or location"],focus:["Core HRMS","Payroll","Attendance"]},
+        {slug:"founders-and-leaders",group:"role",title:"Founders and business leaders",description:"Get a clearer view of people processes, owners and the next operational priorities.",needs:["A reliable overview of people operations","Clear accountability for recurring work","A practical path to expand"],focus:["Core HRMS","Performance"]},
+        {slug:"hr-leaders",group:"role",title:"HR leaders",description:"Bring employee lifecycle workflows into a structure teams can understand and maintain.",needs:["Consistent employee lifecycle processes","Useful handoffs across HR and managers","Clear access and ownership"],focus:["Core HRMS","Onboarding","Performance"]},
+        {slug:"recruitment-teams",group:"role",title:"Recruitment teams",description:"Organise role requirements, interview stages and joining handoffs around your process.",needs:["Approved role briefs","Visible hiring stages","A clear transition from offer to joining"],focus:["Recruitment","Onboarding"]},
+        {slug:"payroll-teams",group:"role",title:"Payroll teams",description:"Coordinate payroll inputs, review ownership and questions with the wider team.",needs:["A consistent input calendar","Named reviewers and approvers","A route for corrections and questions"],focus:["Payroll","Attendance","Core HRMS"]},
+        {slug:"people-managers",group:"role",title:"People managers",description:"Make routine team processes and employee responsibilities easier to follow.",needs:["Clear manager handoffs","Accessible team information","Simple ways to track next steps"],focus:["Onboarding","Performance","Learning"]},
+      ],
+    },
+    aiHub:{
+      eyebrow:"AI AND PEOPLE OPERATIONS",title:"Explore thoughtful ways to use AI in HR.",
+      description:"Review AI-assisted concepts for people teams and decide where human review should remain part of the process.",
+      disclosure:"AI capability availability depends on product development and configuration. The concepts below do not make decisions about employees or replace professional review.",
+      plannedLabel:"Planned concept",ctaLabel:"Discuss AI priorities",
+      items:[
+        {title:"Drafting role descriptions",description:"Start a role brief from approved responsibilities and requirements, with a recruiter reviewing the final copy.",status:"planned"},
+        {title:"Organising onboarding information",description:"Help teams find relevant onboarding guidance and identify missing steps for a human owner to review.",status:"planned"},
+        {title:"Summarising people workflows",description:"Prepare concise summaries of process information for HR or managers to check before taking action.",status:"planned"},
+        {title:"Surfacing payroll input questions",description:"Help reviewers spot incomplete or inconsistent inputs for follow-up, without calculating statutory obligations.",status:"planned"},
+        {title:"Supporting learning discovery",description:"Help employees explore learning resources that match role-related interests and team goals.",status:"planned"},
+        {title:"Finding answers in approved guidance",description:"Make approved internal people guidance easier to search while respecting access and review controls.",status:"planned"},
+      ],
+    },
+    resourcesHub:{
+      eyebrow:"RESOURCES",title:"Ideas and guidance for people teams.",
+      description:"Browse practical articles and resources for organising people operations.",
+      searchLabel:"Search resources",searchPlaceholder:"Search topics and titles",
+      categoryLabel:"Resource type",allLabel:"All resources",categories:["Guide","Checklist","Template","Article"],
+      emptyMessage:"Resources will appear here as they are published.",
+      items:[],
+    },
+    integrationMarketplace:{
+      eyebrow:"INTEGRATIONS",title:"Explore tools and systems to connect.",
+      description:"Browse published integration information or tell us which systems your organisation uses.",
+      searchLabel:"Search integrations",searchPlaceholder:"Search tools and categories",
+      categories:["Accounting","Communication","ERP","Identity and access","Recruitment","Time and attendance"],
+      categoryLabel:"Category",allCategoryLabel:"All categories",emptyMessage:"Integration details will appear here when they are ready to share.",
+      requestLabel:"Ask about an integration",items:[],
+    },
+    complianceHub:{
+      eyebrow:"COMPLIANCE REFERENCES",title:"Find the right source for your requirements.",
+      description:"Browse published references and topics to discuss with your qualified advisers.",
+      notice:"Rules and obligations can vary by location and organisation. Confirm current requirements with official sources or qualified advisers before acting.",
+      topics:[
+        {title:"Provident fund",description:"Review applicable registration, contribution and reporting requirements."},
+        {title:"Employee insurance",description:"Check eligibility, contribution and reporting obligations for your organisation."},
+        {title:"Professional tax",description:"Confirm location-specific applicability, rates and filing dates."},
+        {title:"Labour welfare fund",description:"Check local applicability, contribution rules and due dates."},
+        {title:"Minimum wages",description:"Confirm the current rate and category from the relevant official source."},
+        {title:"Working hours and leave",description:"Review applicable rules, policies and approved exceptions for each workforce."},
+      ],
+      searchLabel:"Search references",searchPlaceholder:"Search a location or topic",
+      emptyMessage:"Published references will appear here when available.",
+      references:[],
+    },
+    customerStories:{
+      eyebrow:"CUSTOMER STORIES",title:"Stories from teams using PeopleHub.",
+      description:"Explore published customer stories and the approaches those teams chose.",
+      emptyMessage:"Customer stories will appear here when they are ready to publish.",
+      items:[],
     },
     careers:{
       eyebrow:"BUILD BETTER WORK WITH US",title:"Your next chapter could start here.",
@@ -245,8 +345,8 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
 }
 
 export const additionalMarketingPages=[
-  {slug:"media-coverage",title:"Media coverage",section:"media",intro:"Editorial topics are clearly marked until verified coverage is available."},
-  {slug:"case-studies",title:"Use cases",section:"caseStudies",intro:"Workflows for different teams; not customer stories or performance claims."},
+  {slug:"media-coverage",title:"Media coverage",section:"media",intro:"News, interviews and updates featuring PeopleHub."},
+  {slug:"case-studies",title:"Use cases",section:"caseStudies",intro:"Explore workflows for people-first teams."},
   {slug:"careers",title:"Careers at PeopleHub",section:"careers",intro:"Explore opportunities to help build better work."},
   {slug:"career",title:"Careers at PeopleHub",section:"careers",intro:"Explore opportunities to help build better work."},
   {slug:"support",title:"Our support",section:"support",intro:"Get help with your account, plans and organisation setup."},

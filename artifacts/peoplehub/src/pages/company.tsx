@@ -3,7 +3,7 @@ import { Link, useLocation, useParams } from 'wouter';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ArrowLeft, ArrowRight, Briefcase, Check, ExternalLink, LifeBuoy, Mail, MapPin, Newspaper, Send, FolderOpen } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Briefcase, Check, ExternalLink, LifeBuoy, Mail, MapPin, Newspaper, Send, FolderOpen, Search } from 'lucide-react';
 import { useCreateLead } from '@workspace/api-client-react';
 import { arr, errMsg, str, useContent, usePublicPages, useSection, type AnyObj } from '@/lib/content';
 import { Markdown } from '@/lib/markdown';
@@ -57,13 +57,18 @@ export function MediaPage() {
   const m = useSection('media');
   const content = useContent();
   const page = usePageRecord(['media-coverage']);
-  const items = arr<AnyObj>(m.items).filter((i) => str(i.title));
+  const [query, setQuery] = useState('');
+  const items = arr<AnyObj>(m.items).filter((i) => i.status === 'published' && i.verified === true && /^https:\/\/[^\s]+$/i.test(str(i.url)) && str(i.publication) && str(i.title))
+    .filter((i) => `${str(i.title)} ${str(i.publication)} ${str(i.description)}`.toLowerCase().includes(query.toLowerCase()));
   if (!content) return <PageSkeleton />;
   return (
     <>
       <Hero section={m} page={page} crumb="Media coverage" />
       <PageBody page={page} />
       <Container>
+        <label className="mb-6 block max-w-xl text-sm font-medium">Search media coverage
+          <span className="relative mt-2 block"><Search aria-hidden="true" className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search publishers and topics" className="w-full rounded-xl border border-white/10 bg-background py-3 pl-10 pr-4 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ph-cyan)]" /></span>
+        </label>
         {!items.length ? <Empty icon={Newspaper} text={str(m.emptyMessage, 'No press coverage has been published yet.')} /> : (
           <ol className="divide-y divide-white/[0.07] border-y border-white/[0.07]">
             {items.map((it, i) => {
@@ -100,13 +105,25 @@ export function CaseStudiesPage() {
   const cs = useSection('caseStudies');
   const content = useContent();
   const page = usePageRecord(['case-studies']);
-  const items = arr<AnyObj>(cs.items).filter((i) => str(i.title));
+  const [query, setQuery] = useState('');
+  const industries = Array.from(new Set(arr<AnyObj>(cs.items).map((item) => str(item.industry)).filter(Boolean))).sort();
+  const [industry, setIndustry] = useState('all');
+  const items = arr<AnyObj>(cs.items).filter((i) => str(i.title))
+    .filter((i) => (!query || `${str(i.title)} ${str(i.summary)} ${str(i.industry)}`.toLowerCase().includes(query.toLowerCase())) && (industry === 'all' || str(i.industry) === industry));
   if (!content) return <PageSkeleton />;
   return (
     <>
       <Hero section={cs} page={page} crumb="Use cases" />
       <PageBody page={page} />
       <Container>
+        <div className="mb-7 grid gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:grid-cols-[1fr_auto] sm:items-end">
+          <label className="block text-sm font-medium">Search use cases
+            <input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search by workflow or industry" className="mt-2 w-full rounded-xl border border-white/10 bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ph-cyan)]" />
+          </label>
+          <label className="block text-sm font-medium">Industry
+            <select value={industry} onChange={(event) => setIndustry(event.target.value)} className="mt-2 w-full min-w-48 rounded-xl border border-white/10 bg-background px-4 py-3 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ph-cyan)]"><option value="all">All industries</option>{industries.map((item) => <option key={item} value={item}>{item}</option>)}</select>
+          </label>
+        </div>
         {!items.length ? <Empty icon={FolderOpen} text={str(cs.emptyMessage, 'Use cases will appear here when published.')} /> : (
           <div className="grid gap-5 md:grid-cols-2">
             {items.map((c, i) => (

@@ -31,7 +31,9 @@ export const NATIVE_LABELS: Record<string, string> = {
   '/': 'Home', '/features': 'Features', '/services': 'Services', '/pricing': 'Pricing', '/about': 'About', '/about-us': 'About (alias /about-us)',
   '/contact': 'Contact', '/faq': 'FAQ', '/blog': 'Blog', '/media-coverage': 'Media coverage', '/case-studies': 'Case studies', '/careers': 'Careers',
   '/career': 'Careers (alias /career)', '/support': 'Support', '/our-support': 'Support (alias /our-support)', '/request-demo': 'Request a demo',
-  '/request-for-demo': 'Request a demo (alias)',
+  '/request-for-demo': 'Request a demo (alias)', '/industries': 'Industries', '/solutions': 'Company size and roles',
+  '/ai': 'AI capabilities', '/resources': 'Resources', '/integrations': 'Integrations', '/compliance': 'Compliance references',
+  '/customer-stories': 'Customer stories',
 };
 
 /** Shared CMS sections each native route reads. */
@@ -41,6 +43,9 @@ export const ROUTE_KEYS: Record<string, string[]> = {
   '/about': ['about', 'roadmap', 'whyUs', 'cta'], '/about-us': ['about', 'roadmap', 'whyUs', 'cta'], '/contact': ['contact'], '/faq': ['faq', 'cta'],
   '/blog': ['pages'], '/media-coverage': ['media', 'cta'], '/case-studies': ['caseStudies', 'cta'], '/careers': ['careers', 'cta'], '/career': ['careers', 'cta'],
   '/support': ['support', 'contact', 'cta'], '/our-support': ['support', 'contact', 'cta'], '/request-demo': ['demo', 'contact'], '/request-for-demo': ['demo', 'contact'],
+  '/industries': ['industryHub', 'cta'], '/solutions': ['segments', 'cta'], '/ai': ['aiHub', 'cta'],
+  '/resources': ['resourcesHub'], '/integrations': ['integrationMarketplace', 'cta'], '/compliance': ['complianceHub', 'cta'],
+  '/customer-stories': ['customerStories', 'cta'],
 };
 export function pagesUsingKey(key: string): string[] {
   return Object.entries(ROUTE_KEYS).filter(([, ks]) => ks.includes(key)).map(([p]) => NATIVE_LABELS[p] ?? p);
@@ -80,6 +85,10 @@ export function linkOptions(content: AnyObj | undefined, publishedPages: AnyObj[
     g('Your pages', publishedPages.filter((p) => !p.status || p.status === 'published').map((p) => ({ href: `/${cleanSlug(p.slug)}`, label: str(p.title, cleanSlug(p.slug)) }))),
     g('Feature details', arr<AnyObj>(c.suites?.items).filter((s) => str(s.slug)).map((s) => ({ href: `/features/${str(s.slug)}`, label: str(s.title) }))),
     g('Service details', arr<AnyObj>(c.services?.items).filter((s) => str(s.slug)).map((s) => ({ href: `/services/${str(s.slug)}`, label: str(s.title) }))),
+    g('Industry solutions', arr<AnyObj>(c.industryHub?.items).filter((s) => str(s.slug)).map((s) => ({ href: `/industries/${str(s.slug)}`, label: str(s.title) }))),
+    g('Company size and role', arr<AnyObj>(c.segments?.items).filter((s) => str(s.slug)).map((s) => ({ href: `/solutions/${str(s.slug)}`, label: str(s.title) }))),
+    g('Published resources', arr<AnyObj>(c.resourcesHub?.items).filter((s) => str(s.slug) && s.status === 'published').map((s) => ({ href: `/resources/${str(s.slug)}`, label: str(s.title) }))),
+    g('Customer stories', arr<AnyObj>(c.customerStories?.items).filter((s) => str(s.slug) && s.status === 'published' && s.verified === true).map((s) => ({ href: `/customer-stories/${str(s.slug)}`, label: str(s.title) }))),
     g('Legal', Object.entries((c.legal ?? {}) as AnyObj).map(([slug, l]) => ({ href: `/${slug}`, label: str((l as AnyObj)?.title, slug) }))),
     g('Other', [{ href: '/register?mode=trial', label: 'Start free trial' }, { href: '/login', label: 'Log in' }]),
   ].filter((x) => x.options.length);

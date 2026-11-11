@@ -12,6 +12,7 @@ import { pageLayoutsSchema, pageSectionsSchema, reservedPageSlug, retargetPageLi
 import { themeContentSchema } from "./theme-schema";
 
 const uuid=z.string().uuid();
+const asText=(value:unknown)=>typeof value==="string"?value:"";
 function validateSectionLinks(value:unknown):void{
   if(Array.isArray(value)){for(const item of value)validateSectionLinks(item);return;}
   if(!value||typeof value!=="object")return;
@@ -24,8 +25,9 @@ function validateSectionLinks(value:unknown):void{
 }
 function validateContent(key:string,value:Doc) {
   if(!value || typeof value!=="object" || Array.isArray(value))fail("A section must be a JSON object");
-  const sectionLimit=["suites","services","pageLayouts"].includes(key)?2100000:["clients","media","caseStudies"].includes(key)?1500000:500000;
+  const sectionLimit=["suites","services","pageLayouts"].includes(key)?2100000:["clients","media","caseStudies","resourcesHub","customerStories","integrationMarketplace","complianceHub"].includes(key)?1500000:500000;
   if(JSON.stringify(value).length>sectionLimit)fail(["clients","media","caseStudies","suites","services"].includes(key)?"Image collection is too large. Use smaller images or fewer uploads.":"Section is too large");
+  if(["industryHub","segments","aiHub","resourcesHub","integrationMarketplace","complianceHub","customerStories"].includes(key))validateSectionLinks(value);
   if(key==="clients"){
     const result=clientsSchema.safeParse(value);
     if(!result.success)fail(result.error.issues[0]?.message??"Invalid client details");
@@ -100,6 +102,42 @@ function validateContent(key:string,value:Doc) {
       if(!item||typeof item!=="object")fail("Each media entry must be an object");
       if(item.imageUrl!=null&&(typeof item.imageUrl!=="string"||item.imageUrl.length>200000||(item.imageUrl!==""&&!safeLogo(item.imageUrl))))fail("Choose a valid PNG, JPEG or WebP upload up to 150KB");
       if(item.imageAlt!=null&&(typeof item.imageAlt!=="string"||item.imageAlt.length>300))fail("Image descriptions must be text up to 300 characters");
+      if(item.status==="published"&&(item.verified!==true||!item.publication||!/^https:\/\/[^\s]+$/i.test(item.url||"")))fail("Published media items need a verified status, publisher and secure source link");
+    }
+  }
+  const sluggableSections=["industryHub","segments","resourcesHub","customerStories"];
+  if(sluggableSections.includes(key)){
+    if(!Array.isArray(value.items))fail("Items must be a list");
+    const slugs=new Set<string>();
+    for(const item of value.items){
+      if(!item||typeof item!=="object"||typeof item.title!=="string"||!item.title.trim())fail("Each item needs a title");
+      if(typeof item.slug!=="string"||!/^[a-z0-9-]+$/.test(item.slug)||slugs.has(item.slug))fail("Item slugs must be unique lower-case URL slugs");
+      if(["resourcesHub","customerStories"].includes(key)&&item.status!=null&&!["draft","published"].includes(item.status))fail("Choose draft or published for each item");
+      if(key==="resourcesHub"&&item.status==="published"&&!asText(item.body).trim())fail("Published resources need article content");
+      if(key==="customerStories"&&item.status==="published"&&(item.verified!==true||!asText(item.summary).trim()||!asText(item.body).trim()))fail("Published customer stories need verified review, a summary and story content");
+      slugs.add(item.slug);
+    }
+  }
+  if(key==="integrationMarketplace"){
+    if(!Array.isArray(value.items))fail("Integration details must be a list");
+    const slugs=new Set<string>();
+    for(const item of value.items){
+      if(!item||typeof item!=="object"||!asText(item.title).trim())fail("Each integration needs a title");
+      if(!/^[a-z0-9-]+$/.test(item.slug||"")||slugs.has(item.slug))fail("Integration slugs must be unique lower-case URL slugs");
+      if(item.status!=null&&!["draft","published"].includes(item.status))fail("Choose draft or published for each integration");
+      if(item.status==="published"&&(item.verified!==true||!asText(item.description).trim()))fail("Published integrations need verified review and a description");
+      slugs.add(item.slug);
+    }
+  }
+  if(key==="complianceHub"){
+    if(!Array.isArray(value.references))fail("Compliance references must be a list");
+    const slugs=new Set<string>();
+    for(const ref of value.references){
+      if(!ref||typeof ref!=="object"||!asText(ref.title||ref.topic).trim())fail("Each compliance reference needs a title or topic");
+      if(ref.slug&&(!/^[a-z0-9-]+$/.test(ref.slug)||slugs.has(ref.slug)))fail("Reference slugs must be unique lower-case URL slugs");
+      if(ref.status!=null&&!["draft","published"].includes(ref.status))fail("Choose draft or published for each reference");
+      if(ref.status==="published"&&(ref.verified!==true||!/^https:\/\/[^\s]+$/i.test(ref.sourceUrl||"")||!asText(ref.lastReviewed).trim()))fail("Published references need verified review, a secure source link and a review date");
+      if(ref.slug)slugs.add(ref.slug);
     }
   }
 }

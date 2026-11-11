@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useParams, useLocation } from 'wouter';
 import { ArrowLeft, ArrowRight, CalendarDays, Check, Compass, Tag, UserRound } from 'lucide-react';
 import { arr, iconFor, str, useContent, usePublicPages, usePublicPosts, useSection, type AnyObj } from '@/lib/content';
@@ -83,6 +84,8 @@ function DetailPage({ kind }: { kind: 'suites' | 'services' }) {
   const label = kind === 'suites' ? 'Features' : 'Services';
   const I = iconFor(item.icon);
   const others = items.filter((s) => s !== item).slice(0, 4);
+  const moduleDetails = arr<AnyObj>(item.moduleDetails);
+  const processSteps = arr<AnyObj>(kind === 'suites' ? item.workflowSteps : item.engagementSteps);
   return (
     <>
       <PageHero crumbs={[{ label: 'Home', href: '/' }, { label, href: base }, { label: str(item.title) }]} eyebrow={str(item.priority || item.billing || label)} title={str(item.title)} description={str(item.description)}>
@@ -92,17 +95,23 @@ function DetailPage({ kind }: { kind: 'suites' | 'services' }) {
         </div>
         <SolutionImage item={item} eager className="mt-10 max-w-md rounded-2xl" />
       </PageHero>
+      {item.body ? <Container className="max-w-4xl"><div className="glass rounded-3xl p-7 sm:p-10"><Markdown source={str(item.body)} /></div></Container> : null}
       <Container className="grid gap-6 lg:grid-cols-[1.3fr_1fr]">
         <Reveal className="glass border-gradient rounded-3xl p-7 sm:p-9">
           <div className="flex items-center gap-3">
             <span className="grid h-11 w-11 place-items-center rounded-xl bg-brand"><I className="h-5 w-5 text-on-brand" /></span>
-            <h2 className="font-display text-2xl font-bold">{kind === 'suites' ? 'Modules included' : 'What we deliver'}</h2>
+            <h2 className="font-display text-2xl font-bold">{kind === 'suites' ? 'Modules and workflows' : 'Service scope'}</h2>
           </div>
-          <ul className="mt-7 grid gap-2 sm:grid-cols-2">
-            {arr<string>(item.modules).map((m) => (
-              <li key={m} className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5 text-sm capitalize text-foreground/90"><span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ph-cyan)]" />{m}</li>
-            ))}
-          </ul>
+          {moduleDetails.length ? (
+            <ul className="mt-7 grid gap-3 sm:grid-cols-2">
+              {moduleDetails.map((m, i) => (
+                <li key={`${str(m.title)}-${i}`} className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
+                  <h3 className="font-semibold capitalize text-foreground">{str(m.title)}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{str(m.description)}</p>
+                </li>
+              ))}
+            </ul>
+          ) : <ul className="mt-7 grid gap-2 sm:grid-cols-2">{arr<string>(item.modules).map((m) => <li key={m} className="flex items-center gap-2.5 rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5 text-sm capitalize text-foreground/90"><span className="h-1.5 w-1.5 rounded-full bg-[color:var(--ph-cyan)]" />{m}</li>)}</ul>}
           {item.billing ? <p className="mt-6 font-mono text-xs uppercase tracking-wider text-[color:var(--ph-pink)]">Billed as: {str(item.billing)}</p> : null}
         </Reveal>
         <Reveal delay={100} className="glass rounded-3xl p-7 sm:p-9">
@@ -114,6 +123,18 @@ function DetailPage({ kind }: { kind: 'suites' | 'services' }) {
           </ul>
         </Reveal>
       </Container>
+      {kind === 'suites' && arr<AnyObj>(item.audiences).length ? (
+        <Container className="mt-10">
+          <div className="max-w-2xl"><p className="font-mono text-xs uppercase tracking-[0.18em] text-[color:var(--ph-cyan)]">Built around shared ownership</p><h2 className="font-display mt-3 text-3xl font-bold">Who is part of the workflow?</h2></div>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">{arr<AnyObj>(item.audiences).map((aud, i) => <Reveal key={i} delay={i * 60} className="glass rounded-2xl p-6"><h3 className="font-semibold">{str(aud.title)}</h3><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{str(aud.description)}</p></Reveal>)}</div>
+        </Container>
+      ) : null}
+      {processSteps.length ? (
+        <Container className="mt-12">
+          <div className="max-w-2xl"><p className="font-mono text-xs uppercase tracking-[0.18em] text-[color:var(--ph-cyan)]">{kind === 'suites' ? 'A practical starting point' : 'How an engagement begins'}</p><h2 className="font-display mt-3 text-3xl font-bold">{kind === 'suites' ? 'Plan a workflow your team can own.' : 'Agree the scope before work begins.'}</h2></div>
+          <ol className="mt-6 grid gap-4 md:grid-cols-3">{processSteps.map((step, i) => <li key={i} className="glass rounded-2xl p-6"><span className="font-mono text-xs text-[color:var(--ph-cyan)]">{String(i + 1).padStart(2, '0')}</span><h3 className="mt-3 font-semibold">{str(step.title)}</h3><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{str(step.description)}</p></li>)}</ol>
+        </Container>
+      ) : null}
       {arr(item.faq).length ? <FaqSection items={arr<AnyObj>(item.faq)} title={`${str(item.title)}: questions`} /> : null}
       <Container className="mt-8">
         <h2 className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">More {label.toLowerCase()}</h2>
@@ -145,9 +166,26 @@ export function ServicesPage() {
 }
 
 export function PricingPage() {
+  const pricing = useSection('pricing');
+  const suites = arr<AnyObj>(useSection('suites').items);
+  const plans = arr<AnyObj>(pricing.plans);
   return (
     <>
       <div className="relative pt-16"><Aurora /><PricingTable h1 /></div>
+      {plans.length && suites.length ? (
+        <section className="py-16">
+          <Container>
+            <div className="max-w-2xl"><p className="font-mono text-xs uppercase tracking-[0.18em] text-[color:var(--ph-cyan)]">Plan details</p><h2 className="font-display mt-3 text-3xl font-bold">{str(pricing.comparisonTitle, 'Compare the available suites')}</h2><p className="mt-3 text-muted-foreground">{str(pricing.comparisonDescription)}</p></div>
+            <div className="mt-7 overflow-x-auto rounded-2xl border border-white/10" role="region" aria-label="Plan suite comparison" tabIndex={0}>
+              <table className="w-full min-w-[620px] border-collapse text-left text-sm">
+                <caption className="sr-only">{str(pricing.comparisonTitle, 'Compare the available suites')}</caption>
+                <thead><tr className="bg-white/[0.04]"><th scope="col" className="p-4 font-semibold">Suite</th>{plans.map((plan, i) => <th scope="col" key={str(plan.key, String(i))} className="p-4 font-semibold">{str(plan.name)}</th>)}</tr></thead>
+                <tbody>{suites.map((suite, i) => <tr key={str(suite.key, String(i))} className="border-t border-white/[0.08]"><th scope="row" className="p-4 font-medium">{str(suite.title)}</th>{plans.map((plan, j) => { const included = arr<string>(plan.modules).includes(str(suite.key)); return <td key={str(plan.key, String(j))} className="p-4 text-center">{included ? <span className="text-[color:var(--ph-cyan)]" aria-label={`Included in ${str(plan.name)}`}>Included</span> : <span className="text-muted-foreground" aria-label={`Not listed in ${str(plan.name)}`}>—</span>}</td>; })}</tr>)}</tbody>
+              </table>
+            </div>
+          </Container>
+        </section>
+      ) : null}
       <FaqSection />
       <CtaBand />
     </>
@@ -179,6 +217,12 @@ export function AboutPage() {
           ))}
         </div>
       </Container>
+      {arr<string>(about.focusAreas).length ? (
+        <Container className="mt-14">
+          <SectionHead eyebrow={str(about.focusTitle, 'Our focus')} title={str(about.focusDescription, 'Practical systems for people operations.')} />
+          <ul className="mt-6 grid gap-4 sm:grid-cols-3">{arr<string>(about.focusAreas).map((area, i) => <li key={i} className="glass rounded-2xl p-6"><span className="font-mono text-xs text-[color:var(--ph-cyan)]">{String(i + 1).padStart(2, '0')}</span><p className="mt-3 font-semibold">{area}</p></li>)}</ul>
+        </Container>
+      ) : null}
       {arr(roadmap.items).length ? (
         <section className="py-24">
           <Container>
@@ -215,6 +259,13 @@ export function RoadmapList({ items }: { items: AnyObj[] }) {
 export function BlogPage() {
   const { posts, loaded, error, refetch } = usePublicPosts();
   const published = posts.filter((p) => !p.status || p.status === 'published');
+  const [query, setQuery] = useState('');
+  const [topic, setTopic] = useState('all');
+  const topics = Array.from(new Set(published.flatMap((p) => arr<string>(p.tags)))).sort((a, b) => a.localeCompare(b));
+  const filtered = published.filter((p) => {
+    const haystack = `${str(p.title)} ${str(p.excerpt)} ${arr<string>(p.tags).join(' ')}`.toLowerCase();
+    return (!query || haystack.includes(query.toLowerCase())) && (topic === 'all' || arr<string>(p.tags).includes(topic));
+  });
   return (
     <>
       <PageHero crumbs={[{ label: 'Home', href: '/' }, { label: 'Blog' }]} eyebrow="Field notes" title="HR, payroll and compliance, explained" description="Practical guides for Indian MSMEs on statutory compliance, payroll and people operations." />
@@ -233,8 +284,19 @@ export function BlogPage() {
             <p className="mt-2 max-w-sm text-sm text-muted-foreground">Our team is writing guides on PF, ESI, PT and labour codes. Check back soon.</p>
           </div>
         ) : (
-          <div className="grid gap-5 md:grid-cols-2">
-            {published.map((p, i) => (
+          <>
+            <div className="mb-7 grid gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-4 sm:grid-cols-[1fr_auto] sm:items-end">
+              <label className="block text-sm font-medium">Search articles
+                <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search topics and titles" className="mt-2 w-full rounded-xl border border-white/10 bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ph-cyan)]" type="search" />
+              </label>
+              <label className="block text-sm font-medium">Topic
+                <select value={topic} onChange={(e) => setTopic(e.target.value)} className="mt-2 w-full min-w-48 rounded-xl border border-white/10 bg-background px-4 py-3 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ph-cyan)]">
+                  <option value="all">All topics</option>{topics.map((t) => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </label>
+            </div>
+            {!filtered.length ? <div className="glass rounded-3xl p-10 text-center"><h2 className="font-display text-xl font-bold">No articles match those filters</h2><p className="mt-2 text-sm text-muted-foreground">Try another topic or search phrase.</p></div> : <div className="grid gap-5 md:grid-cols-2">
+            {filtered.map((p, i) => (
               <Reveal as="article" key={str(p.id ?? p.slug)} delay={(i % 2) * 80}>
                 <Link href={`/blog/${str(p.slug)}`} className="block h-full" data-testid={`link-post-${str(p.slug)}`}>
                   <GlassCard tilt={false} className="h-full">
@@ -254,7 +316,8 @@ export function BlogPage() {
                 </Link>
               </Reveal>
             ))}
-          </div>
+            </div>}
+          </>
         )}
       </Container>
     </>
@@ -270,7 +333,9 @@ export function fmtDate(v: unknown) {
 export function BlogPostPage() {
   const params = useParams<{ slug: string }>();
   const { posts, loaded } = usePublicPosts();
-  const post = posts.find((p) => str(p.slug) === params.slug);
+  const published = posts.filter((p) => !p.status || p.status === 'published');
+  const post = published.find((p) => str(p.slug) === params.slug);
+  const related = published.filter((p) => p !== post && arr<string>(p.tags).some((tag) => arr<string>(post?.tags).includes(tag))).slice(0, 3);
   if (!loaded) return <PageSkeleton />;
   if (!post) return <NotFoundPage />;
   return (
@@ -287,6 +352,7 @@ export function BlogPostPage() {
         <Markdown source={str(post.body_md)} />
         <Link href="/blog" className="mt-12 inline-flex items-center gap-2 text-sm text-[color:var(--ph-cyan)]" data-testid="link-back-blog"><ArrowLeft className="h-4 w-4" />All articles</Link>
       </Container>
+      {related.length ? <Container className="mt-14"><h2 className="font-display text-2xl font-bold">Related reading</h2><div className="mt-5 grid gap-4 md:grid-cols-3">{related.map((item) => <Link key={str(item.slug)} href={`/blog/${str(item.slug)}`} className="glass rounded-2xl p-5 transition hover:border-white/20"><span className="font-mono text-[10px] uppercase tracking-wider text-[color:var(--ph-cyan)]">{arr<string>(item.tags).slice(0, 2).join(' · ')}</span><h3 className="mt-3 font-semibold">{str(item.title)}</h3><p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{str(item.excerpt)}</p></Link>)}</div></Container> : null}
       <CtaBand />
     </article>
   );

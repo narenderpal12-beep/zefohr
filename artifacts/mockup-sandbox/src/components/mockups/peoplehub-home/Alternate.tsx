@@ -1,4 +1,24 @@
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Lottie } from "lottie-react";
+
+const orbitTransform = (p: number[]) => ({
+  o: { a: 0, k: 100 }, r: { a: 0, k: 0 }, p: { a: 0, k: p },
+  a: { a: 0, k: [0, 0, 0] }, s: { a: 0, k: [100, 100, 100] },
+});
+const peopleOrbitAnimation = {
+  v: "5.7.4", fr: 30, ip: 0, op: 180, w: 240, h: 240, nm: "People orbit", ddd: 0, assets: [],
+  layers: [0, 1, 2].map((n) => ({
+    ddd: 0, ind: n + 1, ty: 4, nm: `People orbit ${n + 1}`, sr: 1,
+    ks: { ...orbitTransform([120, 120, 0]), r: { a: 1, k: [{ t: 0, s: [n * 120], e: [n * 120 + 360], i: { x: [0.67], y: [1] }, o: { x: [0.33], y: [0] } }, { t: 180, s: [n * 120 + 360] }] } },
+    ao: 0, ip: 0, op: 180, st: 0, bm: 0,
+    shapes: [{ ty: "gr", it: [
+      { ty: "el", p: { a: 0, k: [76, 0] }, s: { a: 0, k: [30, 30] }, nm: "People dot" },
+      { ty: "fl", c: { a: 0, k: n === 0 ? [0.55, 0.36, 0.96, 1] : n === 1 ? [0.13, 0.83, 0.93, 1] : [0.93, 0.28, 0.6, 1] }, o: { a: 0, k: 100 }, r: 1 },
+      { ty: "tr", p: { a: 0, k: [0, 0] }, a: { a: 0, k: [0, 0] }, s: { a: 0, k: [100, 100] }, r: { a: 0, k: 0 }, o: { a: 0, k: 100 }, sk: { a: 0, k: 0 }, sa: { a: 0, k: 0 } },
+    ] }],
+  })),
+};
 
 const products = [
   {
@@ -177,9 +197,11 @@ export function Alternate() {
         @media(max-width:640px){.ph-container{width:min(100% - 36px,500px)}.ph-header{height:68px}.ph-navlinks,.ph-nav-actions .ph-login{display:none}.ph-nav-actions{gap:10px}.ph-nav-actions .ph-button{min-height:38px;padding:0 12px;font-size:10px}.ph-menu-toggle{display:grid;place-items:center}.ph-menu-toggle svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8}.ph-mobile-menu{display:flex;position:absolute;top:67px;left:0;right:0;padding:16px 18px 20px;background:#fff;border-bottom:1px solid var(--line);box-shadow:0 16px 25px #22304b12;flex-direction:column;gap:2px}.ph-mobile-menu a{padding:11px 2px;font-size:13px;color:#4d5a6d;border-bottom:1px solid #f1f3f6}.ph-hero{padding:53px 0 43px}.ph-hero-grid{gap:33px}.ph-hero h1{font-size:48px;letter-spacing:-1.9px;margin:18px 0}.ph-hero-copy{font-size:14px}.ph-hero-actions{gap:17px;flex-wrap:wrap}.ph-button{min-height:43px;padding:0 15px;font-size:11px}.ph-current-note{font-size:10px}.ph-visual-caption{font-size:8px}.ph-window-body{grid-template-columns:90px 1fr;min-height:260px}.ph-window-side{padding:13px 6px}.ph-side-item{padding:8px 5px;gap:5px;font-size:7px}.ph-side-label{font-size:6px;padding:0 5px}.ph-window-content{padding:13px 10px 10px}.ph-mock-heading h3{font-size:14px}.ph-mock-heading p{font-size:7px}.ph-mock-button{font-size:7px;padding:6px}.ph-table-row,.ph-table-head{grid-template-columns:1.25fr .9fr .67fr;gap:3px;font-size:7px}.ph-person{gap:4px;font-size:7px}.ph-initial{width:18px;height:18px;font-size:6px}.ph-window-brand{font-size:9px}.ph-window-brand .ph-mark{height:22px;width:22px}.ph-preview-note{font-size:6px}.ph-reassure-inner{gap:14px 10px;min-height:0;padding:20px 0}.ph-reassure-intro{font-size:17px}.ph-reassure-item{font-size:9px;gap:7px}.ph-check{height:18px;width:18px}.ph-path,.ph-services,.ph-plans{padding:69px 0}.ph-section-head,.ph-services-head,.ph-plans-top{display:block}.ph-section-head h2,.ph-services-head h2,.ph-plans-top h2{font-size:40px}.ph-section-intro,.ph-services-head p,.ph-plans-top p{margin-top:17px;font-size:12px}.ph-path-steps{grid-template-columns:1fr;margin-top:34px}.ph-step,.ph-step:not(:first-child){padding:20px 0;border-left:0;border-bottom:1px solid var(--line)}.ph-step:first-child{padding-top:20px}.ph-step-tag{right:0;top:22px}.ph-step h3{font-size:23px;margin:9px 0 6px}.ph-step p{margin-bottom:11px}.ph-explore{padding:69px 0}.ph-explore-copy h2{font-size:42px}.ph-explore-copy>p{font-size:12px}.ph-tabs{margin-top:23px;gap:4px}.ph-tab{padding:10px 8px;grid-template-columns:22px 1fr 12px;gap:5px}.ph-tab strong{font-size:10px}.ph-tab small{font-size:8px}.ph-tab-no{font-size:8px}.ph-product-panel .ph-window-body{min-height:280px}.ph-product-detail{display:block}.ph-product-detail h3{font-size:22px}.ph-product-detail p{font-size:11px}.ph-planned-pill{display:inline-flex;margin-top:12px}.ph-services-grid{grid-template-columns:1fr 1fr;margin-top:27px}.ph-service{padding:17px 13px;min-height:155px}.ph-service h3{font-size:17px;margin:10px 0 6px}.ph-service p{font-size:10px}.ph-services-foot{align-items:flex-start;flex-direction:column;font-size:10px}.ph-guidance{padding:65px 0}.ph-guide-title h2,.ph-faq-title h2{font-size:39px}.ph-plans-box{grid-template-columns:1fr}.ph-plan-col{padding:23px 19px}.ph-plan-col+.ph-plan-col{border-left:0;border-top:1px solid var(--line)}.ph-faq{padding:66px 0}.ph-faq-q{font-size:11px;padding:14px 0}.ph-faq-a{font-size:10px}.ph-final{padding-bottom:56px}.ph-final-card{display:block;padding:27px 22px}.ph-final-card h2{font-size:33px}.ph-final-card p{font-size:11px}.ph-final-actions{margin-top:22px;flex-wrap:wrap;gap:15px}.ph-footer-top{display:block}.ph-footer-links{gap:16px;margin-top:25px}.ph-footer-bottom{gap:10px;flex-direction:column}.ph-kicker{font-size:9px}}
         @media(max-width:640px){.ph-dashboard-controls{align-items:flex-start;flex-direction:column;gap:9px}.ph-dashboard-tools{width:100%}.ph-dashboard-copy strong{font-size:15px}.ph-dashboard-disclosure{font-size:7px}.ph-hiring-pipeline{gap:4px}.ph-hiring-stage{padding:7px 5px 10px}}
         @media(prefers-reduced-motion:reduce){.peoplehub-alt *{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}}
-        .ph-explore-layout{display:block}.ph-explore-copy{position:static;max-width:760px}.ph-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:28px 0 24px}.ph-tab{min-width:0;min-height:78px;grid-template-columns:24px minmax(0,1fr) 12px;gap:8px;padding:12px;background:#fff;border-color:#e3e8ef}.ph-tab:hover{border-color:#c9d2e2}.ph-tab[aria-selected=true]{border-color:#435bd0;background:#fff;box-shadow:0 6px 18px #25334a10}.ph-tab strong{font-size:11px}.ph-tab small{line-height:1.4}.ph-product-panel{margin-top:0}.ph-product-panel .ph-window-body{min-height:360px}
+        .ph-explore-layout{display:block}.ph-explore-copy{position:static;max-width:760px}.ph-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:28px 0 24px}.ph-tab{position:relative;isolation:isolate;min-width:0;min-height:78px;grid-template-columns:24px minmax(0,1fr) 12px;gap:8px;padding:12px;background:#fff;border-color:#e3e8ef}.ph-tab:hover{border-color:#c9d2e2}.ph-tab[aria-selected=true]{border-color:#435bd0;background:#fff;box-shadow:0 6px 18px #25334a10}.ph-tab strong{font-size:11px}.ph-tab small{line-height:1.4}.ph-tab-no,.ph-tab>span:not(.ph-tab-indicator){position:relative;z-index:1}.ph-tab-indicator{position:absolute;z-index:0;top:14px;bottom:14px;left:0;width:3px;border-radius:0 3px 3px 0;background:#354fd0;pointer-events:none}.ph-product-panel{margin-top:0}.ph-product-panel .ph-window-body{min-height:360px}
         @media(max-width:900px){.ph-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}.ph-tab{min-height:72px}}
         @media(max-width:640px){.ph-tabs{grid-template-columns:repeat(4,minmax(180px,1fr));overflow-x:auto;padding-bottom:7px;scroll-snap-type:x proximity}.ph-tab{scroll-snap-align:start}}
+        .ph-hero-kicker-row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:470px}.ph-hero-lottie{display:grid;width:68px;height:68px;place-items:center;flex:none;overflow:hidden;border:1px solid #e7ebf2;border-radius:50%;background:radial-gradient(circle,#f9faff 0%,#fff 72%);opacity:.92}.ph-hero-lottie>div,.ph-hero-lottie svg{width:100%!important;height:100%!important}.ph-tab>span:not(.ph-tab-indicator){z-index:1}
+        @media(max-width:640px){.ph-hero-lottie{width:52px;height:52px}}
       `}</style>
       <div className="ph-topline" />
       <header className="ph-header">
@@ -195,10 +217,20 @@ export function Alternate() {
         </div>
       </header>
       <div id="top" />
-      <section className="ph-hero">
+      <motion.section
+        className="ph-hero"
+        initial={prefersReducedMotion ? false : { opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: prefersReducedMotion ? 0 : 0.65, ease: "easeOut" }}
+      >
         <div className="ph-container ph-hero-grid">
           <div>
-            <div className="ph-kicker">People-first HR, built for India</div>
+            <div className="ph-hero-kicker-row">
+              <div className="ph-kicker">People-first HR, built for India</div>
+              <span className="ph-hero-lottie" aria-hidden="true">
+                <Lottie src={peopleOrbitAnimation} loop={!prefersReducedMotion} autoplay={!prefersReducedMotion} />
+              </span>
+            </div>
             <h1>Make room for <em>people.</em><br />We’ll help with the rest.</h1>
             <p className="ph-hero-copy">People operations get more complex as your business grows. PeopleHub brings modular HR software and specialist services together, so you can find a sensible next step.</p>
             <div className="ph-hero-actions"><a href="/register?mode=trial" className="ph-button">Start your free trial <Arrow /></a><a href="#path" className="ph-text-link">Find your starting point <Arrow /></a></div>
@@ -207,7 +239,17 @@ export function Alternate() {
           <div className="ph-hero-visual">
             <div className="ph-visual-caption"><span>Product dashboard concepts</span><span>Planned HRMS direction</span></div>
             <div id="hero-dashboard-panel" role="tabpanel" aria-labelledby={`hero-dashboard-tab-${currentDashboard.key}`}>
-              <ProductSnapshot active={activeDashboard} />
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={currentDashboard.key}
+                  initial={prefersReducedMotion ? false : { opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={prefersReducedMotion ? undefined : { opacity: 0, y: -8 }}
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.3, ease: "easeOut" }}
+                >
+                  <ProductSnapshot active={activeDashboard} />
+                </motion.div>
+              </AnimatePresence>
             </div>
             <div className="ph-dashboard-controls">
               <div className="ph-dashboard-copy" aria-live={rotationPaused || prefersReducedMotion ? "polite" : "off"} aria-atomic="true">
@@ -233,7 +275,7 @@ export function Alternate() {
             <p className="ph-dashboard-disclosure">Illustrative dashboard concepts. HRMS suites are planned product direction, not live software.</p>
           </div>
         </div>
-      </section>
+      </motion.section>
       <section className="ph-reassure" aria-label="PeopleHub approach">
         <div className="ph-container ph-reassure-inner">
           <div className="ph-reassure-intro">One partner for the people work.</div>
@@ -283,6 +325,7 @@ export function Alternate() {
                   document.getElementById(`ph-tab-${products[next].key}`)?.focus();
                 }}
               >
+                {activeProduct === index ? <motion.span layoutId="explore-tab-indicator" className="ph-tab-indicator" transition={{ type: "spring", stiffness: 380, damping: 32 }} aria-hidden="true" /> : null}
                 <span className="ph-tab-no">{product.number}</span>
                 <span><strong>{product.name}</strong><small>{product.short}</small></span>
                 <span className="ph-tab-chevron" aria-hidden="true">›</span>
@@ -290,8 +333,18 @@ export function Alternate() {
             ))}
           </div>
           <div className="ph-product-panel" id="ph-product-panel" role="tabpanel" aria-labelledby={`ph-tab-${products[activeProduct].key}`}>
-            <ProductSnapshot active={activeProduct} />
-            <div className="ph-product-detail"><div><h3>{products[activeProduct].name}</h3><p>{products[activeProduct].description}</p></div><span className="ph-planned-pill">Planned suite</span></div>
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={products[activeProduct].key}
+                initial={prefersReducedMotion ? false : { opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={prefersReducedMotion ? undefined : { opacity: 0, y: -8 }}
+                transition={{ duration: prefersReducedMotion ? 0 : 0.32, ease: "easeOut" }}
+              >
+                <ProductSnapshot active={activeProduct} />
+                <div className="ph-product-detail"><div><h3>{products[activeProduct].name}</h3><p>{products[activeProduct].description}</p></div><span className="ph-planned-pill">Planned suite</span></div>
+              </motion.div>
+            </AnimatePresence>
           </div>
         </div>
       </section>

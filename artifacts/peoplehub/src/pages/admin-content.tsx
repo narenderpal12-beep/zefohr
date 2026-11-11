@@ -62,6 +62,44 @@ function Field({ label, hint, children }: { label: string; hint?: ReactNode; chi
 
 function useContentQ() { return useGetContent({ query: { queryKey: getGetContentQueryKey() } }); }
 function usePageRecords() { return useGetAdminRecords('pages', { query: { queryKey: getGetAdminRecordsQueryKey('pages') } }); }
+function HomepageVersionEditor({ content }: { content: AnyObj }) {
+  const qc = useQueryClient();
+  const save = useSaveContent();
+  const settings = (content.homepage ?? {}) as AnyObj;
+  const saved = str(settings.activeVariant, 'original') === 'alternate' ? 'alternate' : 'original';
+  const [draft, setDraft] = useState<'original' | 'alternate'>(saved);
+  const [message, setMessage] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
+  useEffect(() => setDraft(saved), [saved]);
+  const persist = () => {
+    const latest = ((qc.getQueryData(getGetContentQueryKey()) ?? content) as AnyObj).homepage ?? {};
+    const next = { ...latest, activeVariant: draft };
+    save.mutate({ key: 'homepage', data: next }, {
+      onSuccess: () => {
+        qc.setQueryData(getGetContentQueryKey(), (old: any) => old ? { ...old, homepage: next } : old);
+        void qc.invalidateQueries({ queryKey: getGetContentQueryKey() });
+        setMessage({ kind: 'ok', text: `${draft === 'alternate' ? 'New' : 'Current'} homepage is now selected for /.` });
+      },
+      onError: (error) => setMessage({ kind: 'err', text: errMsg(error) }),
+    });
+  };
+  return (
+    <Card title="Homepage design" sub="Choose which built-in design visitors see at /. Your shared header, footer and theme stay the same." tone="owned">
+      <div className="flex flex-wrap items-end gap-3">
+        <Field label="Homepage shown on the website">
+          <select className={aInput} value={draft} onChange={(event) => { setDraft(event.target.value as 'original' | 'alternate'); setMessage(null); }} data-testid="select-homepage-version">
+            <option value="original">Current homepage</option>
+            <option value="alternate">New homepage</option>
+          </select>
+        </Field>
+        <button type="button" className={aBtnPrimary} disabled={save.isPending || draft === saved} onClick={persist} data-testid="button-save-homepage-version">
+          <Save className="h-3.5 w-3.5" />{save.isPending ? 'Saving...' : 'Save homepage'}
+        </button>
+      </div>
+      {message ? <div className="mt-3"><Notice kind={message.kind}>{message.text}</Notice></div> : null}
+      {save.isError && !message ? <div className="mt-3"><Notice kind="err">{errMsg(save.error)}</Notice></div> : null}
+    </Card>
+  );
+}
 function useInvalidatePages() {
   const qc = useQueryClient();
   return () => {
@@ -285,6 +323,7 @@ function NativeWorkspace({ entry, content, onEditRecord }: { entry: PageEntry; c
   const keys = entry.kind === 'native' ? ROUTE_KEYS[entry.path] ?? [] : [];
   return (
     <div className="space-y-5">
+      {entry.path === '/' ? <HomepageVersionEditor content={content} /> : null}
       <Card tone="owned"
         title={<span className="inline-flex flex-wrap items-center gap-2"><Layers className="h-4 w-4" />Page layout {saved ? <Badge tone="owned">Custom layout</Badge> : <Badge>Default layout</Badge>}{dirty ? <Badge tone="draft">Unsaved</Badge> : null}</span>}
         sub={<>Sections on <span className="font-mono">{entry.path}</span> only. The page keeps the global theme.</>}
@@ -304,6 +343,7 @@ function NativeWorkspace({ entry, content, onEditRecord }: { entry: PageEntry; c
         <h3 className="mb-1 flex items-center gap-2 font-display text-lg font-bold"><Link2 className="h-4 w-4 text-[color:var(--ph-cyan)]" />Linked sections</h3>
         <p className="mb-3 text-xs text-muted-foreground">{entry.path === '/' ? 'Each homepage section reads shared site content. Saving here changes every page that uses those same shared sections.' : 'Content shown by the original block. These are shared: saving here updates every page listed on each card.'}</p>
         <div className="space-y-3">
+          {entry.path === '/' ? <SharedSectionEditor contentKey="homepageV2" title="New homepage content" scopeNote="Homepage-only copy and interactive content shown when the new homepage is selected." /> : null}
           {entry.kind === 'feature' ? <SharedSectionEditor contentKey="suites" sub={['items', entry.index ?? 0]} title={`${entry.label} (feature)`} scopeNote="Only this feature item. Also appears in the Features page, Home and Pricing." /> : null}
           {entry.kind === 'service' ? <SharedSectionEditor contentKey="services" sub={['items', entry.index ?? 0]} title={`${entry.label} (service)`} scopeNote="Only this service item. Also appears in the Services page and Home." /> : null}
           {entry.kind === 'legal' ? <SharedSectionEditor contentKey="legal" sub={[entry.slug ?? '']} title={entry.label} scopeNote="Only this legal page." /> : null}
@@ -473,7 +513,7 @@ export function ContentAdmin() {
   if (recQ.isError) return <Notice kind="err">{errMsg(recQ.error)} <button type="button" className="underline" onClick={() => recQ.refetch()}>Retry loading pages</button></Notice>;
   const entry = catalogue.find((e) => e.id === sel);
   const groups: [string, PageEntry[]][] = [['Website pages', catalogue.filter((e) => e.kind === 'native')], ['Your pages', catalogue.filter((e) => e.kind === 'dynamic')], ['Feature details', catalogue.filter((e) => e.kind === 'feature')], ['Service details', catalogue.filter((e) => e.kind === 'service')], ['Legal pages', catalogue.filter((e) => e.kind === 'legal')]];
-  const keys = Object.keys(data).filter((k) => k !== 'pageLayouts');
+  const keys = Object.keys(data).filter((k) => !['pageLayouts', 'homepage', 'homepageV2'].includes(k));
   return (
     <div>
       <div className="flex flex-wrap items-end justify-between gap-4">

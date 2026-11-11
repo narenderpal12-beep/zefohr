@@ -1,0 +1,88 @@
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+
+.peoplehub-current {
+  --ph-indigo: #6d6cf6;
+  --ph-cyan: #22d3ee;
+  --ph-pink: #f472b6;
+  --ph-bg: #060816;
+  --ph-ink: #ffffff;
+  --ph-on-brand: #fdfcff;
+  --ph-glass-rgb: 255,255,255;
+  --ph-shadow-rgb: 3,4,20;
+  --ph-strong: rgba(12,15,38,.72);
+  --background: 232 47% 5%;
+  --foreground: 226 40% 94%;
+  --muted: 232 35% 14%;
+  --muted-foreground: 220 13% 68%;
+  --card: 232 40% 9%;
+  --card-foreground: 226 40% 94%;
+  --border: 232 30% 18%;
+  --input: 232 30% 18%;
+  --primary: 243 85% 67%;
+  --primary-foreground: 0 0% 100%;
+  --radius: 1rem;
+  color-scheme: dark;
+  background: var(--ph-bg);
+  color: hsl(var(--foreground));
+  font-family: 'Geist', sans-serif;
+}
+
+.peoplehub-current .font-display { font-family: 'Bricolage Grotesque', 'Geist', sans-serif; letter-spacing: -.035em; }
+.peoplehub-current .font-mono { font-family: 'Geist Mono', ui-monospace, monospace; }
+.peoplehub-current .text-gradient {
+  background: linear-gradient(100deg, hsl(var(--foreground)) 0%, color-mix(in oklab, var(--ph-indigo) 70%, hsl(var(--foreground))) 35%, var(--ph-cyan) 62%, var(--ph-pink) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.peoplehub-current .bg-brand { background: linear-gradient(110deg, var(--ph-indigo), color-mix(in oklab, var(--ph-indigo) 50%, var(--ph-pink)) 55%, var(--ph-pink)); }
+.peoplehub-current .border-gradient { position: relative; }
+.peoplehub-current .border-gradient::after {
+  content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; pointer-events: none;
+  background: linear-gradient(140deg, color-mix(in oklab, var(--ph-indigo) 80%, transparent), transparent 40%, transparent 60%, color-mix(in oklab, var(--ph-cyan) 70%, transparent));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude;
+}
+.peoplehub-current .glass {
+  background: linear-gradient(160deg, rgba(var(--ph-glass-rgb),.065), rgba(var(--ph-glass-rgb),.018));
+  border: 1px solid rgba(var(--ph-glass-rgb),.08);
+  backdrop-filter: blur(18px) saturate(140%); -webkit-backdrop-filter: blur(18px) saturate(140%);
+  box-shadow: 0 1px 0 rgba(var(--ph-glass-rgb),.06) inset, 0 24px 60px -30px rgba(var(--ph-shadow-rgb),.9);
+}
+.peoplehub-current .grid-lines {
+  background-image: linear-gradient(rgba(var(--ph-glass-rgb),.04) 1px, transparent 1px), linear-gradient(90deg, rgba(var(--ph-glass-rgb),.04) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse at 50% 30%, #000 20%, transparent 70%);
+}
+.peoplehub-current .aurora-blob { position: absolute; border-radius: 9999px; filter: blur(80px); opacity: .55; will-change: transform; }
+@keyframes ph-aurora-a { 0%,100% { transform: translate3d(0,0,0) scale(1); } 33% { transform: translate3d(8%,-6%,0) scale(1.15); } 66% { transform: translate3d(-6%,8%,0) scale(.92); } }
+@keyframes ph-aurora-b { 0%,100% { transform: translate3d(0,0,0) scale(1.05); } 50% { transform: translate3d(-12%,-4%,0) scale(.9); } }
+@keyframes ph-aurora-c { 0%,100% { transform: translate3d(0,0,0) rotate(0deg); } 50% { transform: translate3d(10%,6%,0) rotate(30deg); } }
+@keyframes ph-marquee { from { transform: translate3d(0,0,0); } to { transform: translate3d(-50%,0,0); } }
+@keyframes ph-float-y { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+@keyframes ph-spin-slow { to { transform: rotate(360deg); } }
+.peoplehub-current .anim-a { animation: ph-aurora-a 18s ease-in-out infinite; }
+.peoplehub-current .anim-b { animation: ph-aurora-b 22s ease-in-out infinite; }
+.peoplehub-current .anim-c { animation: ph-aurora-c 26s ease-in-out infinite; }
+.peoplehub-current .marquee-track { animation: ph-marquee 38s linear infinite; }
+.peoplehub-current .marquee-wrap:hover .marquee-track { animation-play-state: paused; }
+.peoplehub-current .float-1 { animation: ph-float-y 6s ease-in-out infinite; }
+.peoplehub-current .float-2 { animation: ph-float-y 7.5s ease-in-out -2s infinite; }
+.peoplehub-current .float-3 { animation: ph-float-y 8s ease-in-out -4s infinite; }
+.peoplehub-current .orbit-spin { animation: ph-spin-slow 40s linear infinite; }
+.peoplehub-current .orbit-spin-rev { animation: ph-spin-slow 60s linear infinite reverse; }
+.peoplehub-current .solution-frame { position: relative; background: hsl(var(--muted)); isolation: isolate; box-shadow: 0 1px 2px rgba(var(--ph-shadow-rgb),.06), 0 14px 30px -24px rgba(var(--ph-shadow-rgb),.45); }
+.peoplehub-current .solution-frame::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; box-shadow: inset 0 0 0 1px rgba(var(--ph-glass-rgb),.1); background: linear-gradient(180deg, transparent 62%, rgba(var(--ph-shadow-rgb),.12)); }
+.peoplehub-current .solution-photo { transition: transform 900ms ease-out; }
+.peoplehub-current .solution-frame:hover .solution-photo { transform: scale(1.04); }
+.peoplehub-current .btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border-radius: 9999px;
+  background: linear-gradient(110deg, var(--ph-indigo), color-mix(in oklab, var(--ph-indigo) 50%, var(--ph-pink)) 55%, var(--ph-pink));
+  padding: .75rem 1.5rem; color: #fdfcff; font-size: .875rem; font-weight: 600;
+  box-shadow: 0 10px 40px -12px var(--ph-indigo); transition: transform .3s;
+}
+.peoplehub-current .btn-primary:hover { transform: translateY(-2px); }
+.peoplehub-current .btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; border: 1px solid rgba(255,255,255,.15); border-radius: 9999px; background: rgba(255,255,255,.04); padding: .75rem 1.5rem; font-size: .875rem; font-weight: 600; }
+.peoplehub-current .btn-ghost:hover { background: rgba(255,255,255,.09); }
+.peoplehub-current .eyebrow { display: inline-flex; align-items: center; gap: .5rem; border: 1px solid rgba(255,255,255,.1); border-radius: 9999px; background: rgba(255,255,255,.04); padding: .25rem .75rem; color: var(--ph-cyan); font: 11px 'Geist Mono', monospace; letter-spacing: .18em; text-transform: uppercase; }
+.peoplehub-current .eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 9999px; background: var(--ph-cyan); box-shadow: 0 0 12px var(--ph-cyan); }
+@media (prefers-reduced-motion: reduce) {
+  .peoplehub-current *, .peoplehub-current *::before, .peoplehub-current *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
+}

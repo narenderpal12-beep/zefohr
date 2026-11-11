@@ -45,6 +45,7 @@ const aiFeatures = ["AI HR chatbot", "AI recruitment assistant (sourcing to join
 const starter = ["core_hrms","time_workforce","payroll_compliance"];
 const growth = [...starter,"recruitment_ats","performance_talent","engagement"];
 export const defaults: Record<string, any> = {
+  homepage:{activeVariant:"original"},
   nav:{brand:"PeopleHub",links:[{label:"Platform",href:"/features"},{label:"Services",href:"/services"},{label:"Pricing",href:"/pricing"},{label:"Resources",href:"/blog"},{label:"Company",href:"/about"}],loginLabel:"Log in",ctaLabel:"Start free trial"},
   hero:{eyebrow:"THE PEOPLE-FIRST HR PLATFORM",title:"Run HR, payroll and compliance from one smart platform",description:"Less busywork. More people work. Bring your entire employee journey together with intelligent HR software, built for growing Indian businesses.",titleColor:"",descriptionColor:"",buttonColor:"",buttonTextColor:"",primaryCta:"Start free trial",secondaryCta:"View pricing",badges:["PF · ESI · PT · TDS ready","AI-assisted HR","WhatsApp approvals"],lottieUrl:"",trialNote:"14 days free. No credit card required.",visualLabel:"Your people. Perfectly connected."},
   stats:{items:[{value:10,label:"Integrated suites"},{value:10,label:"Specialised services"},{value:11,label:"Smart capabilities"},{value:14,label:"Day free trial"}]},

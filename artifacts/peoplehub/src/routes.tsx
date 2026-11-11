@@ -14,6 +14,7 @@ import {
   AiHubPage, CompliancePage, CustomerStoriesPage, CustomerStoryDetailPage, IndustriesPage, IndustryDetailPage,
   IntegrationsPage, ResourceDetailPage, ResourcesPage, SegmentDetailPage, SegmentsPage,
 } from '@/pages/hubs';
+import { FreeToolsPage } from '@/pages/free-tools';
 import { siteContainerMaxWidth } from '@/lib/theme';
 import { LoginPage, RegisterPage } from '@/pages/auth';
 import { TooltipProvider } from '@/components/ui/tooltip';
@@ -101,7 +102,7 @@ const P = {
   support: pub(SupportPage), demo: pub(DemoPage), dynamic: pub(DynamicPage), notFound: pub(NotFoundPage),
   industries: pub(IndustriesPage), industry: pub(IndustryDetailPage), segments: pub(SegmentsPage), solutionDetail: pub(SolutionDetailRoute),
   ai: pub(AiHubPage), resources: pub(ResourcesPage), resource: pub(ResourceDetailPage), integrations: pub(IntegrationsPage),
-  compliance: pub(CompliancePage), customerStories: pub(CustomerStoriesPage), customerStory: pub(CustomerStoryDetailPage),
+  compliance: pub(CompliancePage), customerStories: pub(CustomerStoriesPage), customerStory: pub(CustomerStoryDetailPage), freeTools: pub(FreeToolsPage),
 };
 
 /** The full route table, shared by client App and SSR PublicApp so markup is identical. */
@@ -126,6 +127,8 @@ export function PublicRoutes() {
         <Route path="/compliance" component={P.compliance} />
         <Route path="/customer-stories" component={P.customerStories} />
         <Route path="/customer-stories/:slug" component={P.customerStory} />
+        <Route path="/free-tools" component={P.freeTools} />
+        <Route path="/free-tools/:slug" component={P.freeTools} />
         <Route path="/pricing" component={P.pricing} />
         <Route path="/about" component={P.about} />
         <Route path="/contact" component={P.contact} />

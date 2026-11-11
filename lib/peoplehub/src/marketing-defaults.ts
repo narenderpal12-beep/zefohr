@@ -6,6 +6,7 @@ const companyLinks=[
   {label:"Our support",href:"/support"},{label:"Request a demo",href:"/request-demo"},
 ];
 const resourceLinks=[
+  {label:"Free HR tools",href:"/free-tools",description:"Use practical calculators and document generators.",icon:"Calculator"},
   {label:"Resource hub",href:"/resources"},{label:"Blog",href:"/blog"},
   {label:"Use cases",href:"/case-studies"},{label:"Customer stories",href:"/customer-stories"},
   {label:"Media coverage",href:"/media-coverage"},{label:"Integrations",href:"/integrations"},
@@ -15,10 +16,27 @@ const solutionLinks=[
   {label:"Industries",href:"/industries"},
   {label:"Company size and roles",href:"/solutions"},
 ];
+const freeToolGuidance:Record<string,{method:string;formula:string;formTitle?:string}>={
+  "roi-calculator":{method:"Compare your current payroll-administration hours with an editable monthly time-saving assumption. The estimate is capped at the hours you entered.",formula:"Annual hours returned = the lower of employee count × hours-saved assumption × 12 or entered payroll hours × 12. Indicative time value = annual hours × estimated hourly salary cost × the configured loaded-cost multiplier. Payback uses a configured implementation cost."},
+  "pricing-estimator":{method:"Select a team size and modules. The estimate is available only when an administrator has configured planning rates.",formula:"Estimated monthly amount = employees × (configured base monthly rate per employee + selected modules × configured module rate). The displayed range applies the configured margin."},
+  "salary-ctc":{method:"Allocate the annual CTC across basic pay, HRA, employer PF and the remaining allowance using the editable percentages.",formula:"Each component = annual CTC × its configured percentage. This does not model every salary component, deduction or employer policy."},
+  gratuity:{method:"Estimate from last-drawn monthly basic pay and completed service years using the editable assumptions.",formula:"Estimated amount = monthly basic × configured months-per-year ÷ configured divisor × completed years, if the configured service threshold is met."},
+  hra:{method:"Compare the entered HRA, rent and salary against the three configured limits.",formula:"Estimated exemption = max(0, minimum of HRA received, rent less the configured share of basic pay, and the configured city share of basic pay)."},
+  "tax-regime":{method:"Compare two browser-calculated estimates using tax slabs supplied and reviewed by your administrator.",formula:"Tax = sum of each progressive slab portion × its configured rate, with configured cess applied. Slabs must include a final open-ended band."},
+  "leave-encashment":{method:"Estimate an amount from the salary basis, eligible days and configured divisor. Confirm the applicable policy before use.",formula:"Estimated amount = monthly salary basis ÷ configured divisor × eligible days."},
+  "notice-settlement":{method:"Organise an indicative notice-shortfall and leave-encashment estimate alongside earnings and deductions you enter.",formula:"Estimate = max(0, required notice days − days served) × daily salary + eligible leave × daily salary + entered earnings − entered deductions."},
+  payslip:{method:"Enter sample pay-period and employee details. The browser totals entered earnings and deductions into a printable draft.",formula:"Gross pay = basic + HRA + other earnings. Indicative net pay = gross pay − entered deductions."},
+  "hr-letters":{method:"Choose an editable template and fill its placeholders to create a first draft for review.",formula:"The preview substitutes your entered details into the administrator-editable letter body. No legal terms are generated or validated."},
+  "job-description":{method:"Add a role, level, skills and responsibilities to assemble an editable role-description draft.",formula:"The preview combines your inputs with a standard outline. It does not assess job requirements or make hiring decisions."},
+  "maturity-assessment":{method:"Rate eight people-process areas based on your current practice, then review the score and prompts.",formula:"Score = the sum of selected option positions divided by the maximum possible score. It is a self-assessment, not a benchmark."},
+  "module-finder":{method:"Answer four yes/no questions about current priorities to gather related topics for a team discussion.",formula:"Suggested topics are the unique module labels attached to answers marked Yes. They are not a product recommendation."},
+  "public-holidays":{method:"Search only for holiday records an administrator has reviewed and published with a secure source and update date.",formula:"Holiday dates are displayed as supplied by the administrator; this tool does not infer or generate dates.",formTitle:"Search published holiday references"},
+  "minimum-wage":{method:"Search only for wage records an administrator has reviewed and published with a secure source and update date.",formula:"Wage values and categories are displayed as supplied by the administrator; this tool does not calculate legal rates.",formTitle:"Search published wage references"},
+};
 export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:string):Doc{
   const suiteLink=(s:Doc)=>({label:s.title,href:`/features/${s.slug}`,description:s.description,icon:s.icon});
   const serviceLink=(s:Doc)=>({label:s.title,href:`/services/${s.slug}`,description:s.description,icon:s.icon});
-  return {
+  const result:Doc = {
     brand:{name:"PeopleHub",tagline:"People-first HR. Business-ready possibilities.",logoUrl:"",logoAlt:"PeopleHub logo",showWordmark:true},
     theme:{preset:"aurora",defaultMode:"dark",allowModeToggle:true,customColors:false,primary:"#8b5cf6",cyan:"#22d3ee",pink:"#ec4899",background:"#090b13",containerLayout:"standard",customContainerWidth:1440},
     nav:{
@@ -186,11 +204,102 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
         description:"Explore practical resources for common HR decisions. For organisation-specific guidance, our team can help you find the right next step.",
         ctaLabel:"Talk through a question",ctaHref:"/request-demo",
         items:[
-          {title:"People cost planning",description:"Understand the inputs behind a workforce budget."},
-          {title:"Leave and exit planning",description:"Review the information teams commonly need to prepare."},
-          {title:"Payroll questions",description:"Organise questions to discuss with your payroll specialist."},
-          {title:"Hiring and onboarding",description:"Map the steps your team may want to plan before a new hire joins."},
+          {title:"People cost planning",description:"Estimate workforce time value and explore configurable pricing.",href:"/free-tools/roi-calculator"},
+          {title:"Leave and exit planning",description:"Estimate leave encashment and organise final-settlement inputs.",href:"/free-tools/leave-encashment"},
+          {title:"Payroll questions",description:"Explore salary, gratuity and payslip planning tools.",href:"/free-tools/salary-ctc"},
+          {title:"Hiring and onboarding",description:"Create a job description draft and identify relevant modules.",href:"/free-tools/job-description"},
         ],
+      },
+      freeTools:{
+        eyebrow:"FREE HR TOOLS",title:"Practical tools for everyday people decisions.",
+        description:"Explore planning calculators, document generators and reference tools. Results are estimates, not legal, tax or payroll advice.",
+        searchLabel:"Find a tool",searchPlaceholder:"Search calculators, generators and references",
+        categoryLabel:"Category",allCategoryLabel:"All tools",emptyMessage:"No tools match your search.",
+        estimateNotice:"Calculations are planning estimates based on the inputs and assumptions shown. Confirm payroll, tax and statutory matters with a qualified professional before acting.",
+        leadTitle:"Email me this estimate",leadNameLabel:"Your name",leadEmailLabel:"Work email",
+        leadButton:"Send my report",leadSuccess:"Your report request has been received.",
+        roiAssumptions:{
+          hoursSavedPerEmployeeMonth:0.15,
+          loadedCostMultiplier:1.25,
+          implementationCost:0,
+          note:"Illustrative planning assumptions only. Update these values for your own organisation before relying on the result.",
+        },
+        pricingAssumptions:{
+          baseMonthlyPerEmployee:0,
+          selectedModuleMonthly:0,
+          rangePercent:10,
+          note:"No verified PeopleHub price is configured. An administrator can set planning rates; otherwise ask the team for a quote.",
+        },
+        gratuityAssumptions:{monthsPerYear:15,divisor:26,eligibilityYears:5},
+        taxAssumptions:{
+          basis:"Illustrative only — not checked for the current tax year. Ask a qualified tax professional to confirm applicable rules.",
+          oldRegime:[],newRegime:[],
+          cessPercent:0,
+        },
+        salaryAssumptions:{
+          basicPercent:50,hraPercentOfBasic:40,employerPfPercent:12,
+          note:"Editable planning assumptions; actual salary structures vary by employer and applicable rules.",
+        },
+        hraAssumptions:{metroPercent:50,nonMetroPercent:40,rentLessBasicPercent:10},
+        leaveAssumptions:{monthlyDivisor:26},
+        noticeAssumptions:{monthlyDivisor:26},
+        pricingModules:["Core HR","Payroll","Attendance","Recruitment","Performance","Employee support"],
+        letterTemplates:[
+          {key:"offer",title:"Offer letter",body:"Dear {{employee_name}},\n\nWe are pleased to offer you the position of {{job_title}} at {{company_name}}, with an intended start date of {{start_date}}.\n\nYour annual compensation is {{compensation}}. Please review the terms with your employer before signing.\n\nSincerely,\n{{signatory_name}}\n{{company_name}}"},
+          {key:"appointment",title:"Appointment letter",body:"Dear {{employee_name}},\n\nThis letter confirms your appointment as {{job_title}} at {{company_name}}, effective {{start_date}}.\n\nYour annual compensation is {{compensation}}. Your manager will share role expectations, applicable policies and joining details separately.\n\nSincerely,\n{{signatory_name}}\n{{company_name}}"},
+          {key:"experience",title:"Experience letter",body:"To whom it may concern,\n\nThis is to confirm that {{employee_name}} was employed by {{company_name}} as {{job_title}} from {{start_date}} to {{end_date}}.\n\nWe wish them well in their future endeavours.\n\nSincerely,\n{{signatory_name}}\n{{company_name}}"},
+          {key:"relieving",title:"Relieving letter",body:"Dear {{employee_name}},\n\nThis confirms that your employment as {{job_title}} with {{company_name}} concluded on {{end_date}}. Please coordinate any remaining handover or asset-return steps with your employer.\n\nSincerely,\n{{signatory_name}}\n{{company_name}}"},
+          {key:"increment",title:"Compensation change",body:"Dear {{employee_name}},\n\nWe are writing to confirm a compensation change for your role as {{job_title}} at {{company_name}}, effective {{start_date}}.\n\nThe revised annual compensation is {{compensation}}. Please refer to the formal terms shared by your employer.\n\nSincerely,\n{{signatory_name}}\n{{company_name}}"},
+          {key:"confirmation",title:"Employment confirmation",body:"Dear {{employee_name}},\n\nWe are pleased to confirm your employment as {{job_title}} at {{company_name}}, effective {{start_date}}.\n\nPlease continue to follow the policies and terms provided by your employer.\n\nSincerely,\n{{signatory_name}}\n{{company_name}}"},
+          {key:"internship",title:"Internship letter",body:"Dear {{employee_name}},\n\nWe are pleased to offer you an internship as {{job_title}} with {{company_name}}, starting {{start_date}} and ending {{end_date}}.\n\nYour employer will share the applicable internship terms and supervision details.\n\nSincerely,\n{{signatory_name}}\n{{company_name}}"},
+        ],
+        maturityQuestions:[
+          {category:"People records",question:"How consistently are employee records maintained?",options:["Scattered or manual","Partly standardised","Centralised and reviewed"]},
+          {category:"Hiring",question:"How clearly are hiring stages and ownership defined?",options:["Mostly ad hoc","Defined for some roles","Repeatable across roles"]},
+          {category:"Joining",question:"How do you coordinate new-hire onboarding?",options:["Informal handoffs","Checklist for some teams","Owned, tracked process"]},
+          {category:"Payroll inputs",question:"How are payroll inputs gathered and checked?",options:["Manual follow-ups","Some repeatable checks","Documented review and sign-off"]},
+          {category:"Time and leave",question:"How are time, schedules and leave managed?",options:["Separate manual records","Partly connected","Consistent shared process"]},
+          {category:"Performance",question:"How are goals and feedback handled?",options:["Infrequent or informal","Some planned cycles","Regular, documented cycles"]},
+          {category:"Employee support",question:"How do employees find answers and request help?",options:["Ask individuals directly","Shared channels exist","Clear, tracked support route"]},
+          {category:"Reporting",question:"How do leaders review people-operation measures?",options:["Manual snapshots","Some recurring reports","Regular, owned review"]},
+        ],
+        moduleQuestions:[
+          {key:"records",question:"Do you need a more consistent employee-record and onboarding process?",modules:["Core HR","Onboarding"]},
+          {key:"payroll",question:"Are payroll input preparation and review a priority?",modules:["Payroll","Compliance support"]},
+          {key:"time",question:"Do you coordinate shifts, time, attendance or leave?",modules:["Time and attendance","Leave management"]},
+          {key:"hiring",question:"Are hiring pipelines and joining handoffs a current focus?",modules:["Recruitment","Onboarding"]},
+        ],
+        taxToolFaq:[
+          {question:"Is this a current tax calculation?",answer:"No. It uses administrator-configured illustrative slab assumptions and does not determine tax liability. Confirm current rules with a qualified tax professional."},
+          {question:"Does this include deductions and all income types?",answer:"No. It is a simplified comparison and may not include all deductions, special-rate income, rebates or individual circumstances."},
+        ],
+        holidayReferences:[],
+        minimumWageReferences:[],
+        faq:[
+          {question:"Are the calculations legal, tax or payroll advice?",answer:"No. They are planning estimates only. Confirm applicable rules and calculations with qualified professionals and official sources."},
+          {question:"Can our team change assumptions and content?",answer:"Yes. Administrators can update tool copy, assumptions, FAQs and reference data in the existing content editor."},
+        ],
+        tools:[
+          {slug:"roi-calculator",category:"Planning",title:"HRMS ROI calculator",description:"Estimate time savings, annual value and payback using your team size and editable assumptions.",icon:"TrendingUp"},
+          {slug:"pricing-estimator",category:"Planning",title:"Pricing estimator",description:"Build a planning estimate from employee count and selected modules when rates are configured.",icon:"IndianRupee"},
+          {slug:"salary-ctc",category:"Salary",title:"Salary and CTC calculator",description:"Break annual CTC into monthly and annual components using editable planning assumptions.",icon:"Wallet"},
+          {slug:"gratuity",category:"Salary",title:"Gratuity estimator",description:"Estimate gratuity using last-drawn basic pay, completed service and editable assumptions.",icon:"Calculator"},
+          {slug:"hra",category:"Salary",title:"HRA exemption estimator",description:"Compare the common HRA exemption limits using rent, salary and city type inputs.",icon:"Home"},
+          {slug:"tax-regime",category:"Salary",title:"Income-tax comparison",description:"Compare two estimates using administrator-configured tax slabs; not a current tax determination.",icon:"Scale"},
+          {slug:"leave-encashment",category:"Salary",title:"Leave encashment estimator",description:"Estimate a leave encashment amount from eligible days and salary inputs.",icon:"Calendar"},
+          {slug:"notice-settlement",category:"Salary",title:"Notice and final-settlement planner",description:"Organise notice shortfall, leave encashment and other estimated settlement components.",icon:"FileText"},
+          {slug:"payslip",category:"Documents",title:"Payslip generator",description:"Create a sample payslip preview and download it as a printable document.",icon:"FileText"},
+          {slug:"hr-letters",category:"Documents",title:"HR letter generator",description:"Prepare an editable first draft for common employment letters.",icon:"FileText"},
+          {slug:"job-description",category:"Hiring",title:"Job description builder",description:"Create a structured role description from role, level, skills and responsibilities.",icon:"Briefcase"},
+          {slug:"maturity-assessment",category:"Planning",title:"HR maturity assessment",description:"Answer eight questions to see a simple score and practical next steps.",icon:"Target"},
+          {slug:"module-finder",category:"Planning",title:"Module finder",description:"Answer four questions to identify areas worth exploring with your team.",icon:"Search"},
+          {slug:"public-holidays",category:"References",title:"Public holiday references",description:"Browse administrator-reviewed holiday data by year and location; no unverified dates are presented as current.",icon:"Calendar"},
+          {slug:"minimum-wage",category:"References",title:"Minimum-wage references",description:"Browse administrator-reviewed wage references with official sources and update dates.",icon:"Scale"},
+        ].map(item=>({
+          ...item,
+          ...freeToolGuidance[item.slug],
+          howItWorks:freeToolGuidance[item.slug]?.method??"Enter the requested inputs and review the on-screen estimate. You can change the values to compare planning scenarios.",
+        })),
       },
       security:{
         eyebrow:"RESPONSIBLE BY DESIGN",title:"Clear about data, support and scope.",
@@ -342,6 +451,9 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       button:"Request a demo",sendingLabel:"Sending...",sendAnotherLabel:"Send another",optionalLabel:"optional",teamSizeLabel:"Team size",messageLabel:"What would you like to explore?",note:"This submits a demo enquiry. No meeting is booked or payment collected automatically.",
     },
   };
+  result.freeTools=result.homepageV2.freeTools;
+  delete result.homepageV2.freeTools;
+  return result;
 }
 
 export const additionalMarketingPages=[

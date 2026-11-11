@@ -34,6 +34,7 @@ export const NATIVE_LABELS: Record<string, string> = {
   '/request-for-demo': 'Request a demo (alias)', '/industries': 'Industries', '/solutions': 'Company size and roles',
   '/ai': 'AI capabilities', '/resources': 'Resources', '/integrations': 'Integrations', '/compliance': 'Compliance references',
   '/customer-stories': 'Customer stories',
+  '/free-tools': 'Free HR tools',
 };
 
 /** Shared CMS sections each native route reads. */
@@ -45,7 +46,7 @@ export const ROUTE_KEYS: Record<string, string[]> = {
   '/support': ['support', 'contact', 'cta'], '/our-support': ['support', 'contact', 'cta'], '/request-demo': ['demo', 'contact'], '/request-for-demo': ['demo', 'contact'],
   '/industries': ['industryHub', 'cta'], '/solutions': ['segments', 'cta'], '/ai': ['aiHub', 'cta'],
   '/resources': ['resourcesHub'], '/integrations': ['integrationMarketplace', 'cta'], '/compliance': ['complianceHub', 'cta'],
-  '/customer-stories': ['customerStories', 'cta'],
+  '/customer-stories': ['customerStories', 'cta'], '/free-tools': ['freeTools'],
 };
 export function pagesUsingKey(key: string): string[] {
   return Object.entries(ROUTE_KEYS).filter(([, ks]) => ks.includes(key)).map(([p]) => NATIVE_LABELS[p] ?? p);
@@ -88,6 +89,7 @@ export function linkOptions(content: AnyObj | undefined, publishedPages: AnyObj[
     g('Industry solutions', arr<AnyObj>(c.industryHub?.items).filter((s) => str(s.slug)).map((s) => ({ href: `/industries/${str(s.slug)}`, label: str(s.title) }))),
     g('Company size and role', arr<AnyObj>(c.segments?.items).filter((s) => str(s.slug)).map((s) => ({ href: `/solutions/${str(s.slug)}`, label: str(s.title) }))),
     g('Published resources', arr<AnyObj>(c.resourcesHub?.items).filter((s) => str(s.slug) && s.status === 'published').map((s) => ({ href: `/resources/${str(s.slug)}`, label: str(s.title) }))),
+    g('Free HR tools', [{ href: '/free-tools', label: str(c.freeTools?.title, 'Free HR tools') }]),
     g('Customer stories', arr<AnyObj>(c.customerStories?.items).filter((s) => str(s.slug) && s.status === 'published' && s.verified === true).map((s) => ({ href: `/customer-stories/${str(s.slug)}`, label: str(s.title) }))),
     g('Legal', Object.entries((c.legal ?? {}) as AnyObj).map(([slug, l]) => ({ href: `/${slug}`, label: str((l as AnyObj)?.title, slug) }))),
     g('Other', [{ href: '/register?mode=trial', label: 'Start free trial' }, { href: '/login', label: 'Log in' }]),

@@ -366,7 +366,7 @@ export function HomeAlternate() {
         <section className="hv-tools">
           <div className="hv-container hv-tools-layout">
             <HomeV2Heading eyebrow={tools.eyebrow} title={tools.title} description={tools.description} />
-            <div className="hv-tools-grid">{arr<AnyObj>(tools.items).map((item, index) => <article key={`${str(item.title)}-${index}`}><span className="hv-tool-icon"><CircleHelp aria-hidden="true" /></span><h3>{str(item.title)}</h3><p>{str(item.description)}</p></article>)}</div>
+            <div className="hv-tools-grid">{arr<AnyObj>(tools.items).map((item, index) => <SafeLink href={str(item.href, '/free-tools')} key={`${str(item.title)}-${index}`} className="block"><span className="hv-tool-icon"><CircleHelp aria-hidden="true" /></span><h3>{str(item.title)}</h3><p>{str(item.description)}</p></SafeLink>)}</div>
             <SafeLink href={tools.ctaHref ?? '/request-demo'} className="hv-button hv-button-secondary">{str(tools.ctaLabel, 'Talk through a question')} <ArrowRight aria-hidden="true" /></SafeLink>
           </div>
         </section>

@@ -140,6 +140,20 @@ function validateContent(key:string,value:Doc) {
       if(ref.slug)slugs.add(ref.slug);
     }
   }
+  if(key==="freeTools"){
+    validateSectionLinks(value);
+    const references=[...(Array.isArray(value.holidayReferences)?value.holidayReferences:[]),...(Array.isArray(value.minimumWageReferences)?value.minimumWageReferences:[])];
+    for(const ref of references){
+      if(!ref||typeof ref!=="object")fail("Each public reference must be an object");
+      if(ref.status!=null&&!["draft","published"].includes(ref.status))fail("Choose draft or published for each reference");
+      if(ref.status==="published"&&(ref.verified!==true||!/^https:\/\/[^\s]+$/i.test(ref.sourceUrl||"")||!asText(ref.lastUpdated).trim()||Number.isNaN(Date.parse(ref.lastUpdated))))fail("Published public references need verified review, a secure source link and a valid update date");
+    }
+    for(const regime of ["oldRegime","newRegime"]){
+      const slabs=value.taxAssumptions?.[regime];
+      if(slabs!=null&&!Array.isArray(slabs))fail("Tax assumptions must use a list of slabs");
+      for(const slab of slabs??[])if(!Number.isFinite(Number(slab.rate))||Number(slab.rate)<0||Number(slab.rate)>100||(!Number.isFinite(Number(slab.upTo))&&slab.upTo!==null))fail("Tax slabs need a valid rate and an upper limit or blank final limit");
+    }
+  }
 }
 export const contentRouter=Router();
 contentRouter.get("/content",async(_req,res)=>{res.set("Cache-Control","no-store").json(await getContent());});

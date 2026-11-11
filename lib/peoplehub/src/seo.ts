@@ -16,6 +16,7 @@ for(const [path,type,title] of [
   ["/ai","static","AI concepts for people operations"],["/resources","static","Resources for people teams"],
   ["/integrations","static","PeopleHub integrations"],["/compliance","static","Compliance references"],
   ["/customer-stories","static","PeopleHub customer stories"],
+  ["/free-tools","static","Free HR tools and calculators"],
   ["/register","app_public","Create your organisation"],["/login","app_public","Sign in"],
   ["/dashboard","app_public","Organisation dashboard"],["/admin","app_public","Site administration"],["/admin/seo","app_public","SEO Manager"],
   ["/admin/clients","app_public","Client management"],
@@ -24,6 +25,7 @@ for(const [path,type,title] of [
   ["/features/:slug","suite","%title%"],["/services/:slug","service","%title%"],["/blog/:slug","blog","%title%"],["/case-studies/:slug","case_study","%title%"],
   ["/industries/:slug","industry","%title%"],["/solutions/:slug","segment","%title%"],["/resources/:slug","resource","%title%"],
   ["/customer-stories/:slug","customer_story","%title%"],
+  ["/free-tools/:slug","free_tool","%title%"],
 ]) registerSeoRoute({path,type,titleFrom:title});
 export const appPath = (path:string)=>/^\/(admin|dashboard|login|register)(\/|$)/.test(path);
 const pathSchema = /^\/[a-zA-Z0-9/_:.-]*$/;
@@ -57,6 +59,7 @@ export async function routeCatalogue(data?:Doc) {
   for(const item of d.content.segments?.items??[]) if(item.slug&&item.title) result.push({path:`/solutions/${item.slug}`,page_type:"segment",title:item.title,description:item.description,item});
   for(const item of d.content.resourcesHub?.items??[]) if(item.slug&&item.title&&item.status==="published") result.push({path:`/resources/${item.slug}`,page_type:"resource",title:item.title,description:item.description,item});
   for(const item of d.content.customerStories?.items??[]) if(item.slug&&item.title&&item.status==="published"&&item.verified===true) result.push({path:`/customer-stories/${item.slug}`,page_type:"customer_story",title:item.title,description:item.summary,item});
+  for(const item of d.content.freeTools?.tools??[]) if(item.slug&&item.title) result.push({path:`/free-tools/${item.slug}`,page_type:"free_tool",title:item.title,description:item.description,item});
   for(const [i,p] of (d.content.caseStudies?.items??[]).entries()){
     if(p.title)result.push({path:`/case-studies/${p.slug||`story-${i+1}`}`,page_type:"case_study",title:p.title,description:p.summary,item:p});
   }
@@ -137,7 +140,7 @@ export async function resolveSeo(path:string,data?:Doc,origin?:string) {
   ];
   if(path!=="/" && match) schema.push({"@context":"https://schema.org","@type":"BreadcrumbList",itemListElement:[{"@type":"ListItem",position:1,name:"Home",item:base+"/"},{"@type":"ListItem",position:2,name:pageTitle,item:canonical}]});
   if(path==="/pricing") schema.push({"@context":"https://schema.org","@type":"SoftwareApplication",name:d.content.nav.brand,applicationCategory:"BusinessApplication",operatingSystem:"Web",offers:d.content.pricing.plans.filter((p:Doc)=>p.monthly!=null).map((p:Doc)=>({"@type":"Offer",name:p.name,price:p.monthly,priceCurrency:"INR",description:"Per employee per month"}))});
-  const faq=path==="/faq"?d.content.faq.items:match?.item?.faq??match?.item?.content?.faq;
+  const faq=path==="/faq"?d.content.faq.items:match?.page_type==="free_tool"?(match.item.slug==="tax-regime"?d.content.freeTools?.taxToolFaq:d.content.freeTools?.faq):match?.item?.faq??match?.item?.content?.faq;
   if((result.schema_type==="FAQPage" || faq) && faq?.length) schema.push({"@context":"https://schema.org","@type":"FAQPage",mainEntity:faq.map((f:Doc)=>({"@type":"Question",name:f.question,acceptedAnswer:{"@type":"Answer",text:f.answer}}))});
   if(match?.page_type==="blog") schema.push({"@context":"https://schema.org","@type":"Article",headline:match.item.title,description:match.item.excerpt,datePublished:match.item.published_at,author:{"@type":"Person",name:match.item.author||d.content.nav.brand},image:match.item.cover_image_url||result.og_image_url});
   if(result.schema_type==="Service") schema.push({"@context":"https://schema.org","@type":"Service",name:pageTitle,description,provider:{"@type":"Organization",name:d.content.nav.brand}});

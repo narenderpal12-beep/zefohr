@@ -10,6 +10,7 @@ import {
 import { ClientsSection } from '@/components/site/clients';
 import { PageBlocks } from '@/components/site/page-blocks';
 import { SolutionImage } from '@/components/site/solution-image';
+import { FreeToolsTeaser } from './free-tools';
 import { HomeAlternate } from './home-alternate';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +23,7 @@ export function HomePage() {
       <Stats />
       <ClientsSection />
       <SuitesTabs />
+      <FreeToolsTeaser />
       <ServiceGrid />
       <AiSection />
       <WhyUs />

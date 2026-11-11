@@ -277,11 +277,11 @@ export function Alternate() {
         @media(max-width:640px){.ph-tabs{grid-template-columns:repeat(4,minmax(180px,1fr));overflow-x:auto;padding-bottom:7px;scroll-snap-type:x proximity}.ph-tab{scroll-snap-align:start}}
         .ph-hero-kicker-row{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:470px}.ph-hero-lottie{display:grid;width:68px;height:68px;place-items:center;flex:none;overflow:hidden;border:1px solid #e7ebf2;border-radius:50%;background:radial-gradient(circle,#f9faff 0%,#fff 72%);opacity:.92}.ph-hero-lottie>div,.ph-hero-lottie svg{width:100%!important;height:100%!important}.ph-tab>span:not(.ph-tab-indicator){z-index:1}
         @media(max-width:640px){.ph-hero-lottie{width:52px;height:52px}}
-        .ph-tabs{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:stretch;gap:9px;margin:28px 0 24px;padding:0 2px 9px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-padding-inline:2px;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#c4cedd transparent}
-        .ph-tabs::-webkit-scrollbar{height:5px}.ph-tabs::-webkit-scrollbar-track{background:transparent}.ph-tabs::-webkit-scrollbar-thumb{background:#c4cedd;border-radius:8px}
-        .ph-tabs .ph-tab{flex:0 0 clamp(210px,22vw,245px);min-width:0;min-height:78px;scroll-snap-align:start}.ph-thumb-recruitment .ph-thumb-chart{background:linear-gradient(90deg,#ced6fb,#566bda)!important}
-        @media(max-width:900px){.ph-tabs{display:flex;flex-wrap:nowrap}.ph-tabs .ph-tab{flex-basis:225px;min-height:76px}}
-        @media(max-width:640px){.ph-tabs{display:flex;flex-wrap:nowrap;gap:7px;margin:23px 0 20px;padding-bottom:8px}.ph-tabs .ph-tab{flex-basis:min(78vw,250px);min-width:200px;min-height:76px;padding:10px 11px}}
+        .ph-tabs{display:flex;flex-direction:row;flex-wrap:nowrap;align-items:stretch;gap:7px;margin:22px 0 20px;padding:0 2px 6px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scroll-padding-inline:2px;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:#c4cedd transparent}
+        .ph-tabs::-webkit-scrollbar{height:4px}.ph-tabs::-webkit-scrollbar-track{background:transparent}.ph-tabs::-webkit-scrollbar-thumb{background:#c4cedd;border-radius:8px}
+        .ph-tabs .ph-tab{flex:0 0 clamp(155px,16vw,185px);grid-template-columns:18px minmax(0,1fr) 10px;gap:6px;min-width:0;min-height:60px;padding:8px 9px;scroll-snap-align:start}.ph-tabs .ph-tab-no{font-size:8px}.ph-tabs .ph-tab strong{display:-webkit-box;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:2;font-size:10px;line-height:1.25}.ph-tabs .ph-tab small{overflow:hidden;margin-top:1px;font-size:8px;line-height:1.2;text-overflow:ellipsis;white-space:nowrap}.ph-tabs .ph-tab-chevron{font-size:13px}.ph-thumb-recruitment .ph-thumb-chart{background:linear-gradient(90deg,#ced6fb,#566bda)!important}
+        @media(max-width:900px){.ph-tabs{display:flex;flex-wrap:nowrap}.ph-tabs .ph-tab{flex-basis:160px;min-height:58px}}
+        @media(max-width:640px){.ph-tabs{display:flex;flex-wrap:nowrap;gap:6px;margin:20px 0 18px;padding-bottom:6px}.ph-tabs .ph-tab{flex-basis:min(44vw,170px);min-width:140px;min-height:56px;padding:7px 8px}}
       `}</style>
       <div className="ph-topline" />
       <header className="ph-header">

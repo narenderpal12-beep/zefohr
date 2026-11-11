@@ -293,27 +293,27 @@ export function HomeAlternate() {
             <div className="hv-explore-intro">
               <HomeV2Heading eyebrow={product.eyebrow} title={product.title} description={product.description} />
               {product.disclosure ? <div className="hv-disclosure"><strong>{str(product.disclosureTitle, 'Illustrative product direction')}</strong><p>{str(product.disclosure)}</p></div> : null}
-              <div className="hv-suite-tabs" role="tablist" aria-label={str(product.tabsLabel, 'Explore product suites')}>
-                {suites.map((suite, index) => (
-                  <button
-                    key={str(suite.key, str(suite.slug, String(index)))}
-                    id={`hv-suite-tab-${index}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeSuite === index}
-                    aria-controls="hv-suite-panel"
-                    tabIndex={activeSuite === index ? 0 : -1}
-                    onClick={() => setActiveSuite(index)}
-                    onKeyDown={(event) => suiteTabsKeyDown(event, index, suites.length, setActiveSuite)}
-                    className="hv-suite-tab"
-                    data-testid={`tab-home-v2-suite-${str(suite.key, String(index))}`}
-                  >
-                    <span className="hv-tab-index">{String(index + 1).padStart(2, '0')}</span>
-                    <span><strong>{str(suite.title)}</strong><small>{str(suite.description)}</small></span>
-                    <ChevronRight aria-hidden="true" />
-                  </button>
-                ))}
-              </div>
+            </div>
+            <div className="hv-suite-tabs" role="tablist" aria-label={str(product.tabsLabel, 'Explore product suites')}>
+              {suites.map((suite, index) => (
+                <button
+                  key={str(suite.key, str(suite.slug, String(index)))}
+                  id={`hv-suite-tab-${index}`}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeSuite === index}
+                  aria-controls="hv-suite-panel"
+                  tabIndex={activeSuite === index ? 0 : -1}
+                  onClick={() => setActiveSuite(index)}
+                  onKeyDown={(event) => suiteTabsKeyDown(event, index, suites.length, setActiveSuite)}
+                  className="hv-suite-tab"
+                  data-testid={`tab-home-v2-suite-${str(suite.key, String(index))}`}
+                >
+                  <span className="hv-tab-index">{String(index + 1).padStart(2, '0')}</span>
+                  <span><strong>{str(suite.title)}</strong><small>{str(suite.description)}</small></span>
+                  <ChevronRight aria-hidden="true" />
+                </button>
+              ))}
             </div>
             <div className="hv-suite-detail" id="hv-suite-panel" role="tabpanel" aria-labelledby={`hv-suite-tab-${activeSuite}`}>
               <ProductSnapshot suite={selectedSuite} brandName={brandName} />

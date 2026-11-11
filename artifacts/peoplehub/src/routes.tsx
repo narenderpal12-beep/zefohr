@@ -142,7 +142,9 @@ function ThemeRoot({ children }: { children: ReactNode }) {
 function RouteLayout({ C }: { C: () => ReactElement | null }) {
   const [loc] = useLocation();
   const layouts = useSection('pageLayouts') as AnyObj;
+  const homepage = useSection('homepage') as AnyObj;
   const path = `/${loc.split('?')[0].replace(/^\/+|\/+$/g, '')}`;
+  if (path === '/' && str(homepage.activeVariant) === 'alternate') return <C />;
   const sections = (layouts?.routes as AnyObj | undefined)?.[path]?.sections;
   if (!Array.isArray(sections)) return <C />;
   return <PageBlocks sections={sections} original={<C />} />;

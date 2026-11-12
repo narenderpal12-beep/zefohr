@@ -230,6 +230,47 @@
 .phv3-list-row:nth-of-type(3) .phv3-list-marker { background: #64a59a; }
 .phv3-snapshot-list > p { margin: 7px 0 0; color: #9691a0; font-size: 6px; line-height: 1.4; }
 .phv3-product-window .phv3-disclosure { margin: 0; border-top: 1px solid #e9e5ed; padding: 10px 16px 11px; background: #f7f5f9; font-size: 9px; }
+.phv3-product-window--payroll .phv3-snapshot-icon { background: #f8eee2; color: #a46a32; }
+.phv3-product-window--attendance .phv3-snapshot-icon { background: #e7f2ef; color: #3f8878; }
+.phv3-product-window--performance .phv3-snapshot-icon { background: #f8eaf0; color: #b05279; }
+.phv3-pay-breakdown { min-height: 112px; padding: 10px 10px 8px; }
+.phv3-pay-total { display: flex; align-items: baseline; justify-content: space-between; gap: 7px; color: #82796f; font-size: 7px; }
+.phv3-pay-total strong { color: #554335; font-family: "Manrope", sans-serif; font-size: 12px; letter-spacing: -.03em; }
+.phv3-pay-stack { display: flex; height: 11px; overflow: hidden; gap: 2px; margin-top: 9px; border-radius: 99px; background: #f1ede8; }
+.phv3-pay-stack i:first-child { width: 82%; background: #bd8a55; }
+.phv3-pay-stack i:nth-child(2) { flex: 1; background: #dfbd91; }
+.phv3-pay-stack i:nth-child(3) { display: none; }
+.phv3-pay-legend { display: grid; gap: 5px; margin-top: 9px; }
+.phv3-pay-legend span { display: flex; align-items: center; gap: 5px; color: #77716d; font-size: 6px; }
+.phv3-pay-legend span > i { width: 5px; height: 5px; flex: 0 0 5px; border-radius: 50%; background: #bd8a55; }
+.phv3-pay-legend span:nth-child(2) > i { background: #dfbd91; }
+.phv3-pay-legend span:nth-child(3) > i { background: #8d9b8d; }
+.phv3-pay-legend strong { margin-left: auto; color: #5e5854; font-size: 6px; }
+.phv3-product-window--payroll .phv3-chart-card { background: #fffdfa; }
+.phv3-product-window--attendance .phv3-chart-card { background: #fbfdfc; }
+.phv3-week-schedule { min-height: 112px; padding: 8px 8px 7px; }
+.phv3-schedule-head, .phv3-schedule-row { display: grid; grid-template-columns: minmax(40px, 1.35fr) repeat(5, minmax(13px, 1fr)); align-items: center; gap: 4px; }
+.phv3-schedule-head { margin-bottom: 4px; color: #9a9c98; font-family: "DM Mono", monospace; font-size: 6px; text-align: center; }
+.phv3-schedule-head span:first-child { text-align: left; }
+.phv3-schedule-row { min-height: 19px; border-top: 1px solid #edf1ee; }
+.phv3-schedule-row strong { overflow: hidden; color: #6f7974; font-size: 6px; font-weight: 650; text-overflow: ellipsis; }
+.phv3-schedule-row > span { width: 100%; height: 8px; border-radius: 3px; background: #74aa9a; }
+.phv3-schedule-row > span.is-open { background: #e7ece9; }
+.phv3-schedule-key { display: flex; align-items: center; gap: 4px; margin-top: 6px; color: #89928d; font-size: 6px; }
+.phv3-schedule-key > span { width: 5px; height: 5px; border-radius: 2px; background: #74aa9a; }
+.phv3-schedule-key > span.is-open { margin-left: 5px; background: #e7ece9; }
+.phv3-product-window--performance .phv3-chart-card { background: #fffdfd; }
+.phv3-growth-progress { display: grid; min-height: 112px; align-content: center; gap: 7px; padding: 8px 10px 7px; }
+.phv3-goal-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3px 7px; color: #77727a; font-size: 6px; }
+.phv3-goal-row strong { color: #655963; font-size: 6px; }
+.phv3-goal-row > i { grid-column: 1 / -1; display: block; height: 4px; overflow: hidden; border-radius: 99px; background: #f1e9ed; }
+.phv3-goal-row > i b { display: block; height: 100%; border-radius: inherit; background: #c77b98; }
+.phv3-goal-row:nth-child(2) > i b { background: #9d8ab3; }
+.phv3-goal-row:nth-child(3) > i b { background: #82a69b; }
+.phv3-review-steps { display: flex; align-items: center; gap: 4px; margin-top: 2px; color: #a19aa2; font-size: 5px; }
+.phv3-review-steps span { border: 1px solid #eee8ec; border-radius: 99px; padding: 3px 5px; white-space: nowrap; }
+.phv3-review-steps span.is-complete { border-color: #ead6df; background: #fbf2f6; color: #9f5875; }
+.phv3-review-steps i { width: 7px; height: 1px; flex: 0 0 7px; background: #ded7dd; }
 .phv3-carousel-slide { animation: phv3-slide-in .38s ease both; }
 @keyframes phv3-slide-in { from { opacity: .35; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 .phv3-carousel-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 13px 2px 0; }

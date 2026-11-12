@@ -63,9 +63,9 @@ const icons = [UsersRound, BriefcaseBusiness, CalendarDays, GraduationCap];
 const conceptSlides = [
   {
     key: 'payroll', title: 'Salary & Payroll', shortTitle: 'Salary', section: 'Payroll overview', period: 'Illustrative · Monthly pay cycle',
-    metrics: [{ label: 'Illustrative payroll', value: '₹18.6L', note: 'monthly concept' }, { label: 'Team members', value: '48', note: 'illustrative roster' }, { label: 'Pay cycle', value: 'Monthly', note: 'concept cadence' }],
+    metrics: [{ label: 'Illustrative payroll', value: '₹17.38L', note: 'illustrative gross pay' }, { label: 'Team members', value: '48', note: 'illustrative roster' }, { label: 'Pay cycle', value: 'Monthly', note: 'concept cadence' }],
     rows: [{ name: 'Base salary', value: '₹14,20,000' }, { name: 'Allowances', value: '₹3,18,400' }, { name: 'Estimated deductions', value: '₹1,24,600' }],
-    chartLabel: 'A sample pay summary, for illustration only', step: 'Review structure', stepNote: 'Concept screen · no payroll is processed',
+    chartLabel: 'Illustrative salary summary', step: 'Review structure', stepNote: 'Concept screen · no payroll is processed',
   },
   {
     key: 'attendance', title: 'Attendance & Time', shortTitle: 'Attendance', section: 'Time overview', period: 'Illustrative · Weekly team view',
@@ -85,7 +85,6 @@ function ConceptSnapshot({ slide, brandName, labels }: { slide: AnyObj; brandNam
   const isPayroll = slide.key === 'payroll';
   const isAttendance = slide.key === 'attendance';
   const Icon = isPayroll ? IndianRupee : isAttendance ? Clock3 : ChartNoAxesCombined;
-  const bars = isPayroll ? [40, 53, 46, 67, 60, 82, 73] : isAttendance ? [62, 77, 68, 88, 72, 57, 80] : [45, 59, 52, 74, 65, 86, 78];
   return (
     <div className={`phv3-product-window phv3-product-window--${str(slide.key)}`} role="group" aria-label={`${str(slide.title)} illustrative interface preview`}>
       <div className="phv3-window-top">
@@ -115,9 +114,39 @@ function ConceptSnapshot({ slide, brandName, labels }: { slide: AnyObj; brandNam
           </div>
           <div className="phv3-snapshot-lower">
             <div className="phv3-chart-card">
-              <div className="phv3-chart-caption"><span>{str(slide.chartLabel)}</span><span>Sample view</span></div>
-              <div className="phv3-chart" aria-hidden="true">{bars.map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}</div>
-              <div className="phv3-chart-days" aria-hidden="true">{(isAttendance ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7']).map((day, index) => <span key={`${day}-${index}`}>{day}</span>)}</div>
+              <div className="phv3-chart-caption"><span>{str(slide.chartLabel)}</span><span>Illustrative</span></div>
+              {isPayroll ? (
+                <div className="phv3-pay-breakdown" role="img" aria-label="Illustrative pay component breakdown: base salary, allowances, and estimated deductions">
+                  <div className="phv3-pay-total"><span>Illustrative gross pay</span><strong>₹17.38L</strong></div>
+                  <div className="phv3-pay-stack"><i /><i /><i /></div>
+                  <div className="phv3-pay-legend">
+                    <span><i />Base salary <strong>82%</strong></span>
+                    <span><i />Allowances <strong>18%</strong></span>
+                    <span><i />Est. deductions <strong>₹1.25L</strong></span>
+                  </div>
+                </div>
+              ) : isAttendance ? (
+                <div className="phv3-week-schedule" role="img" aria-label="Illustrative weekly schedule showing team coverage across Monday to Friday">
+                  <div className="phv3-schedule-head"><span>Team</span>{['M', 'T', 'W', 'T', 'F'].map((day, index) => <span key={`${day}-${index}`}>{day}</span>)}</div>
+                  {[
+                    { name: 'Studio', shifts: [1, 1, 1, 1, 1] },
+                    { name: 'Support', shifts: [1, 1, 0, 1, 1] },
+                    { name: 'Ops', shifts: [1, 0, 1, 1, 1] },
+                  ].map((team) => (
+                    <div className="phv3-schedule-row" key={team.name}>
+                      <strong>{team.name}</strong>{team.shifts.map((scheduled, index) => <span className={scheduled ? 'is-scheduled' : 'is-open'} key={`${team.name}-${index}`} />)}
+                    </div>
+                  ))}
+                  <div className="phv3-schedule-key"><span /> Planned coverage <span className="is-open" /> Open slot</div>
+                </div>
+              ) : (
+                <div className="phv3-growth-progress" role="img" aria-label="Illustrative goal progress and quarterly review stages">
+                  <div className="phv3-goal-row"><span>Customer focus</span><strong>84%</strong><i><b style={{ width: '84%' }} /></i></div>
+                  <div className="phv3-goal-row"><span>Team craft</span><strong>68%</strong><i><b style={{ width: '68%' }} /></i></div>
+                  <div className="phv3-goal-row"><span>Learning goals</span><strong>76%</strong><i><b style={{ width: '76%' }} /></i></div>
+                  <div className="phv3-review-steps"><span className="is-complete">Goals</span><i /><span className="is-complete">Check-in</span><i /><span>Review</span></div>
+                </div>
+              )}
             </div>
             <div className="phv3-snapshot-list">
               <div className="phv3-list-heading"><strong>{str(slide.step)}</strong><span>Concept</span></div>

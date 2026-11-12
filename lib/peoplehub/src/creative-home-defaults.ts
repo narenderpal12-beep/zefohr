@@ -28,7 +28,7 @@ export const creativeHomeDefaults = {
         section: "Payroll overview",
         period: "Illustrative · Monthly pay cycle",
         metrics: [
-          { label: "Illustrative payroll", value: "₹18.6L", note: "monthly concept" },
+          { label: "Illustrative payroll", value: "₹17.38L", note: "illustrative gross pay" },
           { label: "Team members", value: "48", note: "illustrative roster" },
           { label: "Pay cycle", value: "Monthly", note: "concept cadence" },
         ],

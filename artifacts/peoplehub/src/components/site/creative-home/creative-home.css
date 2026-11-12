@@ -86,7 +86,7 @@
 .phv3-chart-line { position: absolute; top: 52%; left: 10%; width: 80%; height: 1px; background: color-mix(in srgb, var(--v3-cyan) 70%, transparent); transform: rotate(-8deg); }
 .phv3-disclosure { display: flex; align-items: center; gap: 8px; margin: 13px 3px 0; color: var(--v3-muted); font-size: 10px; line-height: 1.5; }
 .phv3-disclosure svg { width: 14px; height: 14px; flex: 0 0 14px; color: var(--v3-cyan); }
-.phv3-float-note { position: absolute; right: -18px; bottom: 58px; display: flex; align-items: center; gap: 11px; max-width: 215px; border: 1px solid var(--v3-line); border-radius: 14px; padding: 12px 15px; background: var(--v3-surface); box-shadow: 0 14px 32px color-mix(in srgb, var(--v3-ink) 10%, transparent); font-size: 11px; font-weight: 700; line-height: 1.4; }
+.phv3-float-note { position: relative; right: auto; bottom: auto; display: flex; align-items: center; gap: 11px; max-width: 215px; margin: 9px 0 0 auto; border: 1px solid var(--v3-line); border-radius: 14px; padding: 12px 15px; background: var(--v3-surface); box-shadow: 0 14px 32px color-mix(in srgb, var(--v3-ink) 10%, transparent); font-size: 11px; font-weight: 700; line-height: 1.4; }
 .phv3-float-note svg { width: 18px; height: 18px; flex: 0 0 18px; color: var(--v3-pink); }
 
 /* Role switcher and suite explorer */
@@ -195,6 +195,54 @@
 .phv3-load { animation: phv3-rise .65s both; }
 .phv3-load:nth-child(2) { animation-delay: .08s; }.phv3-load:nth-child(3) { animation-delay: .16s; }
 @keyframes phv3-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Three editorial, code-built HRMS concept snapshots. No live product data is implied. */
+.phv3-carousel { position: relative; z-index: 1; }
+.phv3-product-window { transform: none; border-radius: 21px; background: #fbfaf8; color: #26233a; box-shadow: 0 32px 80px -44px rgba(49, 38, 88, .4), 0 9px 26px rgba(49, 38, 88, .1); }
+.phv3-window-top { min-height: 59px; background: rgba(255,255,255,.72); }
+.phv3-window-tag { border-color: #c7bde9; background: #f1eef9; color: #6253a2; }
+.phv3-window-content { grid-template-columns: 138px minmax(0, 1fr); min-height: 0; }
+.phv3-window-rail { background: #f5f3f8; }
+.phv3-window-main { padding: 20px clamp(14px, 2vw, 22px) 16px; }
+.phv3-snapshot-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.phv3-snapshot-icon { display: grid; width: 29px; height: 29px; flex: 0 0 29px; place-items: center; border-radius: 9px; background: #eeeaf8; color: #6551a0; }
+.phv3-snapshot-icon svg { width: 15px; height: 15px; }
+.phv3-window-title { font-size: 19px; }
+.phv3-window-sub { font-size: 10px; }
+.phv3-preview-grid { gap: 7px; margin-top: 17px; }
+.phv3-preview-stat { min-width: 0; border-color: #e7e3ec; border-radius: 9px; padding: 10px 9px 8px; background: #fff; }
+.phv3-preview-stat span { min-height: 22px; font-size: 7px; line-height: 1.35; }
+.phv3-preview-stat strong { overflow-wrap: anywhere; margin-top: 5px; color: #38304f; font-size: clamp(13px, 1.55vw, 17px); }
+.phv3-preview-stat small { display: block; overflow: hidden; margin-top: 4px; color: #858091; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+.phv3-snapshot-lower { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 8px; margin-top: 9px; }
+.phv3-chart-card, .phv3-snapshot-list { min-width: 0; overflow: hidden; border: 1px solid #e7e3ec; border-radius: 10px; background: #fff; }
+.phv3-chart-caption { display: flex; align-items: center; justify-content: space-between; gap: 5px; padding: 9px 9px 0; color: #5c576b; font-size: 7px; font-weight: 700; }
+.phv3-chart-caption span:last-child { flex: 0 0 auto; color: #a19baa; font-size: 6px; font-weight: 600; }
+.phv3-chart { height: 66px; gap: 7px; margin: 4px 8px 0; border: 0; border-radius: 0; padding: 8px 7px 0; background: repeating-linear-gradient(to bottom, transparent 0 16px, #f1eff4 17px 18px); }
+.phv3-chart i { width: 10%; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, #7d6cc0, #b8aada); }
+.phv3-chart-days { display: flex; justify-content: space-around; padding: 4px 8px 7px; color: #9a95a3; font-family: "DM Mono", monospace; font-size: 6px; }
+.phv3-snapshot-list { padding: 9px 9px 7px; }
+.phv3-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 5px; padding-bottom: 7px; border-bottom: 1px solid #efedf2; font-size: 8px; }
+.phv3-list-heading span { border-radius: 99px; padding: 3px 5px; background: #f1eef8; color: #7869a9; font-size: 6px; }
+.phv3-list-row { display: grid; grid-template-columns: 5px minmax(0, 1fr) auto; align-items: center; gap: 5px; padding: 7px 0; border-bottom: 1px solid #f2f0f4; color: #777283; font-size: 7px; }
+.phv3-list-row strong { color: #514b60; font-size: 7px; font-weight: 700; text-align: right; }
+.phv3-list-marker { width: 5px; height: 5px; border-radius: 50%; background: #7c6fba; }
+.phv3-list-row:nth-of-type(3) .phv3-list-marker { background: #64a59a; }
+.phv3-snapshot-list > p { margin: 7px 0 0; color: #9691a0; font-size: 6px; line-height: 1.4; }
+.phv3-product-window .phv3-disclosure { margin: 0; border-top: 1px solid #e9e5ed; padding: 10px 16px 11px; background: #f7f5f9; font-size: 9px; }
+.phv3-carousel-slide { animation: phv3-slide-in .38s ease both; }
+@keyframes phv3-slide-in { from { opacity: .35; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+.phv3-carousel-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 13px 2px 0; }
+.phv3-carousel-controls > p { margin: 0; color: var(--v3-muted); font-size: 10px; line-height: 1.45; }
+.phv3-carousel-tabs { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 5px; }
+.phv3-carousel-tabs button { display: inline-flex; min-height: 32px; align-items: center; gap: 6px; border: 1px solid transparent; border-radius: 999px; padding: 5px 9px; background: color-mix(in srgb, var(--v3-surface) 80%, transparent); color: var(--v3-muted); cursor: pointer; font-size: 9px; font-weight: 700; transition: background .2s ease, border-color .2s ease, color .2s ease; }
+.phv3-carousel-tabs button > span { color: #948aa9; font-family: "DM Mono", monospace; font-size: 8px; }
+.phv3-carousel-tabs button[aria-pressed="true"] { border-color: color-mix(in srgb, var(--v3-accent) 26%, var(--v3-line)); background: var(--v3-surface); color: var(--v3-accent); }
+.phv3-carousel-tabs button:hover { border-color: color-mix(in srgb, var(--v3-accent) 30%, var(--v3-line)); }
+.phv3-carousel-pause { display: grid; width: 32px; min-width: 32px; min-height: 32px; place-items: center; border: 1px solid var(--v3-line); border-radius: 50%; background: var(--v3-surface); color: var(--v3-muted); cursor: pointer; transition: color .2s ease, border-color .2s ease, background .2s ease; }
+.phv3-carousel-pause svg { width: 13px; height: 13px; }
+.phv3-carousel-pause:hover { border-color: var(--v3-accent); color: var(--v3-accent); }
+
 @media (prefers-reduced-motion: reduce) {
   .phv3 *, .phv3 *::before, .phv3 *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
@@ -213,7 +261,7 @@
   .phv3-hero h1 { font-size: clamp(47px, 14vw, 70px); }
   .phv3-hero::before { inset: 24% 0 0; }
   .phv3-orbit { top: -32px; left: -20px; width: 90px; height: 90px; }
-  .phv3-float-note { right: -4px; bottom: -20px; max-width: 190px; }
+  .phv3-float-note { right: auto; bottom: auto; max-width: 190px; margin-top: 7px; }
   .phv3-window-top { padding: 13px; }
   .phv3-window-content { grid-template-columns: 105px 1fr; min-height: 300px; }
   .phv3-window-rail { padding: 14px 7px; }
@@ -221,6 +269,15 @@
   .phv3-window-main { padding: 17px 11px; }
   .phv3-window-title { font-size: 17px; }
   .phv3-preview-stat { padding: 9px 6px; }.phv3-preview-stat strong { font-size: 14px; }
+  .phv3-window-content { min-height: 0; }
+  .phv3-window-main { padding: 15px 9px 12px; }
+  .phv3-snapshot-lower { grid-template-columns: 1fr; }
+  .phv3-chart { height: 55px; }
+  .phv3-preview-grid { gap: 5px; }
+  .phv3-preview-stat small { font-size: 6px; }
+  .phv3-carousel-controls { align-items: flex-start; flex-direction: column; }
+  .phv3-carousel-tabs { justify-content: flex-start; }
+  .phv3-carousel-tabs button { padding-inline: 8px; font-size: 8px; }
   .phv3-section-head--split, .phv3-service-foot { align-items: flex-start; flex-direction: column; }
   .phv3-service-grid, .phv3-learning-grid { grid-template-columns: 1fr; }
   .phv3-service-card { min-height: 190px; }

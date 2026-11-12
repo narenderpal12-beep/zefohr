@@ -1,8 +1,9 @@
-import { useId, useState, type ComponentType, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useId, useState, type ComponentType, type KeyboardEvent, type ReactNode } from 'react';
 import { Link } from 'wouter';
 import {
   ArrowRight, ArrowUpRight, BookOpen, BriefcaseBusiness, CalendarDays, Check, ChevronRight,
-  CircleHelp, GraduationCap, HeartHandshake, Layers3, ShieldCheck, Sparkles, UsersRound,
+  ChartNoAxesCombined, CircleHelp, Clock3, GraduationCap, HeartHandshake, IndianRupee, Layers3,
+  Pause, Play, ShieldCheck, Sparkles, UsersRound,
 } from 'lucide-react';
 import { arr, str, type AnyObj } from '@/lib/content';
 
@@ -59,39 +60,125 @@ function selectKey(event: KeyboardEvent<HTMLButtonElement>, index: number, count
 
 const icons = [UsersRound, BriefcaseBusiness, CalendarDays, GraduationCap];
 
-function ProductConcept({ suite, brandName, labels }: { suite?: AnyObj; brandName: string; labels: AnyObj }) {
-  const modules = arr<string>(suite?.modules).slice(0, 4);
-  const first = modules[0] ?? str(labels.moduleLabel);
-  const second = modules[1] ?? str(suite?.title);
-  const third = modules[2] ?? str(labels.conceptLabel);
+const conceptSlides = [
+  {
+    key: 'payroll', title: 'Salary & Payroll', shortTitle: 'Salary', section: 'Payroll overview', period: 'Illustrative · Monthly pay cycle',
+    metrics: [{ label: 'Illustrative payroll', value: '₹18.6L', note: 'monthly concept' }, { label: 'Team members', value: '48', note: 'illustrative roster' }, { label: 'Pay cycle', value: 'Monthly', note: 'concept cadence' }],
+    rows: [{ name: 'Base salary', value: '₹14,20,000' }, { name: 'Allowances', value: '₹3,18,400' }, { name: 'Estimated deductions', value: '₹1,24,600' }],
+    chartLabel: 'A sample pay summary, for illustration only', step: 'Review structure', stepNote: 'Concept screen · no payroll is processed',
+  },
+  {
+    key: 'attendance', title: 'Attendance & Time', shortTitle: 'Attendance', section: 'Time overview', period: 'Illustrative · Weekly team view',
+    metrics: [{ label: 'Illustrative present', value: '42 / 48', note: 'concept day view' }, { label: 'Planned shifts', value: '36', note: 'illustrative roster' }, { label: 'Leave requests', value: '04', note: 'concept queue' }],
+    rows: [{ name: 'Studio · morning', value: '08:30 — 17:30' }, { name: 'Support · day', value: '09:00 — 18:00' }, { name: 'Operations · evening', value: '13:00 — 22:00' }],
+    chartLabel: 'Illustrative team coverage across the week', step: 'Weekly rhythm', stepNote: 'Concept screen · no attendance is recorded',
+  },
+  {
+    key: 'performance', title: 'Employee Performance', shortTitle: 'Performance', section: 'Growth & performance', period: 'Illustrative · Quarterly growth cycle',
+    metrics: [{ label: 'Illustrative check-ins', value: '31 / 48', note: 'concept progress' }, { label: 'Growth goals', value: '76%', note: 'illustrative alignment' }, { label: 'Review cycle', value: 'Quarterly', note: 'concept cadence' }],
+    rows: [{ name: 'Customer focus', value: 'On track' }, { name: 'Team craft', value: 'In progress' }, { name: 'Learning goals', value: 'On track' }],
+    chartLabel: 'An illustrative view of team growth goals', step: 'Growth conversations', stepNote: 'Concept screen · no reviews are stored',
+  },
+];
+
+function ConceptSnapshot({ slide, brandName, labels }: { slide: AnyObj; brandName: string; labels: AnyObj }) {
+  const isPayroll = slide.key === 'payroll';
+  const isAttendance = slide.key === 'attendance';
+  const Icon = isPayroll ? IndianRupee : isAttendance ? Clock3 : ChartNoAxesCombined;
+  const bars = isPayroll ? [40, 53, 46, 67, 60, 82, 73] : isAttendance ? [62, 77, 68, 88, 72, 57, 80] : [45, 59, 52, 74, 65, 86, 78];
   return (
-    <div className="phv3-product-window" role="img" aria-label={`${str(suite?.title, str(labels.snapshotTitle))} ${str(labels.conceptLabel)} product interface`}>
+    <div className={`phv3-product-window phv3-product-window--${str(slide.key)}`} role="group" aria-label={`${str(slide.title)} illustrative interface preview`}>
       <div className="phv3-window-top">
         <span className="phv3-window-brand"><span className="phv3-window-mark"><UsersRound aria-hidden="true" /></span>{brandName}</span>
-        <span className="phv3-window-tag">{str(labels.conceptLabel)}</span>
+        <span className="phv3-window-tag">{str(labels.conceptLabel, 'Illustrative concept')}</span>
       </div>
       <div className="phv3-window-content">
         <aside className="phv3-window-rail" aria-hidden="true">
-          <p className="phv3-window-rail-label">{str(labels.moduleLabel)}</p>
-          {[first, second, third].map((item, index) => {
-            const Icon = icons[index];
-            return <span className={`phv3-rail-item${index === 0 ? ' is-active' : ''}`} key={`${item}-${index}`}><Icon />{item}</span>;
+          <p className="phv3-window-rail-label">{str(labels.moduleLabel, 'Planned areas')}</p>
+          {[['People', UsersRound], ['Pay & time', IndianRupee], ['Growth', ChartNoAxesCombined]].map(([item, RailIcon], index) => {
+            const Glyph = RailIcon as typeof UsersRound;
+            return <span className={`phv3-rail-item${index === (isPayroll ? 1 : isAttendance ? 1 : 2) ? ' is-active' : ''}`} key={String(item)}><Glyph />{String(item)}</span>;
           })}
-          <span className="phv3-rail-item"><CircleHelp />{str(labels.supportLabel, '')}</span>
+          <span className="phv3-rail-item"><CircleHelp />{str(labels.supportLabel, 'Overview')}</span>
         </aside>
         <div className="phv3-window-main">
-          <span className="phv3-window-overline">{str(labels.snapshotLabel)}</span>
-          <h3 className="phv3-window-title">{str(suite?.title, str(labels.snapshotTitle))}</h3>
-          <p className="phv3-window-sub">{str(labels.suitePreviewDescription)}</p>
+          <div className="phv3-snapshot-heading">
+            <span className="phv3-window-overline">{str(slide.period)}</span>
+            <span className="phv3-snapshot-icon"><Icon aria-hidden="true" /></span>
+          </div>
+          <h3 className="phv3-window-title">{str(slide.section, str(slide.title, str(labels.snapshotTitle)))}</h3>
+          <p className="phv3-window-sub">{str(labels.suitePreviewDescription, 'A visual concept for a growing team')}</p>
           <div className="phv3-preview-grid">
-            {arr<string>(labels.metricLabels).slice(0, 3).map((label, index) => (
-              <div className="phv3-preview-stat" key={`${label}-${index}`}><span>{label}</span><strong>{arr<string>(labels.metricValues)[index] ?? str(labels.conceptLabel)}</strong></div>
+            {arr<AnyObj>(slide.metrics).slice(0, 3).map((metric, index) => (
+              <div className="phv3-preview-stat" key={`${str(metric.label)}-${index}`}><span>{str(metric.label)}</span><strong>{str(metric.value)}</strong><small>{str(metric.note)}</small></div>
             ))}
           </div>
-          <div className="phv3-chart" aria-hidden="true"><span className="phv3-chart-line" />{[0, 1, 2, 3, 4, 5, 6].map((n) => <i key={n} />)}</div>
+          <div className="phv3-snapshot-lower">
+            <div className="phv3-chart-card">
+              <div className="phv3-chart-caption"><span>{str(slide.chartLabel)}</span><span>Sample view</span></div>
+              <div className="phv3-chart" aria-hidden="true">{bars.map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}</div>
+              <div className="phv3-chart-days" aria-hidden="true">{(isAttendance ? ['M', 'T', 'W', 'T', 'F', 'S', 'S'] : ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7']).map((day, index) => <span key={`${day}-${index}`}>{day}</span>)}</div>
+            </div>
+            <div className="phv3-snapshot-list">
+              <div className="phv3-list-heading"><strong>{str(slide.step)}</strong><span>Concept</span></div>
+              {arr<AnyObj>(slide.rows).slice(0, 3).map((row, index) => <div className="phv3-list-row" key={`${str(row.name)}-${index}`}><span className="phv3-list-marker" /> <span>{str(row.name)}</span><strong>{str(row.value)}</strong></div>)}
+              <p>{str(slide.stepNote)}</p>
+            </div>
+          </div>
         </div>
       </div>
-      <p className="phv3-disclosure"><ShieldCheck aria-hidden="true" />{str(labels.disclosure)}</p>
+      <p className="phv3-disclosure"><ShieldCheck aria-hidden="true" />{str(labels.disclosure, 'Illustrative product concept only. No real people data or transactions.')}</p>
+    </div>
+  );
+}
+
+function ProductConcept({ brandName, labels }: { suite?: AnyObj; brandName: string; labels: AnyObj }) {
+  const slides = arr<AnyObj>(labels.carouselSlides).length ? arr<AnyObj>(labels.carouselSlides) : conceptSlides;
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [userPaused, setUserPaused] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const id = useId();
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setReducedMotion(media.matches);
+    update();
+    media.addEventListener?.('change', update);
+    return () => media.removeEventListener?.('change', update);
+  }, []);
+  useEffect(() => {
+    if (paused || userPaused || reducedMotion || slides.length < 2) return;
+    const timer = window.setInterval(() => setActive((current) => (current + 1) % slides.length), 6200);
+    return () => window.clearInterval(timer);
+  }, [active, paused, userPaused, reducedMotion, slides.length]);
+  const slide = slides[active] ?? slides[0] ?? conceptSlides[0];
+  return (
+    <div className="phv3-carousel" role="region" aria-roledescription="carousel" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={(event) => {
+      if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setPaused(false);
+    }} aria-label={str(labels.carouselLabel, 'Illustrative HRMS concept screens')}>
+      <div className="phv3-carousel-stage" aria-live="off" aria-atomic="true">
+        <div className="phv3-carousel-slide" key={`${id}-${active}`}>
+          <ConceptSnapshot slide={slide} brandName={brandName} labels={labels} />
+        </div>
+      </div>
+      <div className="phv3-carousel-controls">
+        <p>{str(labels.carouselHint, 'A visual direction for planned HRMS suites')}</p>
+        <div className="phv3-carousel-tabs" role="group" aria-label={str(labels.carouselLabel, 'Choose an illustrative screen')}>
+            {slides.map((item, index) => <button key={`${str(item.key)}-${index}`} type="button" aria-pressed={active === index} aria-label={`${str(labels.showSlideLabel, 'Show concept')}: ${str(item.title)}`} onClick={() => setActive(index)}><span>{String(index + 1).padStart(2, '0')}</span>{str(item.shortTitle, str(item.title))}</button>)}
+          {!reducedMotion ? (
+            <button
+              className="phv3-carousel-pause"
+              type="button"
+              aria-pressed={userPaused}
+              aria-label={str(userPaused ? labels.playSlidesLabel : labels.pauseSlidesLabel, userPaused ? 'Resume automatic slides' : 'Pause automatic slides')}
+              title={str(userPaused ? labels.playSlidesLabel : labels.pauseSlidesLabel, userPaused ? 'Resume automatic slides' : 'Pause automatic slides')}
+              onClick={() => { setPaused(false); setUserPaused((current) => !current); }}
+            >
+              {userPaused ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
+            </button>
+          ) : null}
+        </div>
+      </div>
     </div>
   );
 }
@@ -117,7 +204,7 @@ export function HeroSection({ data }: { data: CreativeHomeData }) {
           <p className="phv3-hero-note"><Check aria-hidden="true" />{str(copy.currentNote)}</p>
         </div>
         <div className="phv3-visual-wrap phv3-load">
-          <ProductConcept suite={data.suites[0]} brandName={brandName} labels={{ ...data.page.ui, ...copy }} />
+          <ProductConcept brandName={brandName} labels={{ ...data.page.ui, ...copy }} />
           {copy.sideNote ? <div className="phv3-float-note"><Sparkles aria-hidden="true" />{str(copy.sideNote)}</div> : null}
         </div>
       </div>

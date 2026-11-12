@@ -37,6 +37,11 @@ export function CreativeHomeSection({ section, content }: { section: CreativeSec
     ...creativeHomeDefaults,
     ...homepage,
     ...(content ?? {}),
+    hero: {
+      ...creativeHomeDefaults.hero,
+      ...(homepage.hero ?? {}),
+      ...(content?.hero ?? {}),
+    },
   }), [homepage, content]);
   const data: CreativeHomeData = {
     page,

@@ -1,5 +1,5 @@
 import { lazy, Suspense, useState, useEffect, type CSSProperties, type ReactElement, type ReactNode } from 'react';
-import { Route, Switch, useLocation, useParams, Router as WouterRouter } from 'wouter';
+import { Route, Switch, useLocation, useParams, useSearch, Router as WouterRouter } from 'wouter';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useResolveSeo, getResolveSeoQueryKey } from '@workspace/api-client-react';
 import { BootstrapProvider, ContentProvider, ModeProvider, arr, str, useSection, type AnyObj, type Bootstrap } from '@/lib/content';
@@ -17,6 +17,7 @@ import {
 import { FreeToolsPage } from '@/pages/free-tools';
 import { siteContainerMaxWidth } from '@/lib/theme';
 import { trackEvent } from '@/lib/analytics';
+import { resolveHomepageDesign } from '@/lib/homepage-designs';
 import { LoginPage, RegisterPage } from '@/pages/auth';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { Toaster } from '@/components/ui/toaster';
@@ -143,8 +144,9 @@ function RouteLayout({ C }: { C: () => ReactElement | null }) {
   const [loc] = useLocation();
   const layouts = useSection('pageLayouts') as AnyObj;
   const homepage = useSection('homepage') as AnyObj;
+  const search = useSearch();
   const path = `/${loc.split('?')[0].replace(/^\/+|\/+$/g, '')}`;
-  if (path === '/' && str(homepage.activeVariant) === 'alternate') return <C />;
+  if (path === '/' && resolveHomepageDesign(homepage.activeVariant, search) !== 'original') return <C />;
   const sections = (layouts?.routes as AnyObj | undefined)?.[path]?.sections;
   if (!Array.isArray(sections)) return <C />;
   return <PageBlocks sections={sections} original={<C />} />;

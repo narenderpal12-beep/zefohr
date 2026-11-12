@@ -9,6 +9,12 @@ Existing website pages must remain available. Admin Content should be organised 
 
 **How to apply:** Keep existing routes and content compatible when extending the page builder. New pages and sections inherit the website’s selected theme. Clearly distinguish shared content changes from page-only changes.
 
+Additional homepage designs are optional choices in Appearance, not replacements for existing designs. Their sections should be reusable on other pages.
+
+**Why:** The user requested a creative third homepage inspired by an external reference while keeping the earlier two available.
+
+**How to apply:** Preserve the selected public homepage when adding a design. Let admins preview and explicitly save their choice, and support shared or page-only content when reusing sections.
+
 Page editing must offer section ordering, reset to defaults and an editable hero slider with multiple layout choices.
 
 **Why:** The user requested up/down controls, default resets and a hero slider with two or three options.

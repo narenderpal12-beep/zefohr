@@ -11,6 +11,7 @@ export const TYPE_META: Record<string, { label: string; desc: string; key?: stri
   original: { label: 'Original page content', desc: 'The built-in layout of this page. Edit its individual sections in Linked sections.' },
   hero: { label: 'Hero banner', desc: 'Large headline, description, two calls to action.', key: 'hero' },
   heroSlider: { label: 'Hero slider', desc: 'Rotating hero with up to 8 slides. Choose Split, Centered or Full-image layout.' },
+  creativeSection: { label: 'Creative homepage section', desc: 'Reuse a section from the third homepage. Keep shared content or create a page-only copy.' },
   text: { label: 'Text block', desc: 'Heading, rich text (markdown) and an optional button.' },
   imageText: { label: 'Image and text', desc: 'Photo beside a heading, text and button.' },
   cards: { label: 'Cards grid', desc: 'A set of cards with icon, text and optional link.' },
@@ -104,6 +105,7 @@ export function customTemplate(type: string): AnyObj {
   if (type === 'imageText') return { eyebrow: '', title: 'Heading beside the photo', body: 'Explain what this photo shows and why it matters to an MSME owner or HR manager. Two or three lines work best.', imageUrl: '', imageAlt: '', imageRight: true, ctaLabel: '', ctaHref: '' };
   if (type === 'cards') return { eyebrow: '', title: 'Cards heading', description: '', items: [{ title: 'First card', description: 'Short supporting line.', icon: 'Sparkles', href: '' }, { title: 'Second card', description: 'Short supporting line.', icon: 'ShieldCheck', href: '' }], ctaLabel: '', ctaHref: '' };
   if (type === 'heroSlider') return structuredClone(heroSliderDefaults) as AnyObj;
+  if (type === 'creativeSection') return { section: 'hero' };
   return {};
 }
 /** Home's built-in sections, in the exact order HomePage renders them. Each reads shared CMS content (content {}). */

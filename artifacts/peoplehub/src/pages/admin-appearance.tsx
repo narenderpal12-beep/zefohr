@@ -10,6 +10,7 @@ import { BrandMark } from '@/components/site/layout';
 import { JsonForm, aBtn, aBtnPrimary, aInput } from '@/components/admin/json-form';
 import { cn } from '@/lib/utils';
 import { encodeLogo } from '@/lib/logo-upload';
+import { HomepageDesignPicker } from '@/components/admin/homepage-design-picker';
 
 /** Local draft of one CMS section, initialised once per key, saved through useSaveContent. */
 function useDraft(key: string) {
@@ -114,6 +115,7 @@ export function AppearanceAdmin() {
         </div>
         <SaveBar d={d} label="appearance" saveText="Save appearance" />
       </div>
+      <HomepageDesignPicker />
       <div className="mt-6 grid gap-5 xl:grid-cols-[1fr_340px]">
         <Card title="Theme preset" sub="Every preset ships with a tuned light and dark variant.">
           <div role="radiogroup" aria-label="Theme preset" className="grid grid-cols-2 gap-3 md:grid-cols-3">

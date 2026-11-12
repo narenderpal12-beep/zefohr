@@ -3,6 +3,7 @@ import {marketingDefaults,additionalMarketingPages} from "./marketing-defaults";
 import {clientDefaults} from "./client-defaults";
 import {defaultSolutionPhoto} from "./solution-photos";
 import {privacyDraft,termsDraft} from "./sample-content";
+import {creativeHomeDefaults} from "./creative-home-defaults";
 const suiteData = [
   ["core_hrms", "core-hrms", "Core HRMS", "Users", "employee database, organisation structure, employee lifecycle, onboarding, confirmation, transfer, promotion, separation, document management, ESS, mobile app, HR policies", "Designed to bring employee profiles, organisation structure, onboarding and key lifecycle records into one connected view. Give teams a clearer way to organise people information, keep processes consistent and plan for each employee milestone as the business grows."],
   ["time_workforce", "time-and-workforce-management", "Time & Workforce Management", "Clock", "attendance, biometric, face recognition, GPS, geo-fencing, shift, roster, leave, overtime, comp-off, timesheets, field-force tracking", "Designed to connect attendance, shifts, leave and timesheets in a clearer workforce workflow. Planned tools span biometric and location-based capture, rosters and field-force scheduling so teams can plan work across sites."],
@@ -108,6 +109,7 @@ export const defaults: Record<string, any> = {
   preview:{label:"HRMS preview · People, payroll and attendance in one place.",payrollLabel:"Payroll run",payrollPeriod:"Mar 26",payrollDetail:"248 payslips",statutoryLabel:"Statutory",statutoryTitle:"PF ECR filed",statutoryDetail:"ESI 12 / PT 4 states",approvalLabel:"WhatsApp approval",approvalTitle:"Leave request",approvalStatus:"Approved",approvalDetail:"2 days",attendanceLabel:"Attendance",attendanceValue:"96.4%",attendanceDetail:"Example workplace"},
 };
 Object.assign(defaults,marketingDefaults(suites,services,complianceNote));
+defaults.homepageV3=creativeHomeDefaults;
 defaults.pageLayouts={routes:{}};
 defaults.clients=clientDefaults;
 export const defaultPages = [

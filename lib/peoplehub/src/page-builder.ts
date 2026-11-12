@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const SECTION_TYPES = ["original","hero","heroSlider","text","imageText","cards","faq","cta","stats","clients","suites","services","pricing","contact","ai","whyUs","integrations"] as const;
+export const SECTION_TYPES = ["original","hero","heroSlider","creativeSection","text","imageText","cards","faq","cta","stats","clients","suites","services","pricing","contact","ai","whyUs","integrations"] as const;
 const heroLinkSchema = z.string().max(1000).refine(value => !value || /^(?:\/(?!\/)|#|https?:\/\/|mailto:|tel:)/i.test(value), "Choose a website page or a safe external link");
 export const heroSlideSchema = z.object({
   eyebrow: z.string().max(150),
@@ -34,6 +34,11 @@ export const pageSectionSchema = z.object({
   enabled: z.boolean().default(true),
   content: z.record(z.string(), z.unknown()).default({}),
 }).strict().superRefine((section,ctx) => {
+  if(section.type==="creativeSection"){
+    const result=z.object({section:z.enum(["hero","clients","roles","suites","journey","services","learning","faq","finalCta"]),overrides:z.record(z.string(),z.unknown()).optional()}).strict().safeParse(section.content);
+    if(!result.success)for(const issue of result.error.issues)ctx.addIssue({...issue,path:["content",...issue.path]});
+    return;
+  }
   if(section.type!=="heroSlider")return;
   const result=heroSliderSchema.safeParse(section.content);
   if(!result.success)for(const issue of result.error.issues)ctx.addIssue({...issue,path:["content",...issue.path]});

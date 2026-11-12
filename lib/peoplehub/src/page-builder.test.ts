@@ -5,6 +5,16 @@ import { heroSliderDefaults, heroSliderSchema, pageLayoutsSchema, pageSectionsSc
 const original = { id: "original", type: "original", enabled: true, content: {} };
 const text = { id: "text-1", type: "text", enabled: true, content: { title: "Our approach", body: "Page content" } };
 
+test("creative homepage sections can be reused and reordered on any public page", () => {
+  const shared = { id: "creative-hero", type: "creativeSection", enabled: true, content: { section: "hero" } };
+  const independent = { id: "creative-roles", type: "creativeSection", enabled: true, content: { section: "roles", overrides: { roles: { title: "Our team" } } } };
+  assert(pageLayoutsSchema.safeParse({ routes: { "/about": { sections: [independent, original, shared] } } }).success);
+  assert(pageSectionsSchema.safeParse([{ ...shared, enabled: false }]).success);
+  assert(!pageSectionsSchema.safeParse([{ ...shared, content: { section: "" } }]).success);
+  assert(!pageSectionsSchema.safeParse([{ ...shared, content: { section: "missing" } }]).success);
+  assert(!pageSectionsSchema.safeParse([{ ...shared, content: { section: "hero", overrides: "not-an-object" } }]).success);
+});
+
 test("existing pages retain original content alongside added sections", () => {
   assert(pageLayoutsSchema.safeParse({ routes: { "/about": { sections: [original, text] } } }).success);
   assert(!pageLayoutsSchema.safeParse({ routes: { "/about": { sections: [original, { ...original, id: "copy" }] } } }).success);

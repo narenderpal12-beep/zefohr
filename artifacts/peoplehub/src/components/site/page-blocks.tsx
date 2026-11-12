@@ -8,6 +8,7 @@ import { AiSection, ContactSection, CtaBand, FaqSection, Hero, Integrations, Pri
 import { ClientsSection } from './clients';
 import { cn } from '@/lib/utils';
 import { HeroSlider } from './hero-slider';
+import { CreativeHomeSection } from '@/pages/home-creative';
 
 const NATIVE: Record<string, { key: string; C: ComponentType }> = {
   hero: { key: 'hero', C: Hero }, faq: { key: 'faq', C: () => <FaqSection /> }, cta: { key: 'cta', C: CtaBand }, stats: { key: 'stats', C: Stats },
@@ -90,6 +91,7 @@ function CardsBlock({ c }: { c: AnyObj }) {
 
 /** Custom (page-owned) block renderer; also used for safe inline admin previews. */
 export function CustomBlock({ type, content, preview }: { type: string; content: AnyObj; preview?: boolean }) {
+  if (type === 'creativeSection') return <CreativeHomeSection section={str(content.section, 'hero')} content={content.overrides as AnyObj | undefined} />;
   if (type === 'heroSlider') return <HeroSlider content={content} preview={preview} />;
   if (type === 'text') return <TextBlock c={content} />;
   if (type === 'imageText') return <ImageTextBlock c={content} />;
@@ -115,7 +117,7 @@ export function PageBlocks({ sections, original }: { sections: unknown; original
         const content = (s.content && typeof s.content === 'object' ? s.content : {}) as AnyObj;
         const key = str(s.id, String(i));
         if (type === 'original') return <div key={key} data-block="original">{original ?? null}</div>;
-        if (type === 'text' || type === 'imageText' || type === 'cards' || type === 'heroSlider') return <div key={key} data-block={type}><CustomBlock type={type} content={content} /></div>;
+        if (type === 'text' || type === 'imageText' || type === 'cards' || type === 'heroSlider' || type === 'creativeSection') return <div key={key} data-block={type}><CustomBlock type={type} content={content} /></div>;
         return <div key={key} data-block={type}><NativeBlock type={type} content={content} /></div>;
       })}
     </>

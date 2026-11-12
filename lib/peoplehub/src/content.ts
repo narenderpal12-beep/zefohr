@@ -10,6 +10,7 @@ import { rateLimit } from "express-rate-limit";
 import { clientsSchema, safeLogo } from "./clients";
 import { pageLayoutsSchema, pageSectionsSchema, reservedPageSlug, retargetPageLinks } from "./page-builder";
 import { themeContentSchema } from "./theme-schema";
+import { homepageSettingsSchema } from "./homepage-schema";
 
 const uuid=z.string().uuid();
 const asText=(value:unknown)=>typeof value==="string"?value:"";
@@ -27,7 +28,8 @@ function validateContent(key:string,value:Doc) {
   if(!value || typeof value!=="object" || Array.isArray(value))fail("A section must be a JSON object");
   const sectionLimit=["suites","services","pageLayouts"].includes(key)?2100000:["clients","media","caseStudies","resourcesHub","customerStories","integrationMarketplace","complianceHub"].includes(key)?1500000:500000;
   if(JSON.stringify(value).length>sectionLimit)fail(["clients","media","caseStudies","suites","services"].includes(key)?"Image collection is too large. Use smaller images or fewer uploads.":"Section is too large");
-  if(["industryHub","segments","aiHub","resourcesHub","integrationMarketplace","complianceHub","customerStories"].includes(key))validateSectionLinks(value);
+  if(["industryHub","segments","aiHub","resourcesHub","integrationMarketplace","complianceHub","customerStories","homepageV3"].includes(key))validateSectionLinks(value);
+  if(key==="homepage" && !homepageSettingsSchema.safeParse(value).success)fail("Choose Original, Alternate or Creative as the homepage design.");
   if(key==="clients"){
     const result=clientsSchema.safeParse(value);
     if(!result.success)fail(result.error.issues[0]?.message??"Invalid client details");

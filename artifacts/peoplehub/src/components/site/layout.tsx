@@ -90,30 +90,34 @@ function MegaPanel({ item, open, id, onNavigate, panelRef, style }: { item: Mega
       <div className="mega-panel-surface rounded-2xl p-5">
         <div className="grid gap-x-6 gap-y-5" style={{ gridTemplateColumns: `repeat(${cols}, minmax(min(210px, calc((92vw - 7rem) / ${cols})), 1fr))` }}>
           {item.groups.map((g, gi) => (
-            <div key={gi}>
-              <p className="px-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--ph-pink)]">{g.title}</p>
-              <ul className="mt-2 space-y-0.5">
+            <section key={gi} className="mega-group">
+              <h2 className="mega-group-title">
+                <span className="mega-group-index" aria-hidden="true">{String(gi + 1).padStart(2, '0')}</span>
+                {g.title}
+              </h2>
+              <ul className="mt-3 space-y-1">
                 {g.links.map((l, li) => {
                   const I = iconFor(str(l.icon));
                   return (
                     <li key={li}>
-                      <Link href={str(l.href, '/')} onClick={onNavigate} tabIndex={open ? 0 : -1} className="group flex gap-3 rounded-xl px-2 py-2 transition hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none" data-testid={`link-mega-${slugify(str(l.label))}`}>
-                        <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04]"><I className="h-4 w-4 text-[color:var(--ph-cyan)]" /></span>
+                      <Link href={str(l.href, '/')} onClick={onNavigate} tabIndex={open ? 0 : -1} className="mega-link group flex gap-3 rounded-xl px-2.5 py-2.5 transition hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none" data-testid={`link-mega-${slugify(str(l.label))}`}>
+                        <span className="mega-link-icon mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl"><I className="h-4 w-4 text-[color:var(--ph-cyan)]" /></span>
                         <span className="min-w-0">
-                          <span className="block text-sm font-medium text-foreground">{str(l.label)}</span>
-                          {l.description ? <span className="mt-0.5 block max-w-[240px] text-xs leading-snug text-muted-foreground">{str(l.description)}</span> : null}
+                          <span className="mega-link-title block">{str(l.label)}</span>
+                          {l.description ? <span className="mega-link-description mt-1 block max-w-[240px]">{str(l.description)}</span> : null}
                         </span>
+                        <ArrowUpRight className="mega-link-arrow ml-auto mt-1 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
                       </Link>
                     </li>
                   );
                 })}
               </ul>
-            </div>
+            </section>
           ))}
         </div>
         {item.href ? (
-          <div className="mt-4 flex justify-end border-t border-white/10 pt-3">
-            <Link href={item.href} onClick={onNavigate} tabIndex={open ? 0 : -1} className="inline-flex items-center gap-1.5 text-xs font-medium text-[color:var(--ph-cyan)]" data-testid={`link-mega-all-${slugify(item.label)}`}>View all {item.label.toLowerCase()} <ArrowUpRight className="h-3.5 w-3.5" /></Link>
+          <div className="mega-panel-footer mt-4 flex justify-end pt-3">
+            <Link href={item.href} onClick={onNavigate} tabIndex={open ? 0 : -1} className="mega-view-all inline-flex items-center gap-1.5" data-testid={`link-mega-all-${slugify(item.label)}`}>View all {item.label.toLowerCase()} <ArrowUpRight className="h-3.5 w-3.5" /></Link>
           </div>
         ) : null}
       </div>
@@ -202,11 +206,11 @@ function MobileNav({ items }: { items: MegaItem[] }) {
                 const k = `${i}-${gi}`;
                 return (
                   <div key={gi}>
-                    <button type="button" onClick={() => setOpenGroup(openGroup === k ? null : k)} aria-expanded={openGroup === k} aria-controls={`mobile-group-${k}`} className="flex w-full items-center justify-between px-4 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-[color:var(--ph-pink)]" data-testid={`button-mobile-group-${k}`}>
-                      {g.title}<ChevronDown className={cn('h-3.5 w-3.5 transition-transform', openGroup === k && 'rotate-180')} />
+                    <button type="button" onClick={() => setOpenGroup(openGroup === k ? null : k)} aria-expanded={openGroup === k} aria-controls={`mobile-group-${k}`} className="flex w-full items-center justify-between px-4 py-2 font-sans text-xs font-semibold tracking-wide text-[color:var(--ph-pink)]" data-testid={`button-mobile-group-${k}`}>
+                      <span>{g.title}</span><ChevronDown className={cn('h-3.5 w-3.5 transition-transform', openGroup === k && 'rotate-180')} />
                     </button>
                     <ul id={`mobile-group-${k}`} hidden={openGroup !== k} className="pb-1">
-                      {g.links.map((l, li) => <li key={li}><Link href={str(l.href, '/')} className="block rounded-lg px-6 py-2 text-sm text-foreground/85 hover:bg-white/5" data-testid={`link-mobile-${slugify(str(l.label))}`}>{str(l.label)}</Link></li>)}
+                      {g.links.map((l, li) => <li key={li}><Link href={str(l.href, '/')} className="mobile-mega-link block rounded-lg px-6 py-2 text-sm text-foreground/85 hover:bg-white/5" data-testid={`link-mobile-${slugify(str(l.label))}`}>{str(l.label)}</Link></li>)}
                     </ul>
                   </div>
                 );

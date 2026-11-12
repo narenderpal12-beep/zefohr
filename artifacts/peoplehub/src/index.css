@@ -581,6 +581,137 @@ body { background: var(--ph-bg); }
   -webkit-backdrop-filter: none;
 }
 .light .mega-panel-surface::before { background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--ph-indigo) 28%, transparent), transparent); }
+.mega-group {
+  min-width: 0;
+}
+.mega-group-title {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 1.65rem;
+  padding: 0 .6rem .65rem;
+  border-bottom: 1px solid rgba(var(--ph-glass-rgb),.12);
+  color: hsl(var(--foreground) / .76);
+  font-family: 'Geist', ui-sans-serif, sans-serif;
+  font-size: .68rem;
+  font-weight: 650;
+  line-height: 1.2;
+  letter-spacing: .105em;
+  text-transform: uppercase;
+}
+.mega-group-index {
+  display: inline-grid;
+  width: 1.35rem;
+  height: 1.35rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid color-mix(in oklab, var(--ph-pink) 42%, transparent);
+  border-radius: .45rem;
+  background: color-mix(in oklab, var(--ph-pink) 10%, transparent);
+  color: var(--ph-pink);
+  font-family: 'Geist', ui-sans-serif, sans-serif;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+.mega-link {
+  position: relative;
+  align-items: flex-start;
+  border: 1px solid transparent;
+  color: hsl(var(--foreground));
+  text-decoration: none;
+}
+.mega-link:hover,
+.mega-link:focus-visible {
+  border-color: color-mix(in oklab, var(--ph-indigo) 26%, transparent);
+  background: color-mix(in oklab, var(--ph-indigo) 10%, rgba(var(--ph-glass-rgb),.035));
+}
+.mega-link-icon {
+  border: 1px solid color-mix(in oklab, var(--ph-cyan) 24%, rgba(var(--ph-glass-rgb),.08));
+  background: color-mix(in oklab, var(--ph-cyan) 8%, rgba(var(--ph-glass-rgb),.035));
+  transition: transform .2s ease, background-color .2s ease, border-color .2s ease;
+}
+.mega-link:hover .mega-link-icon,
+.mega-link:focus-visible .mega-link-icon {
+  transform: translateY(-1px);
+  border-color: color-mix(in oklab, var(--ph-cyan) 48%, transparent);
+  background: color-mix(in oklab, var(--ph-cyan) 14%, rgba(var(--ph-glass-rgb),.04));
+}
+.mega-link-title {
+  color: hsl(var(--foreground) / .96);
+  font-family: 'Bricolage Grotesque', 'Geist', sans-serif;
+  font-size: .93rem;
+  font-weight: 700;
+  letter-spacing: -.025em;
+  line-height: 1.25;
+  transition: color .18s ease;
+}
+.mega-link:hover .mega-link-title,
+.mega-link:focus-visible .mega-link-title {
+  color: var(--ph-cyan);
+}
+.mega-link-description {
+  color: hsl(var(--muted-foreground) / .9);
+  font-family: 'Geist', ui-sans-serif, sans-serif;
+  font-size: .72rem;
+  font-weight: 400;
+  line-height: 1.45;
+}
+.mega-link-arrow {
+  color: color-mix(in oklab, var(--ph-cyan) 72%, transparent);
+  opacity: 0;
+  transform: translate(-3px, 3px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.mega-link:hover .mega-link-arrow,
+.mega-link:focus-visible .mega-link-arrow {
+  opacity: .9;
+  transform: translate(0, 0);
+}
+.mega-panel-footer {
+  border-top: 1px solid rgba(var(--ph-glass-rgb),.12);
+}
+.mega-view-all {
+  border-radius: 999px;
+  padding: .55rem .8rem;
+  color: var(--ph-cyan);
+  font-family: 'Geist', ui-sans-serif, sans-serif;
+  font-size: .73rem;
+  font-weight: 650;
+  transition: color .18s ease, background-color .18s ease;
+}
+.mega-view-all:hover,
+.mega-view-all:focus-visible {
+  background: color-mix(in oklab, var(--ph-cyan) 10%, transparent);
+  color: hsl(var(--foreground));
+  outline: none;
+}
+.mobile-mega-link {
+  font-family: 'Bricolage Grotesque', 'Geist', sans-serif;
+  font-weight: 600;
+  letter-spacing: -.015em;
+}
+.light .mega-group-title { color: hsl(var(--foreground) / .7); }
+.light .mega-group-index {
+  background: color-mix(in oklab, var(--ph-pink) 8%, white);
+  border-color: color-mix(in oklab, var(--ph-pink) 34%, transparent);
+}
+.light .mega-link:hover,
+.light .mega-link:focus-visible {
+  border-color: color-mix(in oklab, var(--ph-indigo) 22%, transparent);
+  background: color-mix(in oklab, var(--ph-indigo) 7%, white);
+}
+.light .mega-link-title { color: hsl(var(--foreground) / .94); }
+.light .mega-link:hover .mega-link-title,
+.light .mega-link:focus-visible .mega-link-title { color: color-mix(in oklab, var(--ph-indigo) 76%, hsl(var(--foreground))); }
+.light .mega-link-description { color: hsl(var(--muted-foreground)); }
+.light .mega-link-icon {
+  border-color: color-mix(in oklab, var(--ph-cyan) 20%, hsl(var(--border)));
+  background: color-mix(in oklab, var(--ph-cyan) 7%, white);
+}
+.light .mega-panel-footer { border-color: hsl(var(--border)); }
+.light .mega-view-all:hover,
+.light .mega-view-all:focus-visible { background: color-mix(in oklab, var(--ph-cyan) 10%, white); }
 @keyframes wa-pulse { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(1.6); opacity: 0; } }
 .wa-pulse { animation: wa-pulse 2.4s ease-out infinite; }
 .solution-frame { position: relative; background: hsl(var(--muted)); isolation: isolate; box-shadow: 0 1px 2px rgba(var(--ph-shadow-rgb),.06), 0 14px 30px -24px rgba(var(--ph-shadow-rgb),.45); }

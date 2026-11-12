@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation } from 'wouter';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowUpRight, ChevronDown, Menu, X, LayoutDashboard, Moon, Sun, Instagram, Linkedin, Facebook, Twitter, Share2 } from 'lucide-react';
@@ -83,12 +83,12 @@ function isActive(loc: string, href: string) {
   return href === '/' ? loc === '/' : loc.startsWith(href.split('#')[0]);
 }
 
-function MegaPanel({ item, open, id, onNavigate }: { item: MegaItem; open: boolean; id: string; onNavigate: () => void }) {
+function MegaPanel({ item, open, id, onNavigate, panelRef, style }: { item: MegaItem; open: boolean; id: string; onNavigate: () => void; panelRef: (node: HTMLDivElement | null) => void; style: { left: number } }) {
   const cols = Math.min(item.groups.length, 4);
   return (
-    <div id={id} aria-hidden={!open} className="mega-panel absolute left-1/2 top-full z-50 w-max max-w-[min(92vw,1040px)] -translate-x-1/2 pt-3" data-open={open ? 'true' : 'false'}>
-      <div className="glass-strong rounded-2xl p-5 shadow-2xl shadow-black/30">
-        <div className="grid gap-x-6 gap-y-5" style={{ gridTemplateColumns: `repeat(${cols}, minmax(210px, 1fr))` }}>
+    <div ref={panelRef} id={id} aria-hidden={!open} className="mega-panel absolute top-full z-50 w-max max-w-[min(92vw,1040px)] pt-3" style={style} data-open={open ? 'true' : 'false'}>
+      <div className="mega-panel-surface rounded-2xl p-5">
+        <div className="grid gap-x-6 gap-y-5" style={{ gridTemplateColumns: `repeat(${cols}, minmax(min(210px, calc((92vw - 7rem) / ${cols})), 1fr))` }}>
           {item.groups.map((g, gi) => (
             <div key={gi}>
               <p className="px-2 font-mono text-[10px] uppercase tracking-[0.2em] text-[color:var(--ph-pink)]">{g.title}</p>
@@ -126,7 +126,29 @@ function DesktopNav({ items }: { items: MegaItem[] }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const ref = useRef<HTMLElement>(null);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const triggers = useRef(new Map<number, HTMLButtonElement>());
+  const panels = useRef(new Map<number, HTMLDivElement>());
+  const [panelLeft, setPanelLeft] = useState(0);
   useEffect(() => setOpenIdx(null), [loc]);
+  useLayoutEffect(() => {
+    if (openIdx === null) return;
+    const placePanel = () => {
+      const nav = ref.current;
+      const trigger = triggers.current.get(openIdx);
+      const panel = panels.current.get(openIdx);
+      if (!nav || !trigger || !panel) return;
+      const navRect = nav.getBoundingClientRect();
+      const triggerRect = trigger.getBoundingClientRect();
+      const panelWidth = panel.getBoundingClientRect().width;
+      const minLeft = 8 - navRect.left;
+      const maxLeft = window.innerWidth - 8 - navRect.left - panelWidth;
+      const centeredLeft = triggerRect.left + triggerRect.width / 2 - navRect.left - panelWidth / 2;
+      setPanelLeft(Math.max(minLeft, Math.min(centeredLeft, maxLeft)));
+    };
+    placePanel();
+    window.addEventListener('resize', placePanel);
+    return () => window.removeEventListener('resize', placePanel);
+  }, [openIdx]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpenIdx(null); };
     const onDown = (e: MouseEvent) => { if (ref.current && !ref.current.contains(e.target as Node)) setOpenIdx(null); };
@@ -137,7 +159,7 @@ function DesktopNav({ items }: { items: MegaItem[] }) {
   const enter = (i: number) => { if (timer.current) clearTimeout(timer.current); setOpenIdx(i); };
   const leave = () => { if (timer.current) clearTimeout(timer.current); timer.current = setTimeout(() => setOpenIdx(null), 160); };
   return (
-    <nav ref={ref} aria-label="Primary" className="hidden items-center gap-0.5 lg:flex">
+    <nav ref={ref} aria-label="Primary" className="relative hidden items-center gap-0.5 lg:flex">
       {items.map((it, i) => {
         const active = isActive(loc, it.href);
         if (!it.groups.length) {
@@ -151,13 +173,13 @@ function DesktopNav({ items }: { items: MegaItem[] }) {
         const open = openIdx === i;
         const id = `mega-${slugify(it.label)}`;
         return (
-          <div key={i} className="relative" onMouseEnter={() => enter(i)} onMouseLeave={leave}>
-            <button type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpenIdx(open ? null : i)}
+          <div key={i} onMouseEnter={() => enter(i)} onMouseLeave={leave}>
+            <button ref={(node) => { if (node) triggers.current.set(i, node); else triggers.current.delete(i); }} type="button" aria-expanded={open} aria-controls={id} onClick={() => setOpenIdx(open ? null : i)}
               onKeyDown={(e) => { if (e.key === 'ArrowDown') { e.preventDefault(); setOpenIdx(i); setTimeout(() => (document.querySelector(`#${id} a`) as HTMLElement | null)?.focus(), 30); } }}
               className={cn('inline-flex items-center gap-1 rounded-full px-3.5 py-2 text-sm transition-colors', open || active ? 'bg-white/[0.07] text-foreground' : 'text-muted-foreground hover:text-foreground')} data-testid={`button-nav-${slugify(it.label)}`}>
               {it.label}<ChevronDown className={cn('h-3.5 w-3.5 transition-transform', open && 'rotate-180')} />
             </button>
-            <MegaPanel item={it} open={open} id={id} onNavigate={() => setOpenIdx(null)} />
+            <MegaPanel item={it} open={open} id={id} panelRef={(node) => { if (node) panels.current.set(i, node); else panels.current.delete(i); }} style={{ left: panelLeft }} onNavigate={() => setOpenIdx(null)} />
           </div>
         );
       })}

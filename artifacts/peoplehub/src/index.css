@@ -554,6 +554,33 @@ body { background: var(--ph-bg); }
 .mega-panel { transition: opacity .18s ease, transform .18s ease; }
 .mega-panel[data-open='false'] { opacity: 0; transform: translate3d(0,-6px,0); visibility: hidden; pointer-events: none; }
 .mega-panel[data-open='true'] { opacity: 1; transform: none; visibility: visible; }
+.mega-panel-surface {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(var(--ph-glass-rgb),.13);
+  background:
+    linear-gradient(145deg, rgba(var(--ph-glass-rgb),.075), transparent 48%),
+    var(--ph-strong);
+  box-shadow: 0 22px 56px -24px rgba(var(--ph-shadow-rgb),.72), 0 1px 0 rgba(var(--ph-glass-rgb),.08) inset;
+  backdrop-filter: blur(24px) saturate(150%);
+  -webkit-backdrop-filter: blur(24px) saturate(150%);
+}
+.mega-panel-surface::before {
+  content: '';
+  position: absolute;
+  inset: 0 12% auto;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--ph-cyan) 42%, transparent), transparent);
+}
+.light .mega-panel-surface {
+  background: hsl(var(--card));
+  border-color: hsl(var(--border));
+  box-shadow: 0 18px 44px -24px rgba(var(--ph-shadow-rgb),.28), 0 1px 0 rgba(255,255,255,.8) inset;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.light .mega-panel-surface::before { background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--ph-indigo) 28%, transparent), transparent); }
 @keyframes wa-pulse { 0% { transform: scale(1); opacity: .5; } 100% { transform: scale(1.6); opacity: 0; } }
 .wa-pulse { animation: wa-pulse 2.4s ease-out infinite; }
 .solution-frame { position: relative; background: hsl(var(--muted)); isolation: isolate; box-shadow: 0 1px 2px rgba(var(--ph-shadow-rgb),.06), 0 14px 30px -24px rgba(var(--ph-shadow-rgb),.45); }

@@ -252,17 +252,18 @@ export function BrandingAdmin() {
             </> : null}
             {uploading ? <p role="status" className="text-sm">Processing image...</p> : null}
             {uploadError ? <p role="alert" className="text-sm text-red-500">{uploadError}</p> : null}
+            <F label="Logo corner radius (px)"><input type="number" min={0} max={100} step={1} className={aInput} value={b.logoRadius ?? (b.logoMode === 'image' ? 6 : 0)} onChange={(e) => brand.setDraft({ ...b, logoRadius: Math.max(0, Math.min(100, Number(e.target.value))) })} data-testid="input-brand-logo-radius" /></F>
+            <F label="Logo padding (px)"><input type="number" min={0} max={32} step={1} className={aInput} value={b.logoPadding ?? (b.logoMode === 'image' ? 4 : 0)} onChange={(e) => brand.setDraft({ ...b, logoPadding: Math.max(0, Math.min(32, Number(e.target.value))) })} data-testid="input-brand-logo-padding" /></F>
+            <F label="Logo background">
+              <select className={aInput} value={(b.logoBackground ?? (b.logoMode === 'image' ? '#ffffff' : 'transparent')) === 'transparent' ? 'transparent' : 'color'} onChange={(e) => brand.setDraft({ ...b, logoBackground: e.target.value === 'transparent' ? 'transparent' : '#ffffff' })} data-testid="select-brand-logo-background"><option value="transparent">Transparent</option><option value="color">Custom color</option></select>
+            </F>
+            {(b.logoBackground ?? (b.logoMode === 'image' ? '#ffffff' : 'transparent')) !== 'transparent' ? <F label="Logo background color"><input type="color" className="h-10 w-full cursor-pointer rounded-lg border border-white/10 bg-transparent" value={str(b.logoBackground, '#ffffff')} onChange={(e) => brand.setDraft({ ...b, logoBackground: e.target.value })} data-testid="input-brand-logo-background" /></F> : null}
           </div>
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-5">
             <p className="mb-4 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Logo preview</p>
-            {str(b.logoMode, b.logoUrl ? 'image' : 'mark') === 'image' ? (
-              <>
-                <div className="flex min-h-36 items-center justify-center rounded-lg border border-slate-200 bg-white p-4" data-testid="brand-image-preview">
-                  {b.logoUrl ? <img src={str(b.logoUrl)} alt={str(b.logoAlt, `${str(b.name, 'Brand')} logo preview`)} className="max-h-40 max-w-full object-contain" /> : <p className="text-center text-sm text-slate-500">Browse and select an image to preview your logo here.</p>}
-                </div>
-                {b.showWordmark !== false ? <p className="brand-wordmark mt-3 font-display text-xl font-bold">{str(b.name, 'ZefoHR')}</p> : null}
-              </>
-            ) : <BrandMark name={str(b.name, 'ZefoHR')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} logoMode={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} showWordmark={b.showWordmark !== false} />}
+            <div className="flex min-h-36 items-center justify-center overflow-auto rounded-lg border border-white/10 p-4" data-testid="brand-image-preview">
+              <BrandMark name={str(b.name, 'ZefoHR')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} logoMode={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} showWordmark={b.showWordmark !== false} logoRadius={b.logoRadius} logoPadding={b.logoPadding} logoBackground={b.logoBackground} />
+            </div>
             {b.tagline ? <p className="mt-3 text-sm text-muted-foreground">{str(b.tagline)}</p> : null}
           </div>
         </div>

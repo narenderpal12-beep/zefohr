@@ -7,6 +7,7 @@ import { arr, iconFor, str, useSection, useThemeMode, type AnyObj } from '@/lib/
 import { btnPrimary } from './primitives';
 import { cn } from '@/lib/utils';
 import { FaWhatsapp } from 'react-icons/fa';
+import { logoStyle, type LogoAppearance } from '@/lib/logo-style';
 
 /** Brand from CMS: brand section first, nav.brand for older content. */
 export function useBrand() {
@@ -19,20 +20,28 @@ export function useBrand() {
     logoAlt: str(brand.logoAlt, 'ZefoHR logo'),
     logoMode: str(brand.logoMode, brand.logoUrl ? 'image' : 'mark'),
     showWordmark: brand.showWordmark !== false,
+    logoRadius: brand.logoRadius as number | undefined,
+    logoPadding: brand.logoPadding as number | undefined,
+    logoBackground: brand.logoBackground as string | undefined,
   };
 }
 
-export function BrandMark({ name, className, logoUrl, logoAlt, logoMode, showWordmark = true }: { name?: string; className?: string; logoUrl?: string; logoAlt?: string; logoMode?: string; showWordmark?: boolean }) {
+export function BrandMark({ name, className, logoUrl, logoAlt, logoMode, showWordmark = true, logoRadius, logoPadding, logoBackground }: { name?: string; className?: string; logoUrl?: string; logoAlt?: string; logoMode?: string; showWordmark?: boolean } & LogoAppearance) {
   const b = useBrand();
   const n = name ?? b.name;
   const mode = logoMode ?? b.logoMode;
   const logo = mode === 'image' ? (logoUrl ?? b.logoUrl) : '';
   const alt = logoAlt ?? b.logoAlt;
   const word = name !== undefined ? showWordmark : b.showWordmark;
+  const appearance = logoStyle(mode, {
+    logoRadius: logoRadius ?? b.logoRadius,
+    logoPadding: logoPadding ?? b.logoPadding,
+    logoBackground: logoBackground ?? b.logoBackground,
+  });
   return (
     <span className={cn('flex items-center gap-2.5', className)} data-testid="brand-mark">
       {logo ? (
-        <img src={logo} alt={alt} className="h-9 w-auto max-w-[160px] rounded-md bg-white p-1 object-contain" style={{ backgroundColor: '#fff' }} />
+        <span className="inline-flex shrink-0 items-center justify-center" style={appearance}><img src={logo} alt={alt} className="h-7 w-auto max-w-[152px] object-contain" /></span>
       ) : mode !== 'text' ? (
         <span className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-brand shadow-[0_8px_30px_-8px_var(--ph-indigo)]">
           <svg viewBox="0 0 32 32" className="h-5 w-5" aria-hidden>
@@ -43,7 +52,7 @@ export function BrandMark({ name, className, logoUrl, logoAlt, logoMode, showWor
           </svg>
         </span>
       ) : null}
-      {word || !logo ? <span className="brand-wordmark font-display text-xl font-bold tracking-tight text-foreground">{n}</span> : <span className="sr-only">{n}</span>}
+      {word || !logo ? <span className="brand-wordmark font-display text-xl font-bold tracking-tight text-foreground" style={!logo ? appearance : undefined}>{n}</span> : <span className="sr-only">{n}</span>}
     </span>
   );
 }

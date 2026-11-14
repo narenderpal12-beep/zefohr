@@ -70,6 +70,10 @@ function validateContent(key:string,value:Doc) {
     if(value.logoMode!=null&&!["text","image","mark"].includes(value.logoMode))fail("Choose text, image or built-in logo");
     if(value.logoMode==="image"&&!value.logoUrl)fail("Upload an image or enter its URL");
     if(typeof value.showWordmark!=="boolean")fail("Choose whether to show the brand name");
+    for(const [field,max] of [["logoRadius",100],["logoPadding",32]] as const){
+      if(value[field]!=null&&(typeof value[field]!=="number"||!Number.isFinite(value[field])||value[field]<0||value[field]>max))fail(`${field==="logoRadius"?"Logo radius":"Logo padding"} must be between 0 and ${max}px`);
+    }
+    if(value.logoBackground!=null&&value.logoBackground!=="transparent"&&(typeof value.logoBackground!=="string"||!/^#[0-9a-f]{6}$/i.test(value.logoBackground)))fail("Choose a valid logo background color or transparent");
   }
   if(key==="contact"){
     for(const field of ["phone","email","address","mapUrl","officeHours"]){

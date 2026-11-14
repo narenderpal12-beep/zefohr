@@ -21,6 +21,7 @@ function blankLike(sample: any): any {
 
 /** Typed templates so empty collections get proper item shapes. Matched against the editor path. */
 const TEMPLATES: [RegExp, () => any][] = [
+  [/(^|-)integrationMarketplace-items$/, () => ({ title: '', slug: '', description: '', category: '', logoUrl: '', logoAlt: '', url: '', status: 'draft', verified: false })],
   [/(^|-)integrations?-items$/, () => ({ name: '', displayMode: 'text', imageUrl: '' })],
   [/^clients-items$/, () => ({ id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `c-${Date.now()}`, name: '', alt: '', logoUrl: '', website: '', visible: true })],
   [/^media-items$/, () => ({ title: '', publication: '', date: '', url: '', description: '', imageUrl: '', imageAlt: '' })],
@@ -43,7 +44,7 @@ export function templateFor(path: string, sample?: any): any {
   return sample !== undefined ? blankLike(sample) : '';
 }
 
-const IMAGE_PATH = /^((block-)?(suites|services)-items-\d+-imageUrl|(media|caseStudies)-items-\d+-imageUrl|block-[A-Za-z]+(-\w+)*-imageUrl)$/;
+const IMAGE_PATH = /^((block-)?(suites|services)-items-\d+-imageUrl|(media|caseStudies)-items-\d+-imageUrl|block-[A-Za-z]+(-\w+)*-imageUrl)$|(^|-)integrationMarketplace-items-\d+-logoUrl$/;
 const HREF_PATH = /^(nav-megaMenu|nav-links|footer-columns|footer-links|block-[A-Za-z]+)(-\w+)*-(href|ctaHref)$/;
 const HERO_COLOR_PATH = /^hero-(titleColor|descriptionColor|buttonColor|buttonTextColor)$/;
 const HEX_COLOR = /^#[\da-f]{6}$/i;
@@ -198,7 +199,7 @@ function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; o
   }
   return (
     <div className={cn('grid gap-4', depth > 0 && 'border-l border-white/[0.07] pl-3')}>
-      {Object.entries(value).filter(([k]) => !(/^(media|caseStudies)-items-\d+$/.test(path) && ['sample', 'sampleId'].includes(k))).map(([k, v]) => (
+      {Object.entries(/(^|-)integrationMarketplace-items-\d+$/.test(path) ? { ...value, logoUrl: value.logoUrl ?? '', logoAlt: value.logoAlt ?? '' } : value).filter(([k]) => !(/^(media|caseStudies)-items-\d+$/.test(path) && ['sample', 'sampleId'].includes(k))).map(([k, v]) => (
         <div key={k}>
           <div className="mb-1.5 text-xs font-medium text-foreground/80">{IMAGE_PATH.test(`${path}-${k}`) ? 'Photo' : humanize(k)}</div>
           <JsonNode value={v} onChange={(nv) => onChange({ ...value, [k]: nv })} path={`${path}-${k}`} depth={depth + 1} />

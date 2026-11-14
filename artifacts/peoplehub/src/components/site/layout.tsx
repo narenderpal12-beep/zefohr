@@ -32,7 +32,7 @@ export function BrandMark({ name, className, logoUrl, logoAlt, logoMode, showWor
   return (
     <span className={cn('flex items-center gap-2.5', className)} data-testid="brand-mark">
       {logo ? (
-        <img src={logo} alt={alt} className="h-9 w-auto max-w-[160px] rounded-md bg-white p-1 object-contain" />
+        <img src={logo} alt={alt} className="h-9 w-auto max-w-[160px] rounded-md bg-white p-1 object-contain" style={{ backgroundColor: '#fff' }} />
       ) : mode !== 'text' ? (
         <span className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-brand shadow-[0_8px_30px_-8px_var(--ph-indigo)]">
           <svg viewBox="0 0 32 32" className="h-5 w-5" aria-hidden>

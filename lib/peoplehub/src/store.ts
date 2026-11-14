@@ -416,7 +416,7 @@ export async function seed(reset=false) {
       const profileRows=await client.query("SELECT key,value FROM site_content WHERE key NOT LIKE 'sample_content_v%' AND key<>'zefohr_profile_v1' FOR UPDATE");
       for(const row of profileRows.rows){
         let value=replaceLegacyBrand(row.value);
-        if(row.key==="brand")value={...value,name:"ZefoHR",logoUrl:"/brand/zefohr-logo.webp",logoMode:"image",logoAlt:"ZefoHR logo",showWordmark:false};
+        if(row.key==="brand")value={...value,name:"ZefoHR",logoUrl:"/brand/zefohr-logo.svg",logoMode:"image",logoAlt:"ZefoHR logo",showWordmark:false};
         if(row.key==="nav")value={...value,brand:"ZefoHR"};
         if(row.key==="contact")value={...value,email:"info@zefohr.com",supportEmail:"support@zefohr.com"};
         if(row.key==="about")value={
@@ -466,6 +466,14 @@ export async function seed(reset=false) {
         ["PEOPLE, PROCESS & PERFORMANCE."],
       );
       await client.query("INSERT INTO site_content(key,value) VALUES('zefohr_tagline_v1','{\"seeded\":true}'::jsonb)");
+    }
+    const zefohrLogoSeed=(await client.query("SELECT key FROM site_content WHERE key='zefohr_logo_svg_v1'")).rowCount;
+    if(!zefohrLogoSeed){
+      await client.query(
+        "UPDATE site_content SET value=jsonb_set(value,'{logoUrl}',to_jsonb($1::text),true),updated_at=now() WHERE key='brand'",
+        ["/brand/zefohr-logo.svg"],
+      );
+      await client.query("INSERT INTO site_content(key,value) VALUES('zefohr_logo_svg_v1','{\"seeded\":true}'::jsonb)");
     }
     await client.query("INSERT INTO seo_settings(id,site_url,site_name) VALUES(1,$1,'ZefoHR') ON CONFLICT(id) DO NOTHING",[process.env.SITE_URL ?? ""]);
     if(!zefohrProfileSeed){

@@ -37,7 +37,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
   const suiteLink=(s:Doc)=>({label:s.title,href:`/features/${s.slug}`,description:s.description,icon:s.icon});
   const serviceLink=(s:Doc)=>({label:s.title,href:`/services/${s.slug}`,description:s.description,icon:s.icon});
   const result:Doc = {
-    brand:{name:"ZefoHR",tagline:"PEOPLE, PROCESS & PERFORMANCE.",logoUrl:"/brand/zefohr-logo.webp",logoMode:"image",logoAlt:"ZefoHR logo",showWordmark:false},
+    brand:{name:"ZefoHR",tagline:"PEOPLE, PROCESS & PERFORMANCE.",logoUrl:"/brand/zefohr-logo.svg",logoMode:"image",logoAlt:"ZefoHR logo",showWordmark:false},
     theme:{preset:"aurora",defaultMode:"dark",allowModeToggle:true,customColors:false,primary:"#8b5cf6",cyan:"#22d3ee",pink:"#ec4899",background:"#090b13",containerLayout:"standard",customContainerWidth:1440},
     nav:{
       brand:"ZefoHR",loginLabel:"Log in",ctaLabel:"Start free trial",

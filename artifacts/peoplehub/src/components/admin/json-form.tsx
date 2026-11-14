@@ -141,6 +141,9 @@ export function JsonForm(props: { value: any; onChange: (v: any) => void; path?:
 }
 
 function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; onChange: (v: any) => void; path?: string; depth?: number }) {
+  if (/^nav-megaMenu-\d+-groups-\d+-links-\d+$/.test(path) && value && typeof value === 'object' && !Array.isArray(value) && !Object.hasOwn(value, 'description')) {
+    return <JsonNode value={{ ...value, description: '' }} onChange={onChange} path={path} depth={depth} />;
+  }
   if (/(^|-)(integrations?|integrationMarketplace)-items-\d+$/.test(path)) return <IntegrationItemField value={value} onChange={onChange} path={path} />;
   if (IMAGE_PATH.test(path) && (typeof value === 'string' || value == null)) return <ImageField value={value ?? ''} onChange={onChange} path={path} />;
   if (value === null || value === undefined) {

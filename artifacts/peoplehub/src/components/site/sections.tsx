@@ -53,7 +53,7 @@ function HeroVisual({ lottieUrl }: { lottieUrl?: string }) {
         </div>
       </div>
       <div className="absolute right-0 top-[47%] z-10 flex w-44 flex-col items-end gap-2 sm:-right-4 sm:top-[36%] sm:w-52">
-        <div className="float-1 relative flex h-16 w-[120px] items-center gap-1.5 rounded-2xl glass border-gradient p-2 sm:h-20 sm:w-36 sm:gap-2 sm:p-3">
+        <div className="float-1 relative flex h-16 w-[120px] -translate-y-[50px] items-center gap-1.5 rounded-2xl glass border-gradient p-2 sm:h-20 sm:w-36 sm:gap-2 sm:p-3">
           <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xl bg-[color:var(--ph-indigo)]/15 text-[color:var(--ph-cyan)] sm:h-8 sm:w-8">
             <UsersRound className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </span>

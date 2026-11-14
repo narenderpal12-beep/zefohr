@@ -45,7 +45,7 @@ function HeroVisual({ lottieUrl }: { lottieUrl?: string }) {
           <span key={i} className="absolute h-3 w-3 rounded-full" style={{ background: c, boxShadow: `0 0 18px ${c}`, left: `${50 + 50 * Math.cos((i * Math.PI) / 2)}%`, top: `${50 + 50 * Math.sin((i * Math.PI) / 2)}%`, transform: 'translate(-50%,-50%)' }} />
         ))}
       </div>
-      <div className="absolute inset-[30%] grid place-items-center rounded-full glass border-gradient">
+      <div className="absolute left-1/2 top-1/2 z-10 grid h-24 w-44 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-2xl glass border-gradient p-2.5 sm:h-28 sm:w-52 sm:p-3.5">
         <div className="text-center">
           <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{str(preview.payrollLabel)}</div>
           <div className="font-display text-3xl font-bold text-foreground sm:text-4xl">{str(preview.payrollPeriod)}</div>
@@ -59,7 +59,7 @@ function HeroVisual({ lottieUrl }: { lottieUrl?: string }) {
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full w-[86%] rounded-full bg-gradient-to-r from-[color:var(--ph-cyan)] to-[color:var(--ph-indigo)]" /></div>
         <div className="mt-1.5 font-mono text-[10px] text-muted-foreground">{str(preview.statutoryDetail)}</div>
       </div>
-      <div className="float-2 absolute right-0 top-[52%] w-52 rounded-2xl glass p-3.5 sm:-right-4">
+      <div className="float-2 absolute right-0 top-[67%] z-10 h-24 w-44 rounded-2xl glass p-2.5 sm:-right-4 sm:top-[52%] sm:h-28 sm:w-52 sm:p-3.5">
         <div className="flex items-center gap-2 text-xs text-muted-foreground"><MessageCircle className="h-4 w-4 text-emerald-300" /> {str(preview.approvalLabel)}</div>
         <div className="mt-2 text-sm text-foreground">{str(preview.approvalTitle)}</div>
         <div className="mt-2 flex gap-1.5">

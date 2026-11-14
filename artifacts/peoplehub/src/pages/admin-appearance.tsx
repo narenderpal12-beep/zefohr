@@ -239,11 +239,11 @@ export function BrandingAdmin() {
             <F label="Tagline"><input className={aInput} value={str(b.tagline)} onChange={(e) => brand.setDraft({ ...b, tagline: e.target.value })} data-testid="input-brand-tagline" /></F>
             <F label="Logo type"><select className={aInput} value={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} disabled={uploading} onChange={(e) => brand.setDraft({ ...b, logoMode: e.target.value })} data-testid="select-brand-logo-type"><option value="text">Text only</option><option value="image">Image logo</option><option value="mark">Built-in mark and text</option></select></F>
             {str(b.logoMode, b.logoUrl ? 'image' : 'mark') === 'image' ? <>
-              <F label="Browse logo image" hint="Choose a PNG, JPEG or WebP from your device. Preview it before clicking Save."><input className={cn(aInput, 'file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-2 file:text-on-brand')} type="file" accept="image/png,image/jpeg,image/webp" disabled={uploading} data-testid="input-brand-logo-upload" onChange={async (e) => {
+              <F label="Browse logo image" hint="Choose an SVG, PNG, JPEG or WebP from your device. SVG files are converted to a safe web image. Preview before clicking Save."><input className={cn(aInput, 'file:mr-3 file:cursor-pointer file:rounded-md file:border-0 file:bg-brand file:px-3 file:py-2 file:text-on-brand')} type="file" accept=".svg,image/svg+xml,image/png,image/jpeg,image/webp" disabled={uploading} data-testid="input-brand-logo-upload" onChange={async (e) => {
                 const file = e.target.files?.[0]; e.target.value = '';
                 if (!file) return;
                 setUploading(true); setUploadError('');
-                try { const logoUrl = await encodeLogo(file); brand.setDraft((current) => current ? { ...current, logoUrl, logoMode: 'image' } : current); }
+                try { const logoUrl = await encodeLogo(file, { allowSvg: true }); brand.setDraft((current) => current ? { ...current, logoUrl, logoMode: 'image' } : current); }
                 catch (error) { setUploadError((error as Error).message); }
                 finally { setUploading(false); }
               }} /></F>

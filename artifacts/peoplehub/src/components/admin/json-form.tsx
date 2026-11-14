@@ -106,10 +106,24 @@ function IntegrationItemField({ value, onChange, path }: { value: any; onChange:
           <option value="text">Text</option><option value="image">Uploaded image</option>
         </select>
       </label>
-      <label className="block text-xs font-medium">{entry.displayMode === 'image' ? 'Image description (accessibility)' : 'Integration text'}
-        <input className={cn(aInput, 'mt-1')} value={entry.name} onChange={(e) => onChange({ ...entry, name: e.target.value })} data-testid={`input-${path}-name`} />
-      </label>
-      {entry.displayMode === 'image' ? <ImageField value={entry.imageUrl} onChange={(imageUrl) => onChange({ ...entry, imageUrl })} path={`${path}-imageUrl`} /> : null}
+      {entry.displayMode === 'text' ? (
+        <label className="block text-xs font-medium">Integration text
+          <input className={cn(aInput, 'mt-1')} value={entry.name} onChange={(e) => onChange({ ...entry, name: e.target.value })} data-testid={`input-${path}-name`} />
+        </label>
+      ) : (
+        <label className="block text-xs font-medium">Image description (accessibility)
+          <input className={cn(aInput, 'mt-1')} value={entry.name} onChange={(e) => onChange({ ...entry, name: e.target.value })} data-testid={`input-${path}-name`} />
+        </label>
+      )}
+      <div>
+        <p className="mb-2 text-xs font-medium">Integration image <span className="font-normal text-muted-foreground">(optional)</span></p>
+        <ImageField
+          value={entry.imageUrl}
+          onChange={(imageUrl) => onChange({ ...entry, imageUrl, ...(imageUrl ? { displayMode: 'image' } : {}) })}
+          path={`${path}-imageUrl`}
+        />
+        {entry.displayMode === 'text' && entry.imageUrl ? <p className="mt-2 text-[11px] text-muted-foreground">This image is saved but hidden on the website while Text is selected.</p> : null}
+      </div>
     </div>
   );
 }

@@ -21,7 +21,7 @@ function blankLike(sample: any): any {
 
 /** Typed templates so empty collections get proper item shapes. Matched against the editor path. */
 const TEMPLATES: [RegExp, () => any][] = [
-  [/^(block-)?integrations-items$/, () => ({ name: '', displayMode: 'text', imageUrl: '' })],
+  [/(^|-)integrations?-items$/, () => ({ name: '', displayMode: 'text', imageUrl: '' })],
   [/^clients-items$/, () => ({ id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `c-${Date.now()}`, name: '', alt: '', logoUrl: '', website: '', visible: true })],
   [/^media-items$/, () => ({ title: '', publication: '', date: '', url: '', description: '', imageUrl: '', imageAlt: '' })],
   [/^caseStudies-items$/, () => ({ title: '', industry: '', summary: '', body: '', slug: '', imageUrl: '', imageAlt: '' })],
@@ -145,7 +145,7 @@ export function JsonForm(props: { value: any; onChange: (v: any) => void; path?:
 }
 
 function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; onChange: (v: any) => void; path?: string; depth?: number }) {
-  if (/^(block-)?integrations-items-\d+$/.test(path)) return <IntegrationItemField value={value} onChange={onChange} path={path} />;
+  if (/(^|-)integrations?-items-\d+$/.test(path)) return <IntegrationItemField value={value} onChange={onChange} path={path} />;
   if (IMAGE_PATH.test(path) && (typeof value === 'string' || value == null)) return <ImageField value={value ?? ''} onChange={onChange} path={path} />;
   if (value === null || value === undefined) {
     return <input className={aInput} value="" placeholder="(empty)" onChange={(e) => onChange(e.target.value)} data-testid={`input-${path}`} />;

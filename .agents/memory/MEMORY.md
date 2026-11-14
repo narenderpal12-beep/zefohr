@@ -3,5 +3,6 @@
 - [Brand image input](brand-input.md) — Brand logos use image browsing and preview, not a URL field.
 - [Product and service imagery](product-imagery.md) — Real workplace photography replaces rejected clay-like graphics; retain custom uploads and removals.
 - [Page-wise authoring](page-authoring.md) — Preserve existing pages; admins add sections and dynamic pages and select them inside mega-menu submenus.
+- [Marketing layout controls](marketing-layouts.md) — Preserve existing section layouts by default; let admins adjust row-by-row column counts.
 - [npm-only package management](npm-only.md) — Use npm for this project; do not add pnpm files.
 - [Simple integration editing](integration-editor.md) — Integration entries offer only Text or Image, with the selected input and image preview; no extra catalogue fields.

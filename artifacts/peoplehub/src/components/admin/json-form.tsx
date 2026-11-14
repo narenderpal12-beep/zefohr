@@ -47,6 +47,7 @@ export function templateFor(path: string, sample?: any): any {
 const IMAGE_PATH = /^((block-)?(suites|services)-items-\d+-imageUrl|(media|caseStudies)-items-\d+-imageUrl|block-[A-Za-z]+(-\w+)*-imageUrl)$|(^|-)integrationMarketplace-items-\d+-logoUrl$/;
 const HREF_PATH = /^(nav-megaMenu|nav-links|footer-columns|footer-links|block-[A-Za-z]+)(-\w+)*-(href|ctaHref)$/;
 const HERO_COLOR_PATH = /^hero-(titleColor|descriptionColor|buttonColor|buttonTextColor)$/;
+const GRID_ROWS_PATH = /^(services|blog)-rowColumns$/;
 const HEX_COLOR = /^#[\da-f]{6}$/i;
 const BusyCtx = createContext<(delta: number) => void>(() => undefined);
 
@@ -124,6 +125,28 @@ function IntegrationItemField({ value, onChange, path }: { value: any; onChange:
   );
 }
 
+function GridRowsField({ value, onChange, path }: { value: number[]; onChange: (v: number[]) => void; path: string }) {
+  const rows = Array.isArray(value) && value.length ? value.map((n) => [2, 3, 4, 6].includes(Number(n)) ? Number(n) : 2) : [2];
+  const update = (index: number, columns: number) => onChange(rows.map((row, i) => i === index ? columns : row));
+  return (
+    <div className="space-y-2">
+      {rows.map((columns, index) => (
+        <div key={index} className="flex flex-wrap items-center gap-2 rounded-lg border border-white/[0.07] p-2">
+          <span className="min-w-14 text-xs text-muted-foreground">Row {index + 1}</span>
+          <select className={cn(aInput, 'w-auto min-w-36')} value={columns} onChange={(e) => update(index, Number(e.target.value))} aria-label={`Columns in row ${index + 1}`} data-testid={`select-${path}-${index}`}>
+            {[2, 3, 4, 6].map((count) => <option value={count} key={count}>{count} columns</option>)}
+          </select>
+          <button type="button" className={aBtn} onClick={() => { const next = [...rows]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; onChange(next); }} disabled={index === 0} aria-label={`Move row ${index + 1} up`} data-testid={`button-up-${path}-${index}`}><ArrowUp className="h-3 w-3" /></button>
+          <button type="button" className={aBtn} onClick={() => { const next = [...rows]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; onChange(next); }} disabled={index === rows.length - 1} aria-label={`Move row ${index + 1} down`} data-testid={`button-down-${path}-${index}`}><ArrowDown className="h-3 w-3" /></button>
+          <button type="button" className={cn(aBtn, 'text-red-300')} onClick={() => onChange(rows.filter((_, i) => i !== index))} disabled={rows.length === 1} aria-label={`Remove row ${index + 1}`} data-testid={`button-remove-${path}-${index}`}><Trash2 className="h-3 w-3" /></button>
+        </div>
+      ))}
+      <button type="button" className={aBtn} onClick={() => onChange([...rows, 2])} data-testid={`button-add-${path}`}><Plus className="h-3 w-3" />Add row</button>
+      <p className="text-[11px] text-muted-foreground">Each row uses its selected number of columns. The row pattern repeats for additional cards; smaller screens reflow automatically.</p>
+    </div>
+  );
+}
+
 /** Generic recursive editor for any JSON value. */
 export function JsonForm(props: { value: any; onChange: (v: any) => void; path?: string; depth?: number; onBusyChange?: (busy: boolean) => void }) {
   const [count, setCount] = useState(0);
@@ -145,6 +168,7 @@ function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; o
     return <JsonNode value={{ ...value, description: '' }} onChange={onChange} path={path} depth={depth} />;
   }
   if (/(^|-)(integrations?|integrationMarketplace)-items-\d+$/.test(path)) return <IntegrationItemField value={value} onChange={onChange} path={path} />;
+  if (GRID_ROWS_PATH.test(path)) return <GridRowsField value={value} onChange={onChange} path={path} />;
   if (IMAGE_PATH.test(path) && (typeof value === 'string' || value == null)) return <ImageField value={value ?? ''} onChange={onChange} path={path} />;
   if (value === null || value === undefined) {
     return <input className={aInput} value="" placeholder="(empty)" onChange={(e) => onChange(e.target.value)} data-testid={`input-${path}`} />;
@@ -197,9 +221,9 @@ function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; o
   }
   return (
     <div className={cn('grid gap-4', depth > 0 && 'border-l border-white/[0.07] pl-3')}>
-      {Object.entries(/(^|-)integrationMarketplace-items-\d+$/.test(path) ? { ...value, logoUrl: value.logoUrl ?? '', logoAlt: value.logoAlt ?? '' } : value).filter(([k]) => !(/^(media|caseStudies)-items-\d+$/.test(path) && ['sample', 'sampleId'].includes(k))).map(([k, v]) => (
+      {Object.entries(/(^|-)integrationMarketplace-items-\d+$/.test(path) ? { ...value, logoUrl: value.logoUrl ?? '', logoAlt: value.logoAlt ?? '' } : value).filter(([k]) => !(/^(media|caseStudies)-items-\d+$/.test(path) && ['sample', 'sampleId'].includes(k)) && !(/^(services|blog)$/.test(path) && k === 'gridColumns')).map(([k, v]) => (
         <div key={k}>
-          <div className="mb-1.5 text-xs font-medium text-foreground/80">{IMAGE_PATH.test(`${path}-${k}`) ? 'Photo' : humanize(k)}</div>
+          <div className="mb-1.5 text-xs font-medium text-foreground/80">{IMAGE_PATH.test(`${path}-${k}`) ? 'Photo' : k === 'rowColumns' && /^(services|blog)$/.test(path) ? 'Columns per row' : humanize(k)}</div>
           <JsonNode value={v} onChange={(nv) => onChange({ ...value, [k]: nv })} path={`${path}-${k}`} depth={depth + 1} />
         </div>
       ))}

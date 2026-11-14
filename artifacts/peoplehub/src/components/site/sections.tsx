@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { ArrowRight, ArrowUpRight, Check, CheckCircle2, IndianRupee, Mail, Phone, MapPin, ShieldCheck, Fingerprint, MessageCircle, Send, Sparkles, UsersRound } from 'lucide-react';
 import { useCreateLead } from '@workspace/api-client-react';
-import { arr, cta, errMsg, formatINR, iconFor, str, useSection, type AnyObj } from '@/lib/content';
+import { arrangeContentRows, arr, cta, errMsg, formatINR, iconFor, str, useSection, type AnyObj } from '@/lib/content';
 import { Aurora, Container, Counter, CtaLink, Eyebrow, FaqList, GlassCard, Marquee, Reveal, SectionHead, btnPrimary } from './primitives';
 import { cn } from '@/lib/utils';
 import {orbitAnimation} from '@/lib/lottie-data';
@@ -227,16 +227,17 @@ export function SuitesTabs() {
 export function ServiceGrid({ base = '/services', limit, head = true }: { base?: string; limit?: number; head?: boolean }) {
   const services = useSection('services');
   const items = arr<AnyObj>(services.items).slice(0, limit ?? 99);
+  const rows = arrangeContentRows(items, services.rowColumns, [2, 3]);
   return (
     <section className="relative py-24">
       <Container>
         {head ? <SectionHead eyebrow={str(services.eyebrow)} title={str(services.title)} description={str(services.description)} /> : null}
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-          {items.map((s, i) => {
+        <div className="mt-12 space-y-4" data-testid="service-grid">
+          {rows.map((row, ri) => <div key={ri} className={cn('grid gap-4 sm:grid-cols-2', row.columns === 2 ? 'lg:grid-cols-2' : row.columns === 3 ? 'lg:grid-cols-3' : row.columns === 4 ? 'lg:grid-cols-4' : 'xl:grid-cols-6')} data-row={ri + 1} data-columns={row.columns}>
+          {row.items.map((s, i) => {
             const I = iconFor(s.icon);
-            const span = i % 5 === 0 ? 'lg:col-span-3' : i % 5 === 1 ? 'lg:col-span-3' : 'lg:col-span-2';
             return (
-              <Reveal key={i} delay={(i % 3) * 70} className={span}>
+              <Reveal key={str(s.slug, `${ri}-${i}`)} delay={(i % row.columns) * 70}>
                 <Link href={`${base}/${str(s.slug)}`} className="block h-full" data-testid={`link-service-${str(s.slug)}`}>
                   <GlassCard className="h-full p-6">
                     <SolutionImage item={s} className="-mx-2 -mt-2 mb-5 aspect-[16/9] rounded-xl" />
@@ -252,6 +253,7 @@ export function ServiceGrid({ base = '/services', limit, head = true }: { base?:
               </Reveal>
             );
           })}
+          </div>)}
         </div>
       </Container>
     </section>

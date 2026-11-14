@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link, useParams, useLocation, useSearch } from 'wouter';
 import { ArrowLeft, ArrowRight, CalendarDays, Check, Compass, Tag, UserRound } from 'lucide-react';
-import { arr, iconFor, str, useContent, usePublicPages, usePublicPosts, useSection, type AnyObj } from '@/lib/content';
+import { arrangeContentRows, arr, iconFor, str, useContent, usePublicPages, usePublicPosts, useSection, type AnyObj } from '@/lib/content';
 import { Markdown } from '@/lib/markdown';
 import { Aurora, Container, CtaLink, FaqList, GlassCard, PageHero, Reveal, SectionHead, SkeletonBlock } from '@/components/site/primitives';
 import {
@@ -348,6 +348,7 @@ export function RoadmapList({ items }: { items: AnyObj[] }) {
 
 export function BlogPage() {
   const { posts, loaded, error, refetch } = usePublicPosts();
+  const blog = useSection('blog');
   const published = posts.filter((p) => !p.status || p.status === 'published');
   const [query, setQuery] = useState('');
   const [topic, setTopic] = useState('all');
@@ -385,9 +386,11 @@ export function BlogPage() {
                 </select>
               </label>
             </div>
-            {!filtered.length ? <div className="glass rounded-3xl p-10 text-center"><h2 className="font-display text-xl font-bold">No articles match those filters</h2><p className="mt-2 text-sm text-muted-foreground">Try another topic or search phrase.</p></div> : <div className="grid gap-5 md:grid-cols-2">
-            {filtered.map((p, i) => (
-              <Reveal as="article" key={str(p.id ?? p.slug)} delay={(i % 2) * 80}>
+            {!filtered.length ? <div className="glass rounded-3xl p-10 text-center"><h2 className="font-display text-xl font-bold">No articles match those filters</h2><p className="mt-2 text-sm text-muted-foreground">Try another topic or search phrase.</p></div> : <div className="space-y-5" data-testid="blog-grid">
+            {arrangeContentRows(filtered, blog.rowColumns, [2]).map((row, ri) => (
+              <div key={ri} className={cn('grid gap-5 md:grid-cols-2', row.columns === 2 ? 'lg:grid-cols-2' : row.columns === 3 ? 'xl:grid-cols-3' : row.columns === 4 ? 'xl:grid-cols-4' : 'xl:grid-cols-6')} data-row={ri + 1} data-columns={row.columns}>
+              {row.items.map((p, i) => (
+              <Reveal as="article" key={str(p.id ?? p.slug)} delay={(i % row.columns) * 80}>
                 <Link href={`/blog/${str(p.slug)}`} className="block h-full" data-testid={`link-post-${str(p.slug)}`}>
                   <GlassCard tilt={false} className="h-full">
                     <div className="relative aspect-[16/9] overflow-hidden bg-[radial-gradient(circle_at_30%_30%,var(--ph-indigo),transparent_60%),radial-gradient(circle_at_80%_70%,var(--ph-pink),transparent_55%)]">
@@ -405,6 +408,8 @@ export function BlogPage() {
                   </GlassCard>
                 </Link>
               </Reveal>
+              ))}
+              </div>
             ))}
             </div>}
           </>

@@ -104,6 +104,20 @@ export function iconFor(name?: string, fallback: LucideIcon = Sparkles): LucideI
 }
 
 export const arr = <T = any,>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : []);
+export type ContentGridRow<T> = { columns: number; items: T[] };
+export function arrangeContentRows<T>(items: T[], configured: unknown, fallback: number[]): ContentGridRow<T>[] {
+  const choices = new Set([2, 3, 4, 6]);
+  const requested = Array.isArray(configured) ? configured.map(Number).filter((n) => choices.has(n)) : [];
+  const pattern = requested.length ? requested : fallback;
+  const rows: ContentGridRow<T>[] = [];
+  for (let start = 0, row = 0; start < items.length; row++) {
+    const columns = pattern[row % pattern.length];
+    const count = Math.min(columns, items.length - start);
+    rows.push({ columns, items: items.slice(start, start + count) });
+    start += count;
+  }
+  return rows;
+}
 export const str = (v: unknown, d = ''): string => (v === null || v === undefined ? d : String(v));
 
 export function themeStyle(theme: AnyObj | undefined, mode: Mode): CSSProperties {

@@ -45,43 +45,41 @@ function HeroVisual({ lottieUrl }: { lottieUrl?: string }) {
           <span key={i} className="absolute h-3 w-3 rounded-full" style={{ background: c, boxShadow: `0 0 18px ${c}`, left: `${50 + 50 * Math.cos((i * Math.PI) / 2)}%`, top: `${50 + 50 * Math.sin((i * Math.PI) / 2)}%`, transform: 'translate(-50%,-50%)' }} />
         ))}
       </div>
-      <div className="absolute left-1/2 top-1/2 z-10 grid h-24 w-44 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-2xl glass border-gradient p-2.5 sm:h-28 sm:w-52 sm:p-3.5">
-        <div className="text-center">
-          <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{str(preview.payrollLabel)}</div>
-          <div className="font-display text-3xl font-bold text-foreground sm:text-4xl">{str(preview.payrollPeriod)}</div>
-          <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-0.5 text-[11px] text-emerald-300"><Check className="h-3 w-3" /> {str(preview.payrollDetail)}</div>
-        </div>
-      </div>
-      <div className="absolute right-0 top-[47%] z-10 flex w-44 flex-col items-end gap-2 sm:-right-4 sm:top-[36%] sm:w-52">
-        <div className="float-1 relative flex h-16 w-[120px] -translate-y-[50px] items-center gap-1.5 rounded-2xl glass border-gradient p-2 sm:h-20 sm:w-36 sm:gap-2 sm:p-3">
-          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xl bg-[color:var(--ph-indigo)]/15 text-[color:var(--ph-cyan)] sm:h-8 sm:w-8">
-            <UsersRound className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          </span>
-          <span className="min-w-0">
-            <span className="block truncate font-mono text-[7px] uppercase tracking-[0.08em] text-muted-foreground sm:text-[8px] sm:tracking-[0.12em]">{str(preview.coreHrmsDetail, 'People suite')}</span>
-            <span className="block truncate text-[10px] font-semibold text-foreground sm:text-sm">{str(preview.coreHrmsTitle, 'Core HRMS')}</span>
-          </span>
-        </div>
-        <div className="float-2 relative h-24 w-full rounded-2xl glass p-2.5 sm:h-28 sm:p-3.5">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground"><MessageCircle className="h-4 w-4 text-emerald-300" /> {str(preview.approvalLabel)}</div>
-          <div className="mt-2 text-sm text-foreground">{str(preview.approvalTitle)}</div>
-          <div className="mt-2 flex gap-1.5">
-            <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[11px] text-emerald-300">{str(preview.approvalStatus)}</span>
-            <span className="rounded-full bg-white/5 px-2.5 py-1 font-mono text-[11px] text-muted-foreground">{str(preview.approvalDetail)}</span>
-          </div>
-        </div>
-      </div>
       <HeroLottie url={lottieUrl} />
-      <div className="float-1 absolute left-0 top-[14%] w-48 rounded-2xl glass p-3.5 sm:-left-6">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="h-4 w-4 text-[color:var(--ph-cyan)]" /> {str(preview.statutoryLabel)}</div>
-        <div className="mt-2 text-sm font-medium text-foreground">{str(preview.statutoryTitle)}</div>
-        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full w-[86%] rounded-full bg-gradient-to-r from-[color:var(--ph-cyan)] to-[color:var(--ph-indigo)]" /></div>
-        <div className="mt-1.5 font-mono text-[10px] text-muted-foreground">{str(preview.statutoryDetail)}</div>
+      <div className="float-1 absolute left-1/2 top-[14%] z-10 -ml-[62px] -mt-[46px] flex h-[92px] w-[124px] items-center gap-1.5 rounded-2xl glass border-gradient p-2 sm:-ml-20 sm:-mt-14 sm:h-28 sm:w-40 sm:gap-2 sm:p-3">
+        <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xl bg-[color:var(--ph-indigo)]/15 text-[color:var(--ph-cyan)] sm:h-8 sm:w-8">
+          <UsersRound className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate font-mono text-[7px] uppercase tracking-[0.08em] text-muted-foreground sm:text-[8px] sm:tracking-[0.12em]">{str(preview.coreHrmsDetail, 'People suite')}</span>
+          <span className="block truncate text-[10px] font-semibold text-foreground sm:text-sm">{str(preview.coreHrmsTitle, 'Core HRMS')}</span>
+        </span>
       </div>
-      <div className="float-3 absolute bottom-[4%] left-[10%] w-44 rounded-2xl glass p-3.5">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground"><Fingerprint className="h-4 w-4 text-[color:var(--ph-pink)]" /> {str(preview.attendanceLabel)}</div>
-        <div className="mt-1.5 font-display text-2xl font-bold text-foreground">{str(preview.attendanceValue)}</div>
-        <div className="font-mono text-[10px] text-muted-foreground">{str(preview.attendanceDetail)}</div>
+      <div className="float-1 absolute left-[79%] top-[42%] z-10 -ml-[62px] -mt-[46px] h-[92px] w-[124px] rounded-2xl glass p-2 sm:-ml-20 sm:-mt-14 sm:h-28 sm:w-40 sm:p-3">
+        <div className="flex min-w-0 items-center gap-1 text-[9px] text-muted-foreground sm:gap-2 sm:text-xs"><MessageCircle className="h-3.5 w-3.5 shrink-0 text-emerald-300 sm:h-4 sm:w-4" /><span className="truncate">{str(preview.approvalLabel)}</span></div>
+        <div className="mt-1.5 truncate text-[11px] text-foreground sm:text-sm">{str(preview.approvalTitle)}</div>
+        <div className="mt-1.5 flex gap-1">
+          <span className="truncate rounded-full bg-emerald-400/15 px-1.5 py-0.5 text-[9px] text-emerald-300 sm:px-2 sm:text-[11px]">{str(preview.approvalStatus)}</span>
+          <span className="truncate rounded-full bg-white/5 px-1.5 py-0.5 font-mono text-[9px] text-muted-foreground sm:px-2 sm:text-[11px]">{str(preview.approvalDetail)}</span>
+        </div>
+      </div>
+      <div className="float-1 absolute left-[72%] top-[78%] z-10 -ml-[62px] -mt-[46px] h-[92px] w-[124px] rounded-2xl glass p-2 sm:-ml-20 sm:-mt-14 sm:h-28 sm:w-40 sm:p-3">
+        <div className="flex items-center gap-1 text-[9px] text-muted-foreground sm:gap-2 sm:text-xs"><Fingerprint className="h-3.5 w-3.5 shrink-0 text-[color:var(--ph-pink)] sm:h-4 sm:w-4" /><span className="truncate">{str(preview.attendanceLabel)}</span></div>
+        <div className="mt-1 font-display text-2xl font-bold text-foreground sm:text-3xl">{str(preview.attendanceValue)}</div>
+        <div className="truncate font-mono text-[9px] text-muted-foreground sm:text-[10px]">{str(preview.attendanceDetail)}</div>
+      </div>
+      <div className="float-1 absolute left-[28%] top-[78%] z-10 -ml-[62px] -mt-[46px] grid h-[92px] w-[124px] place-items-center rounded-2xl glass border-gradient p-2 sm:-ml-20 sm:-mt-14 sm:h-28 sm:w-40 sm:p-3">
+        <div className="text-center">
+          <div className="font-mono text-[8px] uppercase tracking-[0.16em] text-muted-foreground sm:text-[10px] sm:tracking-[0.2em]">{str(preview.payrollLabel)}</div>
+          <div className="font-display text-2xl font-bold text-foreground sm:text-3xl">{str(preview.payrollPeriod)}</div>
+          <div className="mt-0.5 inline-flex items-center gap-1 rounded-full bg-emerald-400/10 px-1.5 py-0.5 text-[9px] text-emerald-300 sm:px-2 sm:text-[11px]"><Check className="h-3 w-3" /> {str(preview.payrollDetail)}</div>
+        </div>
+      </div>
+      <div className="float-1 absolute left-[21%] top-[42%] z-10 -ml-[62px] -mt-[46px] h-[92px] w-[124px] rounded-2xl glass p-2 sm:-ml-20 sm:-mt-14 sm:h-28 sm:w-40 sm:p-3">
+        <div className="flex items-center gap-1 text-[9px] text-muted-foreground sm:gap-2 sm:text-xs"><ShieldCheck className="h-3.5 w-3.5 shrink-0 text-[color:var(--ph-cyan)] sm:h-4 sm:w-4" /><span className="truncate">{str(preview.statutoryLabel)}</span></div>
+        <div className="mt-1 truncate text-[11px] font-medium text-foreground sm:mt-2 sm:text-sm">{str(preview.statutoryTitle)}</div>
+        <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-white/10 sm:mt-2"><div className="h-full w-[86%] rounded-full bg-gradient-to-r from-[color:var(--ph-cyan)] to-[color:var(--ph-indigo)]" /></div>
+        <div className="mt-1 font-mono text-[8px] text-muted-foreground sm:mt-1.5 sm:text-[10px]">{str(preview.statutoryDetail)}</div>
       </div>
       <p className="absolute -bottom-6 inset-x-0 text-center font-mono text-[9px] text-muted-foreground">{str(preview.label)}</p>
     </div>

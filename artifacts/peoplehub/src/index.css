@@ -626,6 +626,9 @@ body { background: var(--ph-bg); }
   border-color: color-mix(in oklab, var(--ph-indigo) 26%, transparent);
   background: color-mix(in oklab, var(--ph-indigo) 10%, rgba(var(--ph-glass-rgb),.035));
 }
+.mega-link[data-description="false"] {
+  align-items: center;
+}
 .mega-link-icon {
   border: 1px solid color-mix(in oklab, var(--ph-cyan) 24%, rgba(var(--ph-glass-rgb),.08));
   background: color-mix(in oklab, var(--ph-cyan) 8%, rgba(var(--ph-glass-rgb),.035));

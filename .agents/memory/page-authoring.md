@@ -9,6 +9,12 @@ Existing website pages must remain available. Admin Content should be organised 
 
 **How to apply:** Keep existing routes and content compatible when extending the page builder. New pages and sections inherit the website’s selected theme. Clearly distinguish shared content changes from page-only changes.
 
+The “Add a page to a menu” form must always show an optional description, regardless of the selected destination. Mega-menu links without descriptions must have vertically centered labels.
+
+**Why:** The user repeatedly reported the description as missing when it was shown only after selecting a mega-menu group.
+
+**How to apply:** Do not hide the description based on the destination; explain where it is displayed. Treat whitespace-only descriptions as blank.
+
 Additional homepage designs are optional choices in Appearance, not replacements for existing designs. Their sections should be reusable on other pages.
 
 **Why:** The user requested a creative third homepage inspired by an external reference while keeping the earlier two available.

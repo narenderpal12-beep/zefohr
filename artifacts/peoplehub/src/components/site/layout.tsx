@@ -107,15 +107,16 @@ function MegaPanel({ item, open, id, onNavigate, panelRef, style }: { item: Mega
               <ul className="mt-3 space-y-1">
                 {g.links.map((l, li) => {
                   const I = iconFor(str(l.icon));
+                  const description = str(l.description).trim();
                   return (
                     <li key={li}>
-                      <Link href={str(l.href, '/')} onClick={onNavigate} tabIndex={open ? 0 : -1} className="mega-link group flex gap-3 rounded-xl px-2.5 py-2.5 transition hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none" data-testid={`link-mega-${slugify(str(l.label))}`}>
-                        <span className="mega-link-icon mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-xl"><I className="h-4 w-4 text-[color:var(--ph-cyan)]" /></span>
+                      <Link href={str(l.href, '/')} onClick={onNavigate} tabIndex={open ? 0 : -1} className="mega-link group flex gap-3 rounded-xl px-2.5 py-2.5 transition hover:bg-white/[0.06] focus-visible:bg-white/[0.06] focus-visible:outline-none" data-description={description ? 'true' : 'false'} data-testid={`link-mega-${slugify(str(l.label))}`}>
+                        <span className={cn("mega-link-icon grid h-9 w-9 shrink-0 place-items-center rounded-xl", description && "mt-0.5")}><I className="h-4 w-4 text-[color:var(--ph-cyan)]" /></span>
                         <span className="min-w-0">
                           <span className="mega-link-title block">{str(l.label)}</span>
-                          {l.description ? <span className="mega-link-description mt-1 block max-w-[240px]">{str(l.description)}</span> : null}
+                          {description ? <span className="mega-link-description mt-1 block max-w-[240px]">{description}</span> : null}
                         </span>
-                        <ArrowUpRight className="mega-link-arrow ml-auto mt-1 h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                        <ArrowUpRight className={cn("mega-link-arrow ml-auto h-3.5 w-3.5 shrink-0", description && "mt-1")} aria-hidden="true" />
                       </Link>
                     </li>
                   );

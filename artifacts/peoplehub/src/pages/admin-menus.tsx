@@ -61,14 +61,14 @@ export function MenusAdmin() {
   const addLink = () => {
     const l = label.trim() || optLabel;
     if (!href || !l) return;
-    if (d === 'top') setNav({ ...nav, megaMenu: [...mega, { label: l, href, groups: [] }] });
+    if (d === 'top') setNav({ ...nav, megaMenu: [...mega, { label: l, href, description: description.trim(), groups: [] }] });
     else if (d.startsWith('mega:')) {
       const [, i, j] = d.split(':').map(Number);
       setNav({ ...nav, megaMenu: mega.map((m, mi) => (mi !== i ? m : { ...m, groups: arr<AnyObj>(m.groups).map((g, gj) => (gj !== j ? g : { ...g, links: [...arr(g.links), { label: l, href, description: description.trim(), icon: '' }] })) })) });
     } else if (d.startsWith('footer:')) {
       const i = Number(d.split(':')[1]);
-      setFooter({ ...footer, columns: cols.map((c, ci) => (ci !== i ? c : { ...c, links: [...arr(c.links), { label: l, href }] })) });
-    } else setFooter({ ...footer, links: [...arr(footer.links), { label: l, href }] });
+      setFooter({ ...footer, columns: cols.map((c, ci) => (ci !== i ? c : { ...c, links: [...arr(c.links), { label: l, href, description: description.trim() }] })) });
+    } else setFooter({ ...footer, links: [...arr(footer.links), { label: l, href, description: description.trim() }] });
     setAdded(`"${l}" added to the draft. Click Save menus to publish it.`); setLabel(''); setHref(''); setDescription('');
   };
 
@@ -112,7 +112,7 @@ export function MenusAdmin() {
           <label className="block"><span className="mb-1 block text-xs font-medium text-foreground/80">Label</span><input className={aInput} value={label} placeholder={optLabel || 'Menu label'} onChange={(e) => setLabel(e.target.value)} data-testid="input-menu-label" /></label>
           <label className="block"><span className="mb-1 block text-xs font-medium text-foreground/80">Where</span><select className={aInput} value={d} onChange={(e) => setDest(e.target.value)} data-testid="select-menu-destination">{dests.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></label>
           <button type="button" className={aBtnPrimary} onClick={addLink} disabled={!href || !(label.trim() || optLabel)} data-testid="button-add-menu-link"><Plus className="h-3.5 w-3.5" />Add</button>
-          {d.startsWith('mega:') ? <label className="block md:col-span-4"><span className="mb-1 block text-xs font-medium text-foreground/80">Description (optional)</span><textarea className={cn(aInput, 'min-h-20')} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short description shown beneath this submenu link" data-testid="input-menu-description" /></label> : null}
+          <label className="block md:col-span-4"><span className="mb-1 block text-xs font-medium text-foreground/80">Description (optional)</span><textarea className={cn(aInput, 'min-h-20')} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Short description shown beneath a mega-menu submenu link" data-testid="input-menu-description" /><span className="mt-1 block text-[11px] text-muted-foreground">Shown beneath links inside mega-menu groups. Leave blank for a vertically centered label.</span></label>
         </div>
         {added ? <p role="status" className="mt-3 text-sm text-emerald-300">{added}</p> : null}
       </section>

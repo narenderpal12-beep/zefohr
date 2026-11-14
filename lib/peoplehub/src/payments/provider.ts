@@ -11,6 +11,6 @@
 export const paymentProvider = {
   name:"stub",
   async createOrder(_input:{organisation_id:string,plan_key:string,billing_cycle:string}) {
-    return {provider:"stub",status:"pending_payment",payment_enabled:false,message:"Online payments are not connected yet. Your request is pending payment. Please contact the PeopleHub team to arrange activation."};
+    return {provider:"stub",status:"pending_payment",payment_enabled:false,message:"Online payments are not connected yet. Your request is pending payment. Please contact the ZefoHR team to arrange activation."};
   },
 };

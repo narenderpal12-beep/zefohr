@@ -12,7 +12,7 @@ export const creativeHomeDefaults = {
     currentNote: "Organisation signup and subscription administration are available now. HRMS suites shown here are planned product direction.",
     snapshotLabel: "Illustrative workspace concept",
     snapshotTitle: "A people workspace, in view",
-    snapshotDescription: "A code-built preview of the kind of connected workspace PeopleHub is exploring.",
+    snapshotDescription: "A code-built preview of the kind of connected workspace ZefoHR is exploring.",
     metricLabels: ["People", "Work areas", "Next milestone"],
     metricValues: ["Team", "Modules", "In view"],
     carouselLabel: "Choose an illustrative HRMS concept screen",
@@ -106,7 +106,7 @@ export const creativeHomeDefaults = {
     plannedLabel: "Planned suite",
     exploreLabel: "View planned suite",
     tabsLabel: "Choose a planned suite",
-    disclaimer: "PeopleHub product suites are planned. These descriptions and interface details are illustrative and do not represent live employee workflows.",
+    disclaimer: "ZefoHR product suites are planned. These descriptions and interface details are illustrative and do not represent live employee workflows.",
     emptyMessage: "Product suites will appear here as they are added to the site.",
   },
   journey: {
@@ -135,7 +135,7 @@ export const creativeHomeDefaults = {
   learning: {
     eyebrow: "GOOD QUESTIONS DESERVE USEFUL ANSWERS",
     title: "A little more clarity for the work ahead.",
-    description: "Browse PeopleHub resources and practical tools for everyday people decisions.",
+    description: "Browse ZefoHR resources and practical tools for everyday people decisions.",
     articleLabel: "From the resource hub",
     readLabel: "Read the article",
     resourcesLabel: "Explore practical tools",
@@ -144,12 +144,12 @@ export const creativeHomeDefaults = {
       { title: "Free HR tools", href: "/free-tools" },
       { title: "Browse all articles", href: "/blog" },
     ],
-    emptyMessage: "New PeopleHub resources are on the way. Explore the resource hub in the meantime.",
+    emptyMessage: "New ZefoHR resources are on the way. Explore the resource hub in the meantime.",
   },
   faq: {
     eyebrow: "BEFORE YOU BEGIN",
     title: "A few useful things to know.",
-    description: "Straight answers about what you can do with PeopleHub today, and what is still taking shape.",
+    description: "Straight answers about what you can do with ZefoHR today, and what is still taking shape.",
     emptyMessage: "For a question not covered here, our team is happy to help.",
   },
   finalCta: {
@@ -162,11 +162,11 @@ export const creativeHomeDefaults = {
     secondaryHref: "/request-demo",
   },
   ui: {
-    brandFallback: "PeopleHub",
+    brandFallback: "ZefoHR",
     conceptLabel: "Illustrative",
     suitePreviewDescription: "A visual concept for a growing team",
     moduleLabel: "Planned areas",
     suiteLinkLabel: "Explore this suite",
-    articleFallbackLabel: "PeopleHub resource",
+    articleFallbackLabel: "ZefoHR resource",
   },
 } as const;

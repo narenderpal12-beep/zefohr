@@ -68,6 +68,19 @@ export async function syncModules(client: any, organisationId: string, planKey: 
 export async function expireTrials() {
   await pool.query("UPDATE subscriptions SET status='expired' WHERE status='trial' AND trial_ends_at <= now()");
 }
+function replaceLegacyBrand(value: any, field = ""): any {
+  if (typeof value === "string") {
+    if (/(?:url|href|path|slug|email|uri)$/i.test(field)) return value;
+    return value.split(/(https?:\/\/[^\s<>"')]+|mailto:[^\s<>"')]+|www\.[^\s<>"')]+)/gi)
+      .map((part, index) => index % 2 ? part : part.replace(/\bPeopleHub\b/gi, "ZefoHR"))
+      .join("");
+  }
+  if (Array.isArray(value)) return value.map((item) => replaceLegacyBrand(item, field));
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, replaceLegacyBrand(child, key)]));
+  }
+  return value;
+}
 export async function seed(reset=false) {
   await transaction(async client=>{
     const existingNav=(await client.query("SELECT value FROM site_content WHERE key='nav'")).rows[0]?.value;
@@ -398,7 +411,80 @@ export async function seed(reset=false) {
       await client.query("INSERT INTO modules(key,name,description,priority,sort_order) VALUES($1,$2,$3,$4,$5) ON CONFLICT(key) DO NOTHING",[s.key,s.title,s.description,s.priority,i]);
     }
     for(const page of defaultPages) await client.query("INSERT INTO pages(slug,title,content,status) VALUES($1,$2,$3,'published') ON CONFLICT(slug) DO NOTHING",[page.slug,page.title,JSON.stringify(page.content)]);
-    await client.query("INSERT INTO seo_settings(id,site_url) VALUES(1,$1) ON CONFLICT(id) DO NOTHING",[process.env.SITE_URL ?? ""]);
+    const zefohrProfileSeed=(await client.query("SELECT key FROM site_content WHERE key='zefohr_profile_v1'")).rowCount;
+    if(!zefohrProfileSeed){
+      const profileRows=await client.query("SELECT key,value FROM site_content WHERE key NOT LIKE 'sample_content_v%' AND key<>'zefohr_profile_v1' FOR UPDATE");
+      for(const row of profileRows.rows){
+        let value=replaceLegacyBrand(row.value);
+        if(row.key==="brand")value={...value,name:"ZefoHR",logoUrl:"/brand/zefohr-logo.webp",logoMode:"image",logoAlt:"ZefoHR logo",showWordmark:false};
+        if(row.key==="nav")value={...value,brand:"ZefoHR"};
+        if(row.key==="contact")value={...value,email:"info@zefohr.com",supportEmail:"support@zefohr.com"};
+        if(row.key==="about")value={
+          ...value,
+          mission:"Our mission is to empower every HR team to deliver fast, seamless, transparent, compliant and personalised services to their employees.",
+          vision:"To help individuals make their employment experience delightful by enhancing our processes and systems.",
+          values:[
+            "Customer value creation is our priority",
+            "Develop easy-to-use platforms",
+            "Trustworthy computation and data management",
+            "Proactive online and offline customer support",
+            "Continuous innovation in product development",
+            "Foster a supportive and congenial work environment",
+            "Contribute to reducing the carbon footprint of processes",
+            "Practise diversity and inclusion in management",
+          ],
+        };
+        if(row.key==="footer")value={...value,copyright:"ZefoHR. All rights reserved."};
+        if(JSON.stringify(value)!==JSON.stringify(row.value)){
+          await client.query("UPDATE site_content SET value=$1,updated_at=now() WHERE key=$2",[JSON.stringify(value),row.key]);
+        }
+      }
+      const pageRows=await client.query("SELECT id,title,content FROM pages FOR UPDATE");
+      for(const page of pageRows.rows){
+        const title=replaceLegacyBrand(page.title);
+        const content=replaceLegacyBrand(page.content);
+        if(title!==page.title||JSON.stringify(content)!==JSON.stringify(page.content)){
+          await client.query("UPDATE pages SET title=$1,content=$2,updated_at=now() WHERE id=$3",[title,JSON.stringify(content),page.id]);
+        }
+      }
+      const postRows=await client.query("SELECT id,title,excerpt,body_md,author FROM posts FOR UPDATE");
+      for(const post of postRows.rows){
+        const title=replaceLegacyBrand(post.title);
+        const excerpt=replaceLegacyBrand(post.excerpt);
+        const body=replaceLegacyBrand(post.body_md);
+        const author=replaceLegacyBrand(post.author);
+        if(title!==post.title||excerpt!==post.excerpt||body!==post.body_md||author!==post.author){
+          await client.query("UPDATE posts SET title=$1,excerpt=$2,body_md=$3,author=$4,updated_at=now() WHERE id=$5",[title,excerpt,body,author,post.id]);
+        }
+      }
+      await client.query("INSERT INTO site_content(key,value) VALUES('zefohr_profile_v1','{\"seeded\":true}'::jsonb)");
+    }
+    const zefohrTaglineSeed=(await client.query("SELECT key FROM site_content WHERE key='zefohr_tagline_v1'")).rowCount;
+    if(!zefohrTaglineSeed){
+      await client.query(
+        "UPDATE site_content SET value=jsonb_set(value,'{tagline}',to_jsonb($1::text),true),updated_at=now() WHERE key='brand'",
+        ["PEOPLE, PROCESS & PERFORMANCE."],
+      );
+      await client.query("INSERT INTO site_content(key,value) VALUES('zefohr_tagline_v1','{\"seeded\":true}'::jsonb)");
+    }
+    await client.query("INSERT INTO seo_settings(id,site_url,site_name) VALUES(1,$1,'ZefoHR') ON CONFLICT(id) DO NOTHING",[process.env.SITE_URL ?? ""]);
+    if(!zefohrProfileSeed){
+      const seoSettings=(await client.query("SELECT site_name,organisation_schema FROM seo_settings WHERE id=1")).rows[0];
+      if(seoSettings){
+        const siteName=replaceLegacyBrand(seoSettings.site_name);
+        const organisationSchema=replaceLegacyBrand(seoSettings.organisation_schema ?? {});
+        if(siteName!==seoSettings.site_name||JSON.stringify(organisationSchema)!==JSON.stringify(seoSettings.organisation_schema)){
+          await client.query("UPDATE seo_settings SET site_name=$1,organisation_schema=$2 WHERE id=1",[siteName,JSON.stringify(organisationSchema)]);
+        }
+      }
+      const seoRows=await client.query("SELECT id,title,meta_description,og_title,og_description FROM seo_pages FOR UPDATE");
+      for(const page of seoRows.rows){
+        const fields=[replaceLegacyBrand(page.title),replaceLegacyBrand(page.meta_description),replaceLegacyBrand(page.og_title),replaceLegacyBrand(page.og_description)];
+        if(fields.some((field,index)=>field!==[page.title,page.meta_description,page.og_title,page.og_description][index])){
+          await client.query("UPDATE seo_pages SET title=$1,meta_description=$2,og_title=$3,og_description=$4,updated_at=now() WHERE id=$5",[...fields,page.id]);
+        }
+      }
+    }
     if(process.env.SUPER_ADMIN_EMAIL && process.env.SUPER_ADMIN_PASSWORD){
       if(process.env.SUPER_ADMIN_PASSWORD.length<10) fail("SUPER_ADMIN_PASSWORD must be at least 10 characters.");
       const exists = await client.query("SELECT id FROM users WHERE lower(email)=lower($1)",[process.env.SUPER_ADMIN_EMAIL]);

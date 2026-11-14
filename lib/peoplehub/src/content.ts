@@ -214,7 +214,7 @@ contentRouter.post("/billing/subscribe",requireAuth,async(req,res)=>{
   if(!cms.pricing.plans.some((p:Doc)=>p.key===req.body.plan_key))fail("Choose a valid plan");
   const cycle=req.body.billing_cycle??"monthly";if(!["monthly","annual"].includes(cycle))fail("Choose a billing cycle");
   const current=(await pool.query("SELECT * FROM subscriptions WHERE organisation_id=$1",[user.organisation_id])).rows[0];
-  if(current?.status==="active")fail("Contact the PeopleHub team to change an active subscription",409);
+  if(current?.status==="active")fail("Contact the ZefoHR team to change an active subscription",409);
   await transaction(async client=>{
     await client.query("UPDATE subscriptions SET plan_key=$1,billing_cycle=$2,status='pending_payment',payment_provider='stub' WHERE organisation_id=$3",[req.body.plan_key,cycle,user.organisation_id]);
     await syncModules(client,user.organisation_id,req.body.plan_key,cms);

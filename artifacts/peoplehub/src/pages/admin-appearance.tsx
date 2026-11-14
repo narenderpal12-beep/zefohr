@@ -260,9 +260,9 @@ export function BrandingAdmin() {
                 <div className="flex min-h-36 items-center justify-center rounded-lg border border-slate-200 bg-white p-4" data-testid="brand-image-preview">
                   {b.logoUrl ? <img src={str(b.logoUrl)} alt={str(b.logoAlt, `${str(b.name, 'Brand')} logo preview`)} className="max-h-40 max-w-full object-contain" /> : <p className="text-center text-sm text-slate-500">Browse and select an image to preview your logo here.</p>}
                 </div>
-                {b.showWordmark !== false ? <p className="brand-wordmark mt-3 font-display text-xl font-bold">{str(b.name, 'PeopleHub')}</p> : null}
+                {b.showWordmark !== false ? <p className="brand-wordmark mt-3 font-display text-xl font-bold">{str(b.name, 'ZefoHR')}</p> : null}
               </>
-            ) : <BrandMark name={str(b.name, 'PeopleHub')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} logoMode={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} showWordmark={b.showWordmark !== false} />}
+            ) : <BrandMark name={str(b.name, 'ZefoHR')} logoUrl={str(b.logoUrl)} logoAlt={str(b.logoAlt)} logoMode={str(b.logoMode, b.logoUrl ? 'image' : 'mark')} showWordmark={b.showWordmark !== false} />}
             {b.tagline ? <p className="mt-3 text-sm text-muted-foreground">{str(b.tagline)}</p> : null}
           </div>
         </div>

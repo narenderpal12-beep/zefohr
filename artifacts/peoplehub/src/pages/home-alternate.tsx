@@ -149,7 +149,7 @@ export function HomeAlternate() {
   const selectedRole = roleItems[activeRole] ?? roleItems[0];
   const selectedPhase = phases[activePhase] ?? phases[0];
   const selectedPrompt = prompts[activePrompt] ?? prompts[0];
-  const brandName = str(brand.name, 'PeopleHub');
+  const brandName = str(brand.name, 'ZefoHR');
   const publishedPosts = arr<AnyObj>(posts).filter((post) => !post.status || post.status === 'published').slice(0, 3);
   const validTrialDays = Number(pricing.trialDays);
   const trialDaysLabel = Number.isFinite(validTrialDays) && validTrialDays > 0 ? `${validTrialDays}-day free trial` : 'Free-trial signup';
@@ -249,7 +249,7 @@ export function HomeAlternate() {
       </section>
 
       {visibleStats.length ? (
-        <section className="hv-stats" aria-label={str(statsCopy.ariaLabel, 'Current PeopleHub content')}>
+        <section className="hv-stats" aria-label={str(statsCopy.ariaLabel, 'Current ZefoHR content')}>
           <div className="hv-container hv-stats-inner">
             {visibleStats.map((item) => <div className="hv-stat" key={str(item.key)}><strong>{statValues[str(item.key)].toLocaleString('en-IN')}</strong><span>{str(item.label)}</span></div>)}
             {statsCopy.note ? <p className="hv-stats-note">{str(statsCopy.note)}</p> : null}
@@ -258,7 +258,7 @@ export function HomeAlternate() {
       ) : null}
 
       {arr(approach.points).length ? (
-        <section className="hv-approach" aria-label={str(approach.title, 'PeopleHub approach')}>
+        <section className="hv-approach" aria-label={str(approach.title, 'ZefoHR approach')}>
           <div className="hv-container hv-approach-inner">
             <h2>{str(approach.title)}</h2>
             {arr<string>(approach.points).map((point, index) => <p key={`${point}-${index}`}><Check aria-hidden="true" />{point}</p>)}

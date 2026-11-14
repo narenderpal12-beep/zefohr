@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS audit_log (
  before jsonb,after jsonb,at timestamptz NOT NULL DEFAULT now()
 );
 CREATE TABLE IF NOT EXISTS seo_settings (
- id integer PRIMARY KEY DEFAULT 1 CHECK(id=1),site_name text NOT NULL DEFAULT 'PeopleHub',site_url text NOT NULL DEFAULT '',
+ id integer PRIMARY KEY DEFAULT 1 CHECK(id=1),site_name text NOT NULL DEFAULT 'ZefoHR',site_url text NOT NULL DEFAULT '',
  default_title_template text NOT NULL DEFAULT '%page% | %site%',default_meta_description text NOT NULL DEFAULT 'Connected HR, payroll and compliance for growing Indian businesses.',
  default_og_image_url text NOT NULL DEFAULT '/og-default.svg',favicon_url text NOT NULL DEFAULT '/favicon.svg',twitter_handle text NOT NULL DEFAULT '',
  organisation_schema jsonb NOT NULL DEFAULT '{}',ga4_id text NOT NULL DEFAULT '',gsc_verification text NOT NULL DEFAULT '',bing_verification text NOT NULL DEFAULT '',

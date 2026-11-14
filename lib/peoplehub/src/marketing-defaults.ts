@@ -37,10 +37,10 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
   const suiteLink=(s:Doc)=>({label:s.title,href:`/features/${s.slug}`,description:s.description,icon:s.icon});
   const serviceLink=(s:Doc)=>({label:s.title,href:`/services/${s.slug}`,description:s.description,icon:s.icon});
   const result:Doc = {
-    brand:{name:"PeopleHub",tagline:"People-first HR. Business-ready possibilities.",logoUrl:"",logoAlt:"PeopleHub logo",showWordmark:true},
+    brand:{name:"ZefoHR",tagline:"PEOPLE, PROCESS & PERFORMANCE.",logoUrl:"/brand/zefohr-logo.webp",logoMode:"image",logoAlt:"ZefoHR logo",showWordmark:false},
     theme:{preset:"aurora",defaultMode:"dark",allowModeToggle:true,customColors:false,primary:"#8b5cf6",cyan:"#22d3ee",pink:"#ec4899",background:"#090b13",containerLayout:"standard",customContainerWidth:1440},
     nav:{
-      brand:"PeopleHub",loginLabel:"Log in",ctaLabel:"Start free trial",
+      brand:"ZefoHR",loginLabel:"Log in",ctaLabel:"Start free trial",
       links:[{label:"Products",href:"/features"},{label:"Services",href:"/services"},{label:"AI",href:"/ai"},{label:"Solutions",href:"/solutions"},{label:"Pricing",href:"/pricing"},{label:"Resources",href:"/resources"},{label:"Company",href:"/about"}],
       megaMenu:[
         {label:"Products",href:"/features",groups:[
@@ -60,7 +60,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
         ]},
         {label:"Pricing",href:"/pricing",groups:[]},
         {label:"Resources",href:"/resources",groups:[{title:"Explore & learn",links:resourceLinks}]},
-        {label:"Company",href:"/about",groups:[{title:"PeopleHub",links:companyLinks}]},
+        {label:"Company",href:"/about",groups:[{title:"ZefoHR",links:companyLinks}]},
       ],
       themeToggleLabel:"Switch colour mode",lightLabel:"Light",darkLabel:"Dark",
     },
@@ -87,11 +87,11 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       links:[{label:"Privacy policy",href:"/privacy-policy"},{label:"Terms of service",href:"/terms"},{label:"Contact",href:"/contact"}],
     },
     whatsapp:{
-      enabled:true,phone:"+919311638356",message:"Hello, I would like to learn more about PeopleHub.",
+      enabled:true,phone:"+919311638356",message:"Hello, I would like to learn more about ZefoHR.",
       label:"Chat on WhatsApp",unconfiguredLabel:"Contact our team",fallbackHref:"/contact",
     },
     homepageV2:{
-      announcement:{enabled:true,label:"PEOPLEHUB",text:"A clearer way to explore people operations for growing Indian teams.",linkLabel:"Talk to our team",href:"/request-demo",dismissLabel:"Dismiss announcement"},
+      announcement:{enabled:true,label:"ZEFOHR",text:"A clearer way to explore people operations for growing Indian teams.",linkLabel:"Talk to our team",href:"/request-demo",dismissLabel:"Dismiss announcement"},
       hero:{
         eyebrow:"PEOPLE-FIRST HR, BUILT FOR INDIA",
         title:"Make room for people. We’ll help with the rest.",
@@ -101,7 +101,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       },
       approach:{title:"One partner for the people work.",points:["Choose what fits your team","Software and specialist support","Made for growing Indian businesses"]},
       stats:{
-        ariaLabel:"Current PeopleHub content",
+        ariaLabel:"Current ZefoHR content",
         items:[
           {key:"suites",label:"Product suites to explore"},
           {key:"services",label:"Specialist services"},
@@ -114,7 +114,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
         eyebrow:"A CLEARER WAY TO BEGIN",title:"Start with the work in front of you.",
         description:"You don’t need to choose an entire HR stack on day one. Start with the people challenge taking your team’s time, then take the next step that makes sense.",
         steps:[
-          {title:"See how PeopleHub fits",description:"Explore the product direction and specialist services. Product screens are illustrative, not an active HRMS.",label:"Explore",linkLabel:"Explore the platform",href:"#explore"},
+          {title:"See how ZefoHR fits",description:"Explore the product direction and specialist services. Product screens are illustrative, not an active HRMS.",label:"Explore",linkLabel:"Explore the platform",href:"#explore"},
           {title:"Create your organisation",description:"Start a free-trial signup and set up your organisation. Operational HRMS suites are planned, not currently live.",label:"Get started",linkLabel:"Start free trial",href:"/register?mode=trial"},
           {title:"Find the right support",description:"Discuss your team’s needs with our people—from HR operations to recruitment and compliance support.",label:"Talk it through",linkLabel:"Talk to our team",href:"/request-demo"},
         ],
@@ -171,8 +171,8 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       },
       comparison:{
         eyebrow:"A MORE CONNECTED WAY TO EXPLORE",title:"Less chasing. More clarity.",
-        description:"A practical comparison of common coordination challenges and the connected product direction PeopleHub is planning.",
-        leftTitle:"Common coordination challenge",rightTitle:"PeopleHub direction",
+        description:"A practical comparison of common coordination challenges and the connected product direction ZefoHR is planning.",
+        leftTitle:"Common coordination challenge",rightTitle:"ZefoHR direction",
         rows:[
           {challenge:"People details live in separate places.",approach:"A planned people workspace brings key records and milestones into one view."},
           {challenge:"Teams repeat the same handoffs.",approach:"Planned workflows aim to make ownership and next steps easier to follow."},
@@ -228,7 +228,7 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
           baseMonthlyPerEmployee:0,
           selectedModuleMonthly:0,
           rangePercent:10,
-          note:"No verified PeopleHub price is configured. An administrator can set planning rates; otherwise ask the team for a quote.",
+          note:"No verified ZefoHR price is configured. An administrator can set planning rates; otherwise ask the team for a quote.",
         },
         gratuityAssumptions:{monthsPerYear:15,divisor:26,eligibilityYears:5},
         taxAssumptions:{
@@ -303,21 +303,21 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       },
       security:{
         eyebrow:"RESPONSIBLE BY DESIGN",title:"Clear about data, support and scope.",
-        description:"PeopleHub is an early-stage platform. Discuss your security and data requirements with the team before onboarding sensitive employee information.",
+        description:"ZefoHR is an early-stage platform. Discuss your security and data requirements with the team before onboarding sensitive employee information.",
         points:["Account passwords are hashed and access is role-based.","Organisation records are scoped to the relevant organisation.","EOR, POSH, FRRO and labour-law matters require appropriate specialist expertise."],
       },
       learning:{
         eyebrow:"IDEAS FOR PEOPLE TEAMS",title:"Keep learning as your team grows.",
         description:"Read practical perspectives on people operations, payroll and compliance.",
-        emptyTitle:"Explore the PeopleHub blog",
+        emptyTitle:"Explore the ZefoHR blog",
         emptyDescription:"Visit the resource hub for the latest articles and guides.",
         readLabel:"Read article",visitLabel:"Visit the resource hub",emptyLinkLabel:"Visit the blog",
       },
       pricing:{
         eyebrow:"A PRACTICAL FIRST STEP",title:"Choose how to continue.",
-        description:"Current organisation signup is available for a free-trial journey. Product pricing and operational suite availability should be confirmed with PeopleHub.",
+        description:"Current organisation signup is available for a free-trial journey. Product pricing and operational suite availability should be confirmed with ZefoHR.",
         cycleLabel:"Billing cycle",noPriceLabel:"Talk to our team",unitLabel:"/ employee / month",
-        priceNote:"Plan details are managed by PeopleHub and can be confirmed with the team.",
+        priceNote:"Plan details are managed by ZefoHR and can be confirmed with the team.",
       },
       faq:{eyebrow:"GOOD QUESTIONS, CLEAR ANSWERS",title:"Before you take the next step.",supportPrompt:"Still deciding what fits?",supportLabel:"Talk to our team",supportHref:"/contact"},
       finalCta:{
@@ -327,8 +327,8 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       },
     },
     media:{
-      eyebrow:"IN THE CONVERSATION",title:"PeopleHub in the media.",
-      description:"News, interviews and updates featuring PeopleHub.",
+      eyebrow:"IN THE CONVERSATION",title:"ZefoHR in the media.",
+      description:"News, interviews and updates featuring ZefoHR.",
       emptyMessage:"Media coverage will appear here.",
       items:[],linkLabel:"Read coverage",
       pressTitle:"Press enquiries",pressDescription:"For interviews, company information or press enquiries, contact our team.",pressButton:"Contact our team",
@@ -422,14 +422,14 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
       references:[],
     },
     customerStories:{
-      eyebrow:"CUSTOMER STORIES",title:"Stories from teams using PeopleHub.",
+      eyebrow:"CUSTOMER STORIES",title:"Stories from teams using ZefoHR.",
       description:"Explore published customer stories and the approaches those teams chose.",
       emptyMessage:"Customer stories will appear here when they are ready to publish.",
       items:[],
     },
     careers:{
       eyebrow:"BUILD BETTER WORK WITH US",title:"Your next chapter could start here.",
-      description:"Help growing businesses put their people first. Discover opportunities with PeopleHub.",
+      description:"Help growing businesses put their people first. Discover opportunities with ZefoHR.",
       emptyMessage:"There are no published vacancies right now. Contact our team to register your interest.",
       items:[],applyLabel:"Apply for this role",interestLabel:"Introduce yourself",contactDescription:"Tell us about your experience and the work you would love to do.",
     },
@@ -457,12 +457,12 @@ export function marketingDefaults(suites:Doc[],services:Doc[],complianceNote:str
 }
 
 export const additionalMarketingPages=[
-  {slug:"media-coverage",title:"Media coverage",section:"media",intro:"News, interviews and updates featuring PeopleHub."},
+  {slug:"media-coverage",title:"Media coverage",section:"media",intro:"News, interviews and updates featuring ZefoHR."},
   {slug:"case-studies",title:"Use cases",section:"caseStudies",intro:"Explore workflows for people-first teams."},
-  {slug:"careers",title:"Careers at PeopleHub",section:"careers",intro:"Explore opportunities to help build better work."},
-  {slug:"career",title:"Careers at PeopleHub",section:"careers",intro:"Explore opportunities to help build better work."},
+  {slug:"careers",title:"Careers at ZefoHR",section:"careers",intro:"Explore opportunities to help build better work."},
+  {slug:"career",title:"Careers at ZefoHR",section:"careers",intro:"Explore opportunities to help build better work."},
   {slug:"support",title:"Our support",section:"support",intro:"Get help with your account, plans and organisation setup."},
   {slug:"our-support",title:"Our support",section:"support",intro:"Get help with your account, plans and organisation setup."},
-  {slug:"request-demo",title:"Request a demo",section:"demo",intro:"Explore the right PeopleHub suites for your organisation."},
-  {slug:"request-for-demo",title:"Request a demo",section:"demo",intro:"Explore the right PeopleHub suites for your organisation."},
+  {slug:"request-demo",title:"Request a demo",section:"demo",intro:"Explore the right ZefoHR suites for your organisation."},
+  {slug:"request-for-demo",title:"Request a demo",section:"demo",intro:"Explore the right ZefoHR suites for your organisation."},
 ].map(p=>({slug:p.slug,title:p.title,content:{intro:p.intro,body:"",section:p.section,benefits:[],faq:[]}}));

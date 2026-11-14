@@ -11,11 +11,11 @@ for(const [path,type,title] of [
   ["/services","static","Specialised HR services"],["/pricing","static","Flexible HRMS pricing"],
   ["/about","static","People-first HR for growing businesses"],["/contact","static","Contact our people team"],
   ["/about-us","static","People-first HR for growing businesses"],
-  ["/faq","static","PeopleHub frequently asked questions"],["/blog","static","HR insights and resources"],
-  ["/industries","static","PeopleHub solutions by industry"],["/solutions","static","PeopleHub solutions by team"],
+  ["/faq","static","ZefoHR frequently asked questions"],["/blog","static","HR insights and resources"],
+  ["/industries","static","ZefoHR solutions by industry"],["/solutions","static","ZefoHR solutions by team"],
   ["/ai","static","AI concepts for people operations"],["/resources","static","Resources for people teams"],
-  ["/integrations","static","PeopleHub integrations"],["/compliance","static","Compliance references"],
-  ["/customer-stories","static","PeopleHub customer stories"],
+  ["/integrations","static","ZefoHR integrations"],["/compliance","static","Compliance references"],
+  ["/customer-stories","static","ZefoHR customer stories"],
   ["/free-tools","static","Free HR tools and calculators"],
   ["/register","app_public","Create your organisation"],["/login","app_public","Sign in"],
   ["/dashboard","app_public","Organisation dashboard"],["/admin","app_public","Site administration"],["/admin/seo","app_public","SEO Manager"],
@@ -46,12 +46,12 @@ export function validJsonLd(value:any) {
 }
 export async function getSettings() {
   const row=(await pool.query("SELECT * FROM seo_settings WHERE id=1")).rows[0];
-  return row ?? {site_name:"PeopleHub",site_url:process.env.SITE_URL??"",default_title_template:"%page% | %site%",default_meta_description:"Connected HR, payroll and compliance for growing Indian businesses.",default_og_image_url:"/og-default.svg",organisation_schema:{},sitemap_enabled:true};
+  return row ?? {site_name:"ZefoHR",site_url:process.env.SITE_URL??"",default_title_template:"%page% | %site%",default_meta_description:"Connected HR, payroll and compliance for growing Indian businesses.",default_og_image_url:"/og-default.svg",organisation_schema:{},sitemap_enabled:true};
 }
 export async function routeCatalogue(data?:Doc) {
   const d=data ?? await publicData();
   const result:Doc[]=[];
-  for(const r of registry) result.push({path:r.path,page_type:r.type,title:typeof r.titleFrom==="function"?r.titleFrom(d):r.titleFrom,description:typeof r.descFrom==="function"?r.descFrom(d):r.descFrom??`${typeof r.titleFrom==="string"?r.titleFrom:"PeopleHub"}. Explore connected HR software and expert-led support for growing Indian businesses.`,pattern:r.path.includes(":")});
+  for(const r of registry) result.push({path:r.path,page_type:r.type,title:typeof r.titleFrom==="function"?r.titleFrom(d):r.titleFrom,description:typeof r.descFrom==="function"?r.descFrom(d):r.descFrom??`${typeof r.titleFrom==="string"?r.titleFrom:"ZefoHR"}. Explore connected HR software and expert-led support for growing Indian businesses.`,pattern:r.path.includes(":")});
   for(const s of d.content.suites.items) result.push({path:`/features/${s.slug}`,page_type:"suite",title:s.title,description:s.description,item:s});
   for(const s of d.content.services.items) result.push({path:`/services/${s.slug}`,page_type:"service",title:s.title,description:s.description,item:s});
   for(const p of d.pages) result.push({path:`/${p.slug.replace(/^\/+/,"")}`,page_type:"landing",title:p.title,description:p.content?.intro||p.content?.body?.slice(0,155),item:p});

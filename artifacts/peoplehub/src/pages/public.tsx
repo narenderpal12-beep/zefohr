@@ -276,15 +276,36 @@ export function AboutPage() {
   return (
     <>
       <PageHero crumbs={[{ label: 'Home', href: '/' }, { label: 'About' }]} eyebrow="About" title={str(about.title, 'About')} description={str(about.description)} />
+      {about.mission || about.vision ? (
+        <Container className="mb-12">
+          <section aria-label="Our mission and vision" className="grid gap-4 md:grid-cols-2">
+            {about.mission ? (
+              <Reveal className="glass border-gradient rounded-3xl p-7 sm:p-9">
+                <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-[color:var(--ph-cyan)]">Mission</h2>
+                <p className="mt-4 text-lg leading-relaxed text-foreground/90">{str(about.mission)}</p>
+              </Reveal>
+            ) : null}
+            {about.vision ? (
+              <Reveal delay={80} className="glass rounded-3xl p-7 sm:p-9">
+                <h2 className="font-mono text-xs uppercase tracking-[0.18em] text-[color:var(--ph-pink)]">Vision</h2>
+                <p className="mt-4 text-lg leading-relaxed text-foreground/90">{str(about.vision)}</p>
+              </Reveal>
+            ) : null}
+          </section>
+        </Container>
+      ) : null}
       <Container>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <section aria-labelledby="about-values-title">
+          <h2 id="about-values-title" className="font-display mb-6 text-2xl font-bold sm:text-3xl">Our values</h2>
+          <ol className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {arr<string>(about.values).map((v, i) => (
-            <Reveal key={i} delay={i * 70} className="glass rounded-3xl p-6">
+            <Reveal as="li" key={i} delay={i * 70} className="glass list-none rounded-3xl p-6">
               <span className="font-display text-4xl font-bold text-[color:var(--ph-indigo)]/70">{String(i + 1).padStart(2, '0')}</span>
               <p className="mt-4 text-lg text-foreground/90">{v}</p>
             </Reveal>
           ))}
-        </div>
+          </ol>
+        </section>
       </Container>
       {arr<string>(about.focusAreas).length ? (
         <Container className="mt-14">

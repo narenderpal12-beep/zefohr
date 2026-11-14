@@ -13,10 +13,10 @@ export function useBrand() {
   const brand = useSection('brand');
   const nav = useSection('nav');
   return {
-    name: str(brand.name || nav.brand, 'PeopleHub'),
+    name: str(brand.name || nav.brand, 'ZefoHR'),
     tagline: str(brand.tagline),
     logoUrl: str(brand.logoUrl),
-    logoAlt: str(brand.logoAlt, 'PeopleHub logo'),
+    logoAlt: str(brand.logoAlt, 'ZefoHR logo'),
     logoMode: str(brand.logoMode, brand.logoUrl ? 'image' : 'mark'),
     showWordmark: brand.showWordmark !== false,
   };
@@ -32,7 +32,7 @@ export function BrandMark({ name, className, logoUrl, logoAlt, logoMode, showWor
   return (
     <span className={cn('flex items-center gap-2.5', className)} data-testid="brand-mark">
       {logo ? (
-        <img src={logo} alt={alt} className="h-9 w-auto max-w-[160px] object-contain" />
+        <img src={logo} alt={alt} className="h-9 w-auto max-w-[160px] rounded-md bg-white p-1 object-contain" />
       ) : mode !== 'text' ? (
         <span className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-brand shadow-[0_8px_30px_-8px_var(--ph-indigo)]">
           <svg viewBox="0 0 32 32" className="h-5 w-5" aria-hidden>
@@ -372,7 +372,8 @@ export function SiteFooter() {
             {brand.tagline ? <p className="mt-4 font-display text-lg font-semibold text-foreground/90">{brand.tagline}</p> : null}
             <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">{str(footer.description)}</p>
             <div className="mt-6 space-y-1 font-mono text-xs text-muted-foreground">
-              {contact.email ? <a href={`mailto:${contact.email}`} className="block hover:text-foreground">{str(contact.email)}</a> : null}
+              {contact.email ? <a href={`mailto:${contact.email}`} aria-label={`Email ${str(contact.email)}`} className="block hover:text-foreground">{str(contact.email)}</a> : null}
+              {contact.supportEmail ? <a href={`mailto:${contact.supportEmail}`} aria-label={`Email support at ${str(contact.supportEmail)}`} className="block hover:text-foreground">{str(contact.supportEmail)}</a> : null}
               {contact.phone ? <a href={`tel:${String(contact.phone).replace(/\s/g, '')}`} className="block hover:text-foreground">{str(contact.phone)}</a> : null}
               {contact.address ? <address className="max-w-xs whitespace-pre-line break-words not-italic" data-testid="text-footer-address">{contact.mapUrl ? <a href={str(contact.mapUrl)} target="_blank" rel="noopener noreferrer" className="hover:text-foreground">{str(contact.address)}</a> : str(contact.address)}</address> : null}
               {contact.officeHours ? <p className="whitespace-pre-line">{str(contact.officeHours)}</p> : null}

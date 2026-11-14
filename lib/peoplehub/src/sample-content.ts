@@ -5,7 +5,7 @@ export const samplePosts = [
     excerpt: "A practical guide to organising people information, ownership and updates as a team grows.",
     cover_image_url: "/editorial/people-operations.jpg",
     cover_image_alt: "HR colleagues welcoming a new employee at an office desk",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["HR operations", "Employee records"],
     published_at: "2026-01-12T09:00:00.000Z",
     body_md: `An employee record is more useful when people can find the information they need and understand which version is current. For a growing business, that begins with a shared structure—not a new tool by itself.
@@ -26,7 +26,7 @@ Use a short checklist for joining, role changes and exits. Record when a change 
 
 Avoid collecting data simply because a form can hold it. Begin with the fields that support current operations, then add more when a defined process needs them. Document retention and access practices with appropriate privacy and legal advice.
 
-PeopleHub is designed to help teams organise connected people workflows. [Explore the platform](/features) and decide which records fit your process.`,
+ZefoHR is designed to help teams organise connected people workflows. [Explore the platform](/features) and decide which records fit your process.`,
   },
   {
     slug: "thoughtful-first-week-onboarding",
@@ -34,7 +34,7 @@ PeopleHub is designed to help teams organise connected people workflows. [Explor
     excerpt: "A welcoming onboarding plan can replace last-minute handoffs with a sequence people can follow.",
     cover_image_url: "/editorial/people-operations.jpg",
     cover_image_alt: "Colleagues welcoming a new team member in a modern office",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["Onboarding", "Employee experience"],
     published_at: "2026-02-09T09:00:00.000Z",
     body_md: `A new employee should not have to guess who to meet, where to find basic information or what happens next. A simple first-week plan gives the new joiner and their team a shared reference point.
@@ -55,7 +55,7 @@ New joiners often depend on several people. Note who handles equipment, access, 
 
 At the end of the week, ask the new employee which parts were useful and where they had to search for answers. Review the plan with the team and adjust it for the next hire.
 
-Good onboarding is a repeatable process with room for a human welcome. [See how PeopleHub connects employee lifecycle workflows](/features/core-hrms).`,
+Good onboarding is a repeatable process with room for a human welcome. [See how ZefoHR connects employee lifecycle workflows](/features/core-hrms).`,
   },
   {
     slug: "a-month-end-payroll-preparation-checklist",
@@ -63,7 +63,7 @@ Good onboarding is a repeatable process with room for a human welcome. [See how 
     excerpt: "Use a repeatable preparation checklist to bring payroll inputs, reviews and questions into one process.",
     cover_image_url: "/editorial/payroll-review.jpg",
     cover_image_alt: "HR and finance colleagues reviewing payroll information on a laptop",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["Payroll operations", "Process"],
     published_at: "2026-03-16T09:00:00.000Z",
     body_md: `Payroll preparation is easier to coordinate when the team knows which inputs are needed, who reviews them and how corrections are handled. The right checklist depends on your organisation and professional advice; this guide is about process organisation, not statutory guidance.
@@ -84,7 +84,7 @@ Record who prepared and reviewed the payroll inputs, what was changed and when t
 
 After payroll is processed, capture unresolved items and update the next cycle's checklist. A short retrospective can show whether the timing, responsibilities or source information need to change.
 
-Statutory calculations and filings should be confirmed with qualified specialists for your circumstances. PeopleHub brings payroll workflows and employee records into a connected view. [Explore payroll and compliance](/features/payroll-and-compliance).`,
+Statutory calculations and filings should be confirmed with qualified specialists for your circumstances. ZefoHR brings payroll workflows and employee records into a connected view. [Explore payroll and compliance](/features/payroll-and-compliance).`,
   },
   {
     slug: "attendance-process-teams-can-follow",
@@ -92,7 +92,7 @@ Statutory calculations and filings should be confirmed with qualified specialist
     excerpt: "Clear expectations, correction steps and manager ownership make attendance records easier to use.",
     cover_image_url: "/editorial/workforce-shifts.jpg",
     cover_image_alt: "A supervisor coordinating with frontline colleagues at work",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["Attendance", "Workforce management"],
     published_at: "2026-04-13T09:00:00.000Z",
     body_md: `Attendance processes become confusing when people do not know how to record time, report an exception or ask for a correction. A clear process explains each step in language employees and managers can use.
@@ -121,7 +121,7 @@ The right workflow should be understandable before it is automated. [Explore tim
     excerpt: "Help employees and managers understand how requests, decisions and handoffs fit together.",
     cover_image_url: "/editorial/manager-conversation.jpg",
     cover_image_alt: "A manager listening to a teammate during a one-to-one conversation",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["Leave management", "Employee experience"],
     published_at: "2026-05-11T09:00:00.000Z",
     body_md: `A leave process should tell employees how to request time away and tell managers what they need to review. When the steps are unclear, people rely on informal messages and teams can lose track of decisions.
@@ -150,7 +150,7 @@ Leave rules vary by organisation and applicable requirements. Have the policy re
     excerpt: "A shared hiring workflow helps teams keep decisions, communication and next steps visible.",
     cover_image_url: "/editorial/hiring-conversation.jpg",
     cover_image_alt: "A recruiter speaking with a candidate in an office meeting room",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["Recruitment", "Hiring"],
     published_at: "2026-06-08T09:00:00.000Z",
     body_md: `Hiring involves several people and many handoffs. A shared workflow can make the process easier to coordinate without taking judgement away from the people making hiring decisions.
@@ -179,7 +179,7 @@ Tools can help organise applications and interviews, but hiring decisions remain
     excerpt: "Give people access to useful tasks and information while keeping sensitive records appropriately restricted.",
     cover_image_url: "/editorial/people-operations.jpg",
     cover_image_alt: "Colleagues discussing employee information together in an office",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["Self-service", "HR systems"],
     published_at: "2026-07-13T09:00:00.000Z",
     body_md: `Employee self-service can make everyday requests easier to find. It also needs clear access rules: employees should know what they can view or update, and administrators should understand how changes are reviewed.
@@ -208,7 +208,7 @@ Self-service should make support easier to reach, not replace it. Review privacy
     excerpt: "A shared operating model can help distributed teams follow the same process without ignoring local needs.",
     cover_image_url: "/editorial/workforce-shifts.jpg",
     cover_image_alt: "A supervisor coordinating with colleagues in an operations workspace",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["Multi-location", "HR operations"],
     published_at: "2026-08-10T09:00:00.000Z",
     body_md: `When teams operate from different offices, sites or shifts, everyday HR processes can drift. A shared operating model gives everyone a common starting point while leaving room for approved local differences.
@@ -237,7 +237,7 @@ Technology can centralise records, but the organisation still needs clear owners
     excerpt: "A lightweight conversation structure can help managers discuss progress, support and next steps.",
     cover_image_url: "/editorial/manager-conversation.jpg",
     cover_image_alt: "A manager and teammate having a focused one-to-one conversation",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["Manager enablement", "Engagement"],
     published_at: "2026-09-14T09:00:00.000Z",
     body_md: `Regular check-ins work best when they create space for a useful conversation rather than another form to complete. A simple structure helps managers and employees prepare while keeping the discussion personal.
@@ -266,7 +266,7 @@ Performance processes should be fair, clear and appropriate for your organisatio
     excerpt: "Start with a real workflow, map its handoffs and introduce changes in a sequence your team can support.",
     cover_image_url: "/editorial/payroll-review.jpg",
     cover_image_alt: "Colleagues planning a shared workplace process around a laptop",
-    author: "PeopleHub Editorial",
+    author: "ZefoHR Editorial",
     tags: ["HR technology", "Implementation"],
     published_at: "2026-10-12T09:00:00.000Z",
     body_md: `Digitising HR does not need to begin with a large transformation programme. A focused roadmap starts with an existing process, identifies the friction and introduces change in manageable steps.
@@ -291,7 +291,7 @@ Ask users what became easier and what remains confusing. Check access, record qu
 
 Set owners for access, retention, support and policy updates. Seek qualified advice for privacy, security and statutory matters rather than assuming software alone addresses them.
 
-A steady rollout depends on the people who will use and maintain the process. [Request a PeopleHub demo](/request-demo) to discuss your organisation's needs.`,
+A steady rollout depends on the people who will use and maintain the process. [Request a ZefoHR demo](/request-demo) to discuss your organisation's needs.`,
   },
 ];
 
@@ -330,7 +330,7 @@ export const sampleMediaItems = [
     imageUrl: "/editorial/workforce-shifts.jpg",
     imageAlt: "A supervisor coordinating with frontline colleagues at work",
     title: "Supporting distributed and multi-location teams",
-    description: "Illustrative topic copy for a future media entry. No organisation, journalist or publication has endorsed PeopleHub.",
+    description: "Illustrative topic copy for a future media entry. No organisation, journalist or publication has endorsed ZefoHR.",
   },
   {
     sampleId: "media-sample-05",
@@ -353,7 +353,7 @@ ${steps.map((step) => `- ${step}`).join("\n")}
 
 Before adopting a workflow, confirm process ownership, employee communication, access permissions and any organisation-specific policy or legal requirements. Validate data practices with qualified advisers where needed.
 
-PeopleHub can be tailored around the suites and services relevant to your organisation. [Request a demo](/request-demo) to discuss your requirements.`;
+ZefoHR can be tailored around the suites and services relevant to your organisation. [Request a demo](/request-demo) to discuss your requirements.`;
 
 export const sampleUseCases = [
   {
@@ -451,7 +451,7 @@ export const privacyDraft = {
 **Website and service operator:** [Insert full legal entity name, registered address and country of incorporation]  
 **Privacy contact:** [Insert monitored privacy email and postal contact]
 
-This draft describes topics the operator should review and complete. It must not be treated as a verified description of current PeopleHub data practices until every section has been checked.
+This draft describes topics the operator should review and complete. It must not be treated as a verified description of current ZefoHR data practices until every section has been checked.
 
 ## 1. Information this service handles
 

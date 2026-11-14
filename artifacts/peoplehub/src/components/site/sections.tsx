@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { ArrowRight, ArrowUpRight, Check, CheckCircle2, IndianRupee, Mail, Phone, MapPin, ShieldCheck, Fingerprint, MessageCircle, Send, Sparkles } from 'lucide-react';
+import { ArrowRight, ArrowUpRight, Check, CheckCircle2, IndianRupee, Mail, Phone, MapPin, ShieldCheck, Fingerprint, MessageCircle, Send, Sparkles, UsersRound } from 'lucide-react';
 import { useCreateLead } from '@workspace/api-client-react';
 import { arr, cta, errMsg, formatINR, iconFor, str, useSection, type AnyObj } from '@/lib/content';
 import { Aurora, Container, Counter, CtaLink, Eyebrow, FaqList, GlassCard, Marquee, Reveal, SectionHead, btnPrimary } from './primitives';
@@ -52,20 +52,31 @@ function HeroVisual({ lottieUrl }: { lottieUrl?: string }) {
           <div className="mt-1 inline-flex items-center gap-1 rounded-full bg-emerald-400/10 px-2 py-0.5 text-[11px] text-emerald-300"><Check className="h-3 w-3" /> {str(preview.payrollDetail)}</div>
         </div>
       </div>
+      <div className="absolute right-0 top-[47%] z-10 flex w-44 flex-col items-end gap-2 sm:-right-4 sm:top-[36%] sm:w-52">
+        <div className="float-1 relative flex h-16 w-[120px] items-center gap-1.5 rounded-2xl glass border-gradient p-2 sm:h-20 sm:w-36 sm:gap-2 sm:p-3">
+          <span className="grid h-7 w-7 shrink-0 place-items-center rounded-xl bg-[color:var(--ph-indigo)]/15 text-[color:var(--ph-cyan)] sm:h-8 sm:w-8">
+            <UsersRound className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          </span>
+          <span className="min-w-0">
+            <span className="block truncate font-mono text-[7px] uppercase tracking-[0.08em] text-muted-foreground sm:text-[8px] sm:tracking-[0.12em]">{str(preview.coreHrmsDetail, 'People suite')}</span>
+            <span className="block truncate text-[10px] font-semibold text-foreground sm:text-sm">{str(preview.coreHrmsTitle, 'Core HRMS')}</span>
+          </span>
+        </div>
+        <div className="float-2 relative h-24 w-full rounded-2xl glass p-2.5 sm:h-28 sm:p-3.5">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground"><MessageCircle className="h-4 w-4 text-emerald-300" /> {str(preview.approvalLabel)}</div>
+          <div className="mt-2 text-sm text-foreground">{str(preview.approvalTitle)}</div>
+          <div className="mt-2 flex gap-1.5">
+            <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[11px] text-emerald-300">{str(preview.approvalStatus)}</span>
+            <span className="rounded-full bg-white/5 px-2.5 py-1 font-mono text-[11px] text-muted-foreground">{str(preview.approvalDetail)}</span>
+          </div>
+        </div>
+      </div>
       <HeroLottie url={lottieUrl} />
       <div className="float-1 absolute left-0 top-[14%] w-48 rounded-2xl glass p-3.5 sm:-left-6">
         <div className="flex items-center gap-2 text-xs text-muted-foreground"><ShieldCheck className="h-4 w-4 text-[color:var(--ph-cyan)]" /> {str(preview.statutoryLabel)}</div>
         <div className="mt-2 text-sm font-medium text-foreground">{str(preview.statutoryTitle)}</div>
         <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full w-[86%] rounded-full bg-gradient-to-r from-[color:var(--ph-cyan)] to-[color:var(--ph-indigo)]" /></div>
         <div className="mt-1.5 font-mono text-[10px] text-muted-foreground">{str(preview.statutoryDetail)}</div>
-      </div>
-      <div className="float-2 absolute right-0 top-[67%] z-10 h-24 w-44 rounded-2xl glass p-2.5 sm:-right-4 sm:top-[52%] sm:h-28 sm:w-52 sm:p-3.5">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground"><MessageCircle className="h-4 w-4 text-emerald-300" /> {str(preview.approvalLabel)}</div>
-        <div className="mt-2 text-sm text-foreground">{str(preview.approvalTitle)}</div>
-        <div className="mt-2 flex gap-1.5">
-          <span className="rounded-full bg-emerald-400/15 px-2.5 py-1 text-[11px] text-emerald-300">{str(preview.approvalStatus)}</span>
-          <span className="rounded-full bg-white/5 px-2.5 py-1 font-mono text-[11px] text-muted-foreground">{str(preview.approvalDetail)}</span>
-        </div>
       </div>
       <div className="float-3 absolute bottom-[4%] left-[10%] w-44 rounded-2xl glass p-3.5">
         <div className="flex items-center gap-2 text-xs text-muted-foreground"><Fingerprint className="h-4 w-4 text-[color:var(--ph-pink)]" /> {str(preview.attendanceLabel)}</div>

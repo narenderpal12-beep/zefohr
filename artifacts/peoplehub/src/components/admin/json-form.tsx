@@ -21,6 +21,7 @@ function blankLike(sample: any): any {
 
 /** Typed templates so empty collections get proper item shapes. Matched against the editor path. */
 const TEMPLATES: [RegExp, () => any][] = [
+  [/^(block-)?integrations-items$/, () => ({ name: '', displayMode: 'text', imageUrl: '' })],
   [/^clients-items$/, () => ({ id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `c-${Date.now()}`, name: '', alt: '', logoUrl: '', website: '', visible: true })],
   [/^media-items$/, () => ({ title: '', publication: '', date: '', url: '', description: '', imageUrl: '', imageAlt: '' })],
   [/^caseStudies-items$/, () => ({ title: '', industry: '', summary: '', body: '', slug: '', imageUrl: '', imageAlt: '' })],
@@ -96,6 +97,23 @@ export function ImageField({ value, onChange, path, onBusyChange }: { value: str
   );
 }
 
+function IntegrationItemField({ value, onChange, path }: { value: any; onChange: (v: any) => void; path: string }) {
+  const entry = typeof value === 'string' ? { name: value, displayMode: 'text', imageUrl: '' } : { name: '', displayMode: 'text', imageUrl: '', ...value };
+  return (
+    <div className="space-y-3">
+      <label className="block text-xs font-medium">Display as
+        <select className={cn(aInput, 'mt-1')} value={entry.displayMode} onChange={(e) => onChange({ ...entry, displayMode: e.target.value })} data-testid={`select-${path}-displayMode`}>
+          <option value="text">Text</option><option value="image">Uploaded image</option>
+        </select>
+      </label>
+      <label className="block text-xs font-medium">{entry.displayMode === 'image' ? 'Image description (accessibility)' : 'Integration text'}
+        <input className={cn(aInput, 'mt-1')} value={entry.name} onChange={(e) => onChange({ ...entry, name: e.target.value })} data-testid={`input-${path}-name`} />
+      </label>
+      {entry.displayMode === 'image' ? <ImageField value={entry.imageUrl} onChange={(imageUrl) => onChange({ ...entry, imageUrl })} path={`${path}-imageUrl`} /> : null}
+    </div>
+  );
+}
+
 /** Generic recursive editor for any JSON value. */
 export function JsonForm(props: { value: any; onChange: (v: any) => void; path?: string; depth?: number; onBusyChange?: (busy: boolean) => void }) {
   const [count, setCount] = useState(0);
@@ -113,6 +131,7 @@ export function JsonForm(props: { value: any; onChange: (v: any) => void; path?:
 }
 
 function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; onChange: (v: any) => void; path?: string; depth?: number }) {
+  if (/^(block-)?integrations-items-\d+$/.test(path)) return <IntegrationItemField value={value} onChange={onChange} path={path} />;
   if (IMAGE_PATH.test(path) && (typeof value === 'string' || value == null)) return <ImageField value={value ?? ''} onChange={onChange} path={path} />;
   if (value === null || value === undefined) {
     return <input className={aInput} value="" placeholder="(empty)" onChange={(e) => onChange(e.target.value)} data-testid={`input-${path}`} />;

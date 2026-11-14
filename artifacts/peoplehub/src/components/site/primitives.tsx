@@ -189,7 +189,7 @@ export function FaqList({ items, idPrefix = 'faq' }: { items: { question?: strin
   );
 }
 
-export function Marquee({ items }: { items: string[] }) {
+export function Marquee({ items }: { items: ReactNode[] }) {
   if (!items.length) return null;
   const doubled = [...items, ...items];
   return (

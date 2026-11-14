@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { arr, formatINR, str, usePublicPosts, useSection, type AnyObj } from '@/lib/content';
 import './home-alternate.css';
+import { IntegrationLabel } from '@/components/site/integration-label';
 
 function safeHref(value: unknown, fallback = '/contact') {
   const href = str(value).trim();
@@ -448,7 +449,7 @@ export function HomeAlternate() {
             <div><HomeV2Heading eyebrow={security.eyebrow} title={security.title} description={security.description} /></div>
             <div className="hv-security-content">
               {arr<string>(security.points).length ? <ul className="hv-security-list">{arr<string>(security.points).map((point, index) => <li key={`${point}-${index}`}><ShieldCheck aria-hidden="true" />{point}</li>)}</ul> : null}
-              {arr(integrationsSection.items).length ? <div className="hv-integrations"><h3>{str(integrationsSection.title)}</h3><ul>{arr<string>(integrationsSection.items).map((item) => <li key={item}>{item}</li>)}</ul></div> : null}
+              {arr(integrationsSection.items).length ? <div className="hv-integrations"><h3>{str(integrationsSection.title)}</h3><ul>{arr(integrationsSection.items).map((item, index) => <li key={index}><IntegrationLabel item={item} /></li>)}</ul></div> : null}
             </div>
           </div>
         </section>

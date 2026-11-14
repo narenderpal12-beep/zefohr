@@ -11,6 +11,7 @@ import { Aurora, Container, Counter, CtaLink, Eyebrow, FaqList, GlassCard, Marqu
 import { cn } from '@/lib/utils';
 import {orbitAnimation} from '@/lib/lottie-data';
 import { SolutionImage } from './solution-image';
+import { IntegrationLabel } from './integration-label';
 import { trackEvent, withLeadAttribution } from '@/lib/analytics';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -335,7 +336,7 @@ export function Integrations() {
       <Container>
         <h2 className="text-center font-mono text-xs uppercase tracking-[0.22em] text-muted-foreground">{str(integ.title)}</h2>
       </Container>
-      <div className="mt-8"><Marquee items={arr<string>(integ.items)} /></div>
+      <div className="mt-8"><Marquee items={arr(integ.items).map((item, index) => <IntegrationLabel key={index} item={item} />)} /></div>
     </section>
   );
 }

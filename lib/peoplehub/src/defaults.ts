@@ -1,5 +1,6 @@
 export const complianceNote = "The platform automates documentation and tracking. EOR, POSH, FRRO and labour-law compliance are supported by appropriate legal, statutory and operational expertise; software alone does not fulfil every statutory obligation.";
 import {marketingDefaults,additionalMarketingPages} from "./marketing-defaults";
+import { missionVisionPage } from "./mission-vision-page";
 import {clientDefaults} from "./client-defaults";
 import {defaultSolutionPhoto} from "./solution-photos";
 import {privacyDraft,termsDraft} from "./sample-content";
@@ -113,6 +114,7 @@ defaults.homepageV3=creativeHomeDefaults;
 defaults.pageLayouts={routes:{}};
 defaults.clients=clientDefaults;
 export const defaultPages = [
+  missionVisionPage,
   ...additionalMarketingPages,
   {slug:"solutions/payroll-software-india",title:"Payroll software for Indian businesses",content:{intro:"Bring salary processing, statutory tracking and employee records into one connected platform.",body:"Simplify PF, ESI, PT, TDS and payroll administration with ZefoHR. Our payroll and compliance suite connects salary processing with your employee and attendance records.",benefits:["India-ready payroll workflows","Connected employee records","Statutory calendar and documentation"],faq:defaults.faq.items.slice(0,3)}},
   {slug:"solutions/hrms-for-msme",title:"HRMS built for growing MSMEs",content:{intro:"Start with the essentials. Grow without the complexity.",body:"ZefoHR brings affordable, modular HR software and expert-led services together for Indian MSMEs.",benefits:["Affordable entry packages","Simple implementation","Modular suites"],faq:defaults.faq.items.slice(0,3)}},

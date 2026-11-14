@@ -411,6 +411,35 @@ export async function seed(reset=false) {
       await client.query("INSERT INTO modules(key,name,description,priority,sort_order) VALUES($1,$2,$3,$4,$5) ON CONFLICT(key) DO NOTHING",[s.key,s.title,s.description,s.priority,i]);
     }
     for(const page of defaultPages) await client.query("INSERT INTO pages(slug,title,content,status) VALUES($1,$2,$3,'published') ON CONFLICT(slug) DO NOTHING",[page.slug,page.title,JSON.stringify(page.content)]);
+    // Add the new page without replacing saved navigation or later admin edits.
+    const missionNavSeed=(await client.query("SELECT key FROM site_content WHERE key='mission_vision_navigation_v1'")).rowCount;
+    if(!missionNavSeed){
+      const href="/mission-vision-values";
+      const link={label:"Mission, Vision & Values",href};
+      for(const key of ["nav","footer"]){
+        const row=(await client.query("SELECT value FROM site_content WHERE key=$1 FOR UPDATE",[key])).rows[0];
+        const value=structuredClone(row?.value ?? defaults[key]);
+        if(key==="nav"){
+          const menus=Array.isArray(value.megaMenu)?value.megaMenu:[];
+          let company=menus.find((m:Doc)=>m.href==="/about"||m.label==="Company");
+          if(!company){company={label:"Company",href:"/about",groups:[]};menus.push(company);}
+          const groups=Array.isArray(company.groups)?company.groups:[];
+          if(!groups.some((g:Doc)=>(g.links??[]).some((l:Doc)=>l.href===href))){
+            if(!groups.length)groups.push({title:"ZefoHR",links:[]});
+            groups[0].links=[...(groups[0].links??[]),link];
+          }
+          company.groups=groups;value.megaMenu=menus;
+        }else{
+          const columns=Array.isArray(value.columns)?value.columns:[];
+          let company=columns.find((c:Doc)=>c.title==="Company");
+          if(!company){company={title:"Company",links:[]};columns.push(company);}
+          if(!(company.links??[]).some((l:Doc)=>l.href===href))company.links=[...(company.links??[]),link];
+          value.columns=columns;
+        }
+        await client.query("INSERT INTO site_content(key,value) VALUES($1,$2) ON CONFLICT(key) DO UPDATE SET value=EXCLUDED.value,updated_at=now()",[key,JSON.stringify(value)]);
+      }
+      await client.query("INSERT INTO site_content(key,value) VALUES('mission_vision_navigation_v1','{\"seeded\":true}'::jsonb)");
+    }
     const zefohrProfileSeed=(await client.query("SELECT key FROM site_content WHERE key='zefohr_profile_v1'")).rowCount;
     if(!zefohrProfileSeed){
       const profileRows=await client.query("SELECT key,value FROM site_content WHERE key NOT LIKE 'sample_content_v%' AND key<>'zefohr_profile_v1' FOR UPDATE");

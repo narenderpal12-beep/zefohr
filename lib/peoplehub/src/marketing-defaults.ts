@@ -3,6 +3,7 @@ import {sampleUseCases} from "./sample-content";
 
 const companyLinks=[
   {label:"About us",href:"/about"},{label:"Careers",href:"/careers"},
+  {label:"Mission, Vision & Values",href:"/mission-vision-values"},
   {label:"Our support",href:"/support"},{label:"Request a demo",href:"/request-demo"},
 ];
 const resourceLinks=[

@@ -124,6 +124,13 @@ function validateContent(key:string,value:Doc) {
     if(!Array.isArray(value.items))fail("Integration details must be a list");
     const slugs=new Set<string>();
     for(const item of value.items){
+      // Simple logo/text entries do not need catalogue metadata.
+      if(typeof item==="string")continue;
+      if(item&&["text","image"].includes(item.displayMode)){
+        if(item.name!=null&&typeof item.name!=="string")fail("Integration text must be text");
+        if(item.imageUrl!=null&&typeof item.imageUrl!=="string")fail("Choose an integration image");
+        continue;
+      }
       if(!item||typeof item!=="object"||!asText(item.title).trim())fail("Each integration needs a title");
       if(!/^[a-z0-9-]+$/.test(item.slug||"")||slugs.has(item.slug))fail("Integration slugs must be unique lower-case URL slugs");
       if(item.status!=null&&!["draft","published"].includes(item.status))fail("Choose draft or published for each integration");

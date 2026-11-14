@@ -21,7 +21,7 @@ function blankLike(sample: any): any {
 
 /** Typed templates so empty collections get proper item shapes. Matched against the editor path. */
 const TEMPLATES: [RegExp, () => any][] = [
-  [/(^|-)integrationMarketplace-items$/, () => ({ title: '', slug: '', description: '', category: '', logoUrl: '', logoAlt: '', url: '', status: 'draft', verified: false })],
+  [/(^|-)integrationMarketplace-items$/, () => ({ name: '', displayMode: 'text', imageUrl: '' })],
   [/(^|-)integrations?-items$/, () => ({ name: '', displayMode: 'text', imageUrl: '' })],
   [/^clients-items$/, () => ({ id: typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `c-${Date.now()}`, name: '', alt: '', logoUrl: '', website: '', visible: true })],
   [/^media-items$/, () => ({ title: '', publication: '', date: '', url: '', description: '', imageUrl: '', imageAlt: '' })],
@@ -99,12 +99,14 @@ export function ImageField({ value, onChange, path, onBusyChange }: { value: str
 }
 
 function IntegrationItemField({ value, onChange, path }: { value: any; onChange: (v: any) => void; path: string }) {
-  const entry = typeof value === 'string' ? { name: value, displayMode: 'text', imageUrl: '' } : { name: '', displayMode: 'text', imageUrl: '', ...value };
+  const entry = typeof value === 'string'
+    ? { name: value, displayMode: 'text', imageUrl: '' }
+    : { ...value, name: value?.name ?? value?.title ?? '', displayMode: value?.displayMode ?? (value?.logoUrl ? 'image' : 'text'), imageUrl: value?.imageUrl ?? value?.logoUrl ?? '' };
   return (
     <div className="space-y-3">
       <label className="block text-xs font-medium">Display as
         <select className={cn(aInput, 'mt-1')} value={entry.displayMode} onChange={(e) => onChange({ ...entry, displayMode: e.target.value })} data-testid={`select-${path}-displayMode`}>
-          <option value="text">Text</option><option value="image">Uploaded image</option>
+          <option value="text">Text</option><option value="image">Image</option>
         </select>
       </label>
       {entry.displayMode === 'text' ? (
@@ -112,19 +114,12 @@ function IntegrationItemField({ value, onChange, path }: { value: any; onChange:
           <input className={cn(aInput, 'mt-1')} value={entry.name} onChange={(e) => onChange({ ...entry, name: e.target.value })} data-testid={`input-${path}-name`} />
         </label>
       ) : (
-        <label className="block text-xs font-medium">Image description (accessibility)
-          <input className={cn(aInput, 'mt-1')} value={entry.name} onChange={(e) => onChange({ ...entry, name: e.target.value })} data-testid={`input-${path}-name`} />
-        </label>
-      )}
-      <div>
-        <p className="mb-2 text-xs font-medium">Integration image <span className="font-normal text-muted-foreground">(optional)</span></p>
         <ImageField
           value={entry.imageUrl}
-          onChange={(imageUrl) => onChange({ ...entry, imageUrl, ...(imageUrl ? { displayMode: 'image' } : {}) })}
+          onChange={(imageUrl) => onChange({ ...entry, imageUrl })}
           path={`${path}-imageUrl`}
         />
-        {entry.displayMode === 'text' && entry.imageUrl ? <p className="mt-2 text-[11px] text-muted-foreground">This image is saved but hidden on the website while Text is selected.</p> : null}
-      </div>
+      )}
     </div>
   );
 }
@@ -146,7 +141,7 @@ export function JsonForm(props: { value: any; onChange: (v: any) => void; path?:
 }
 
 function JsonNode({ value, onChange, path = 'root', depth = 0 }: { value: any; onChange: (v: any) => void; path?: string; depth?: number }) {
-  if (/(^|-)integrations?-items-\d+$/.test(path)) return <IntegrationItemField value={value} onChange={onChange} path={path} />;
+  if (/(^|-)(integrations?|integrationMarketplace)-items-\d+$/.test(path)) return <IntegrationItemField value={value} onChange={onChange} path={path} />;
   if (IMAGE_PATH.test(path) && (typeof value === 'string' || value == null)) return <ImageField value={value ?? ''} onChange={onChange} path={path} />;
   if (value === null || value === undefined) {
     return <input className={aInput} value="" placeholder="(empty)" onChange={(e) => onChange(e.target.value)} data-testid={`input-${path}`} />;

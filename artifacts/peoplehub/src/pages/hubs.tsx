@@ -5,6 +5,7 @@ import { arr, str, useContent, usePublicPosts, useSection, type AnyObj } from '@
 import { Markdown } from '@/lib/markdown';
 import { Container, PageHero, Reveal } from '@/components/site/primitives';
 import { CtaBand } from '@/components/site/sections';
+import { IntegrationLabel } from '@/components/site/integration-label';
 import { NotFoundPage, PageSkeleton } from './public';
 
 const published = (item: AnyObj) => item.status === 'published';
@@ -196,7 +197,9 @@ export function IntegrationsPage() {
   const content = useContent();
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('all');
-  const items = arr<AnyObj>(section.items).filter(reviewed).filter((item) => `${str(item.title)} ${str(item.description)} ${str(item.category)}`.toLowerCase().includes(query.toLowerCase()))
+  const simpleItems = arr<unknown>(section.items).filter((item) => typeof item === 'string' || (item && typeof item === 'object' && ['text', 'image'].includes(str((item as AnyObj).displayMode))))
+    .filter((item) => (typeof item === 'string' ? item : str((item as AnyObj).name)).toLowerCase().includes(query.toLowerCase()));
+  const items = arr<AnyObj>(section.items).filter((item) => !['text', 'image'].includes(str(item.displayMode))).filter(reviewed).filter((item) => `${str(item.title)} ${str(item.description)} ${str(item.category)}`.toLowerCase().includes(query.toLowerCase()))
     .filter((item) => category === 'all' || str(item.category) === category);
   const categories = Array.from(new Set([...arr<string>(section.categories), ...items.map((item) => str(item.category)).filter(Boolean)])).sort();
   if (!content) return <PageSkeleton />;
@@ -209,7 +212,8 @@ export function IntegrationsPage() {
           <select value={category} onChange={(event) => setCategory(event.target.value)} className="mt-2 w-full min-w-44 rounded-xl border border-white/10 bg-background px-4 py-3 text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color:var(--ph-cyan)]"><option value="all">{str(section.allCategoryLabel, 'All categories')}</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select>
         </label>
       </div>
-      {items.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{items.map((item, index) => <Reveal key={str(item.slug, String(index))} delay={(index % 3) * 55} className="glass rounded-2xl p-6">{str(item.logoUrl) ? <img src={str(item.logoUrl)} alt={str(item.logoAlt, str(item.title))} className="mb-5 h-12 max-w-40 object-contain" /> : <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10"><FileText className="h-5 w-5 text-[color:var(--ph-cyan)]" /></span>}<p className="mt-4 font-mono text-[10px] uppercase tracking-wider text-[color:var(--ph-cyan)]">{str(item.category)}</p><h2 className="font-display mt-2 text-xl font-bold">{str(item.title)}</h2><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{str(item.description)}</p>{safeExternal(item.url) ? <a className="mt-5 inline-flex items-center gap-2 text-sm text-foreground" href={safeExternal(item.url)} target="_blank" rel="noopener noreferrer">Learn more <ExternalLink className="h-4 w-4" /></a> : null}</Reveal>)}</div> : <NoResults>{str(section.emptyMessage, 'Integration details will appear here when they are ready to share.')}</NoResults>}
+      {simpleItems.length ? <div className="mb-8 flex flex-wrap gap-4">{simpleItems.map((item, index) => <div key={index} className="glass flex items-center justify-center rounded-2xl px-6 py-4"><IntegrationLabel item={item} /></div>)}</div> : null}
+      {items.length ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{items.map((item, index) => <Reveal key={str(item.slug, String(index))} delay={(index % 3) * 55} className="glass rounded-2xl p-6">{str(item.logoUrl) ? <img src={str(item.logoUrl)} alt={str(item.logoAlt, str(item.title))} className="mb-5 h-12 max-w-40 object-contain" /> : <span className="grid h-10 w-10 place-items-center rounded-xl border border-white/10"><FileText className="h-5 w-5 text-[color:var(--ph-cyan)]" /></span>}<p className="mt-4 font-mono text-[10px] uppercase tracking-wider text-[color:var(--ph-cyan)]">{str(item.category)}</p><h2 className="font-display mt-2 text-xl font-bold">{str(item.title)}</h2><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{str(item.description)}</p>{safeExternal(item.url) ? <a className="mt-5 inline-flex items-center gap-2 text-sm text-foreground" href={safeExternal(item.url)} target="_blank" rel="noopener noreferrer">Learn more <ExternalLink className="h-4 w-4" /></a> : null}</Reveal>)}</div> : !simpleItems.length ? <NoResults>{str(section.emptyMessage, 'Integration details will appear here when they are ready to share.')}</NoResults> : null}
       <div className="mt-8 rounded-2xl border border-white/10 p-5"><p className="text-sm text-muted-foreground">Looking for a specific system?</p><Link href="/request-demo" className="mt-2 inline-flex items-center gap-2 font-semibold text-[color:var(--ph-cyan)]">{str(section.requestLabel, 'Ask about an integration')} <ArrowRight className="h-4 w-4" /></Link></div>
     </Container>
     <CtaBand />

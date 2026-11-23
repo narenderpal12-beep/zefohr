@@ -1,0 +1,169 @@
+0. YOUR ROLE AND THE ONE RULE THAT MATTERS MOST
+
+You are a senior product designer and full-stack engineer. You are upgrading an existing HRMS marketing website that already works.
+
+Before changing anything, scan the whole project (routing, page files, components, data/CMS/API layer, database schema, env usage, forms, auth, any dynamic content). Write a short summary of what exists, then proceed.
+
+Hard constraints — DO NOT BREAK
+Keep the existing architecture. Same framework, same folder structure, same routing, same file naming, same component hierarchy.
+Keep all dynamic content wiring exactly as it is. Whatever is currently loaded from the database / API / CMS / JSON / admin panel must continue to load from the same source with the same field names. Do not hard-code content that is currently dynamic. Do not rename tables, endpoints, props, or fields.
+Keep every page that exists today, at the same URL. Other pages (inner pages, listing pages, detail pages, forms) must follow the same structure as they have now.
+Change only three things: (a) visual design, (b) the amount and quality of information shown, (c) creative/interactive elements.
+Anything new that needs data must plug into the same dynamic system (same data layer, same admin/CMS pattern). If I have no admin field for it yet, add the field/table in the same style as the existing ones and seed it with sample data. Never scatter hard-coded copy through components.
+Work incrementally: finish the design system first, then Home, then inner pages, then new sections. After each stage confirm nothing dynamic regressed.
+1. GOAL
+
+Make visitors stay longer, explore more pages, and convert (book demo / start free trial). Do this by making the site feel like an enterprise-grade HR platform: richer feature depth, clear role/industry paths, hands-on tools, and plenty of useful content, all in a fresh visual identity that does not resemble any competitor.
+
+Use these competitor sites only as a pattern and information benchmark (do not copy their text, images, logos, brand names, or layouts pixel for pixel): Keka, HROne, Darwinbox, Zimyo, greytHR, ZingHR. Write all copy original. Use the placeholder {{BRAND}} where my brand name should appear (replace with the brand already in my project).
+
+2. WHAT THE BENCHMARK SITES DO THAT KEEPS PEOPLE ENGAGED
+
+Implement the equivalents below, in my own style.
+
+Pattern	Seen on	What to build
+Announcement bar with event/webinar/new-release	Keka, Darwinbox, Zimyo, HROne	Dismissible top strip, driven by dynamic content
+Mega-menu grouped by suite → module, with one-line descriptor under each item	Keka, HROne, Zimyo	Product / AI / Solutions / Pricing / Resources / Free Tools menus with icons
+Four-suite product architecture (Payroll, HR, Talent, Projects)	Keka	Suite cards that open to module lists
+Tabbed "one platform" explorer with live product screenshot per tab	Keka, Zimyo	Home section: tabs swap UI mockup + 3 bullets + "Learn more"
+Lifecycle tab explorer (Hire → Onboard → Pay → Perform → Grow → Alumni)	ZingHR	Animated horizontal lifecycle with stage detail panel
+Role-based value switcher (CHRO / CFO / Payroll Admin / Manager / Employee / CIO)	greytHR, HROne, Keka	Segmented control that rewrites headline, benefits, and sample dashboard
+"Without us vs With us" / "Stitched suite vs one platform" comparison	greytHR, ZingHR	Two-column contrast block with checks and crosses
+AI layer with Ask / Collaborate / Anticipate narrative and agent cards with metrics	Keka, Zimyo, ZingHR, greytHR, HROne	AI section with agent cards (Payroll, Recruitment, Helpdesk, Onboarding, Performance, Compliance), each with a headline metric and a mini chat demo
+Hero stat strip (customers, employees, modules, countries)	Zimyo, greytHR, HROne	Animated counters, dynamic values
+Interactive product screenshots with floating KPI widgets	Zimyo, HROne	Layered UI mockups with hover parallax
+Interactive calculators and generators	Keka, HROne, Zimyo	See Section 5
+Pricing calculator / "price challenge"	greytHR, HROne ROI tool	Employee slider + module checkboxes → live estimate
+Industry pages (9–12 verticals)	Zimyo, ZingHR, Keka, HROne	Industry grid + template detail page
+Company-size and role segments	Keka, greytHR	Small / Mid / Enterprise / Global paths
+Compliance wiki by state	greytHR, Keka	Searchable state-by-state PF/ESI/PT/LWF/min-wage reference
+Free templates, glossary, guides, checklists, interview questions, email and policy templates	Zimyo, HROne, Keka, greytHR	Resource hub with filters and search
+Community, academy, podcast, webinars, events	greytHR, HROne, Keka	"Learn & Grow" hub
+Customer stories with measurable outcomes	Keka	Story cards with big result number + filter by industry/size
+Integration marketplace	Keka, HROne, Zimyo	Searchable, filterable logo grid with category chips
+Security & certification badges	All	ISO 27001 / SOC 2 / GDPR row with short explainers
+Review badges and testimonials carousel	Keka, greytHR, HROne, Darwinbox	Rating badges + quote carousel with logo, role, metric
+Exit-intent popup and sticky demo bar	Keka, HROne	Gated asset popup + sticky mobile CTA
+Location/region switcher, mobile app badges, WhatsApp chat	Keka, greytHR, Zimyo	Footer + floating buttons
+Interactive demos / take a tour	Keka, Darwinbox	Click-through guided demo overlay
+3. DESIGN DIRECTION (must differ from all six benchmarks)
+
+Create a new visual identity while keeping the existing layout skeleton for each page:
+
+Style: modern, warm, confident. Avoid generic purple-gradient SaaS look. Choose a distinctive palette (one strong primary, one warm accent, soft neutrals, a dark-mode-ready surface scale). Define everything as design tokens (CSS variables / theme file): colors, radius, shadows, spacing, type scale, motion durations.
+Typography: one expressive display face for headlines plus one highly readable UI face. Tight, intentional type scale. Large numerals for stats.
+Layout language: generous whitespace, bento-grid feature cards, layered UI mockups, subtle grain or mesh backgrounds, large rounded containers, section dividers with a unique shape motif.
+Motion: meaningful only. Scroll-reveal, number count-up, tab cross-fades, card hover lifts, sticky-scroll storytelling for the lifecycle section. Respect prefers-reduced-motion.
+Illustration/visuals: build product UI mockups in code (HTML/CSS/SVG) rather than stock photos. Use consistent icon set. No competitor logos or screenshots. Use clearly labelled placeholder logos for "trusted by".
+Accessibility: WCAG AA contrast, keyboard navigable menus and tabs, focus rings, alt text, semantic landmarks.
+Responsive: mobile first. Mega-menu becomes an accordion drawer. Tabs become swipeable. Sticky bottom CTA on mobile.
+Performance: lazy-load below the fold, optimized images, no layout shift.
+4. HOME PAGE — SECTION ORDER (keep my existing home route and data sources; restyle and extend)
+Announcement bar (dynamic: event/release/webinar link)
+Header with logo, mega-menu (Products, AI, Solutions, Pricing, Resources, Free Tools), Login, "Book a demo", "Start free trial", global search (Cmd/Ctrl+K command palette)
+Hero: outcome-led headline, subline, two CTAs, trust row (rating badges + 3 key stats), layered animated product mockup
+Logo marquee: "Trusted by growing and large teams" (dynamic logos)
+Pain-to-promise strip: 4 short problem cards (tool sprawl, spreadsheets, compliance risk, slow hiring) that flip to the solution on hover
+"One platform" tabbed explorer: Payroll & Compliance · Core HR · Hiring & Onboarding · Time & Attendance · Performance · Projects/Timesheets (each tab: mockup + benefits + link)
+Role switcher: CHRO · CFO · Payroll Admin · Manager · Employee · IT/CIO
+Lifecycle explorer: Attract → Onboard → Pay → Perform → Grow → Alumni (sticky-scroll)
+AI section: Ask · Automate · Anticipate, with agent cards and a live mini chat demo (scripted, no external API required; if an AI endpoint already exists in my project, wire to it)
+Stat counters: customers, employees, modules, countries, compliance rules supported (dynamic)
+Comparison block: "Stitched tools" vs "One platform"
+Interactive tools teaser: 4 cards (ROI calculator, Payroll/salary calculator, Gratuity/HRA/TDS calculators, Letter generator)
+Industry carousel: 9–12 verticals
+Compliance & security: state map or searchable list teaser + ISO/SOC/GDPR badges
+Integration marketplace teaser: category chips + logo grid
+Customer stories: 3–4 cards with big outcome numbers
+Testimonials carousel + review badges
+Learn & Grow hub: blog, glossary, templates, webinar/event, podcast, community, academy
+Pricing teaser: mini estimator (employees slider → starting-from price)
+FAQ accordion (with FAQ schema markup)
+Final CTA band with demo/trial form (name, work email, phone, employee-size dropdown, city)
+Footer: product columns, solutions, resources, company, offices/phones, social, app-store badges, certifications, region/language switcher, legal links
+Floating layer: WhatsApp/chat button, sticky mobile CTA, exit-intent popup offering a downloadable asset
+
+Each section must read from the same dynamic source pattern my project already uses; if a section has no source yet, create one following the existing pattern and seed sample entries.
+
+5. INTERACTIVE TOOLS (the biggest "stay longer" lever)
+
+Build these as separate pages under a Free Tools hub plus teaser cards on the home page. All must work client-side with no paid API.
+
+HRMS ROI calculator: inputs (employees, HR team size, avg salary, hours/month on payroll, tools currently used) → outputs (hours saved, annual cost saved, payback period). Show animated result and a "Send me this report" email capture.
+Pricing estimator: employee slider + module toggles → estimated monthly range, "Talk to sales" CTA.
+Salary / CTC breakup calculator
+Gratuity calculator
+HRA calculator
+Income tax (TDS) estimator (old vs new regime comparison, clearly labelled as estimate)
+Leave encashment and notice-period/F&F calculators
+Payslip generator (downloadable PDF)
+HR letter generators (offer, appointment, experience, relieving, increment, confirmation, internship) with live preview and PDF/DOCX download
+Job description generator (role, level, skills → structured JD)
+HR maturity assessment quiz: 8–10 questions → score, radar chart, tailored recommendations, email capture
+"Which module do I need?" finder: 4-step questionnaire → recommended modules
+Public holiday list by year/state and minimum wage by state reference tables
+
+For each tool: explanatory content below (how it works, formula, FAQs), related tools, related blog posts, and a soft CTA. Add disclaimers where legal or tax figures are involved. Tool copy and rates must be editable from the dynamic source, not buried in code.
+
+6. PAGE TEMPLATES (keep existing routes; apply the new design and richer information)
+
+For every template below, keep my current structure and data binding, then enrich as described.
+
+A. Product suite page (Payroll, HR, Talent, Projects): hero with mockup; module grid; 3–5 deep-dive feature blocks with alternating media; "how it works" 4-step; role-wise benefits; integrations; related stories; FAQ; CTA.
+
+B. Module detail page (Core HR, Payroll, Attendance & Leave, Recruitment, Onboarding, Performance/OKR, Engagement, Helpdesk, Expense & Travel, Asset, Document, Policy, Workflow, ESS, Timesheet, LMS, Offboarding, Analytics): problem → solution; feature checklist (aim for 10–20 specific capabilities with short descriptions); screenshot tabs; configuration examples; compliance notes; "works with" integration chips; mini FAQ; next-module navigation.
+
+C. Industry page (IT/SaaS, Manufacturing, BFSI, Retail & QSR, Healthcare & Pharma, Logistics, Education, Hospitality, Staffing, Construction, Automotive, NGO): industry challenges, features mapped to challenges, relevant compliance, sample workflow, stat, story, CTA.
+
+D. Solutions by size and role: Small business, Mid-market, Enterprise, Global; Founder, CHRO, CFO, Talent Acquisition, Payroll Admin.
+
+E. Pricing page: plan cards, module add-on matrix, employee slider, monthly/annual toggle, comparison table with sticky header, FAQ, "what's included" list, contact-sales strip.
+
+F. Resources hub: tabs/filters for Blog, Guides, Glossary, Templates, Checklists, Interview Questions, Reports/E-books, Webinars, Podcasts. Include search, tag filters, reading time, "related" rail, table of contents on detail pages, author box, share buttons, newsletter capture, and in-article CTA.
+
+G. Customer stories: filter by industry, size, module; story detail with challenge, solution, results (big numbers), quote.
+
+H. Integrations page: searchable grid, categories (accounting, ATS, background verification, benefits, communication, ERP, identity/SSO, assessments), detail modal.
+
+I. Compliance hub: searchable state-by-state reference (PF, ESI, PT, LWF, minimum wages, holidays), "last updated" label from dynamic data, downloadable checklist, labour-code explainer.
+
+J. AI page: philosophy, agent gallery, security and permissions model, example prompts library, FAQ.
+
+K. About, Careers, Partners, Contact, Security, Legal: keep existing; restyle; add team, timeline, office locations with click-to-call, partner program benefits and form.
+
+L. Demo / Free trial page: short form (name, work email, phone, company, employee size, city, interest), side panel with benefits, ratings, and customer logos.
+
+7. FEATURE DEPTH — INFORMATION TO SURFACE (write original copy for each)
+
+Make sure feature content covers at least the following so the site feels complete. Store as dynamic data.
+
+Core HR: employee database, org chart, document vault with e-sign, letters, custom fields, role-based access, audit trail, bulk upload, lifecycle events, probation and confirmation tracking.
+Payroll & compliance: salary structures, auto PF/ESI/PT/LWF/TDS, arrears and off-cycle runs, full-and-final settlement, bonuses/incentives/overtime, Form 16, challan generation, bank file export, accounting sync, multi-entity and multi-state support, payroll audit reports, payslip distribution.
+Time, attendance & leave: biometric, GPS/geo-fence, face recognition, mobile check-in, shift rostering, overtime rules, regularisation, policy-based leave, holiday calendars, comp-off.
+Hiring & onboarding: requisitions, career page, job-board posting, ATS pipeline, interview scheduling and scorecards, offer letters, pre-boarding, digital joining kit, background verification, asset allocation.
+Performance & growth: KRA/KPI, OKRs, 360 feedback, continuous feedback and 1:1s, review cycles, calibration, compensation and increment planning, skills and career paths, learning paths.
+Engagement: announcements feed, surveys and pulse checks, recognition and rewards, communities, birthdays and anniversaries, eNPS.
+Employee experience: self-service portal and mobile app, helpdesk with ticket SLAs, workflow builder, policy acknowledgement, assets, travel and expense claims with policy checks.
+Analytics: headcount, attrition, cost, diversity, hiring funnel, payroll variance, custom dashboards, scheduled reports, AI anomaly alerts.
+AI: ask questions in plain language, take actions (approve leave, update records) within permissions, draft JDs and letters, attrition and payroll anomaly signals, explain-the-number citations.
+Platform: single employee record, one login, SSO, API and webhooks, sandbox, data residency options, uptime status page, certifications.
+
+Where I lack real numbers (customers, employees served, ratings, uptime, ROI), use clearly marked placeholders such as {{CUSTOMER_COUNT}} driven from the dynamic settings table. Never invent statistics, awards, or testimonials in production copy.
+
+8. CONVERSION AND ANALYTICS
+Every page ends with a relevant CTA; primary CTA is always visible in the header.
+Forms: inline validation, success state, spam protection, and storage in the existing leads mechanism. Capture UTM parameters and source page with each lead.
+Add lightweight event tracking hooks (CTA click, tool used, calculator completed, tab changed, scroll depth 25/50/75/100) using the analytics setup already in the project; if none, add a thin wrapper that can be pointed at any provider.
+SEO: unique title/meta per page, canonical tags, Open Graph, JSON-LD (Organization, Product, FAQPage, BreadcrumbList, Article), XML sitemap, clean heading hierarchy, internal linking between modules, industries, tools and blog posts.
+9. DELIVERY ORDER
+Scan project and report what must not change.
+Design tokens, typography, base components (buttons, cards, tabs, accordions, forms, modals, mega-menu, footer).
+Re-skin Home using the section order above, keeping data bindings.
+Re-skin all existing inner pages with the same structure.
+Add enriched content blocks and new sections via the dynamic layer.
+Build the interactive tools and Free Tools hub.
+Add Resources hub, Compliance hub, Integrations, Customer Stories enhancements.
+SEO, analytics hooks, accessibility and performance pass.
+Regression check: confirm every previously dynamic field still renders, every route still resolves, every form still submits.
+
+At the end, give me: (a) a list of files changed, (b) a list of new dynamic fields/tables added, (c) anything you could not finish, (d) a checklist for me to verify.

@@ -17,7 +17,7 @@ Phase 1 marketing website and organisation signup portal for an Indian HRMS prod
 - Keep the existing workspace directories. Website client/server are in the PeopleHub artifact; shared domain logic is in `lib/peoplehub`.
 - The user explicitly requested JWT/bcrypt and pg/plain SQL; do not migrate this app to Clerk or Drizzle without asking.
 - **Do not use Drizzle push for this product:** the SQL migration is authoritative and the starter Drizzle schema does not describe these tables.
-- Production database schema changes go through Replit Publish. Startup seeds missing content only; it never executes schema DDL.
+- Production database schema changes go through localcheck Publish. Startup seeds missing content only; it never executes schema DDL.
 - API and SSR services must share the same signing secret and business library. JWT lives in an HttpOnly cookie, not localStorage.
 
 ## Product boundaries

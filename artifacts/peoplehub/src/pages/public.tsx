@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useParams, useLocation, useSearch } from 'wouter';
+import { Link, useParams, useLocation } from 'wouter';
 import { ArrowLeft, ArrowRight, CalendarDays, Check, Compass, Tag, UserRound } from 'lucide-react';
 import { arrangeContentRows, arr, iconFor, str, useContent, usePublicPages, usePublicPosts, useSection, type AnyObj } from '@/lib/content';
 import { Markdown } from '@/lib/markdown';
@@ -11,17 +11,9 @@ import { ClientsSection } from '@/components/site/clients';
 import { PageBlocks } from '@/components/site/page-blocks';
 import { SolutionImage } from '@/components/site/solution-image';
 import { FreeToolsTeaser } from './free-tools';
-import { HomeAlternate } from './home-alternate';
-import { HomeCreative } from './home-creative';
-import { resolveHomepageDesign } from '@/lib/homepage-designs';
 import { cn } from '@/lib/utils';
 
 export function HomePage() {
-  const homepage = useSection('homepage');
-  const search = useSearch();
-  const design = resolveHomepageDesign(homepage.activeVariant, search);
-  if (design === 'creative') return <HomeCreative />;
-  if (design === 'alternate') return <HomeAlternate />;
   return (
     <>
       <Hero />

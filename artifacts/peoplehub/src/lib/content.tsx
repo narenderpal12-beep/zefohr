@@ -45,7 +45,7 @@ const ContentCtx = createContext<AnyObj | undefined>(undefined);
 /** Fetches live CMS content, seeded with SSR bootstrap so hydration matches. */
 export function ContentProvider({ children }: { children: ReactNode }) {
   const boot = useContext(BootCtx);
-  const { data } = useGetContent({
+  const contentQuery = useGetContent({
     query: {
       queryKey: getGetContentQueryKey(),
       initialData: boot?.content as any,
@@ -53,6 +53,11 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       staleTime: 2000,
     },
   });
+  const { data } = contentQuery;
+  useEffect(() => {
+    if (data === undefined && !contentQuery.isError) return;
+    document.documentElement.classList.add('app-ready');
+  }, [data, contentQuery.isError]);
   return <ContentCtx.Provider value={data as AnyObj | undefined}>{children}</ContentCtx.Provider>;
 }
 

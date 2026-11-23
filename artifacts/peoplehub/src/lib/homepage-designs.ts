@@ -1,7 +1,5 @@
 export const HOMEPAGE_DESIGNS = [
   { id: 'original', label: 'Original homepage', description: 'The existing modular ZefoHR homepage.' },
-  { id: 'alternate', label: 'Alternate homepage', description: 'The second design with interactive product storytelling.' },
-  { id: 'creative', label: 'Creative homepage · third design', description: 'A fresh people-first experience with reusable sections.' },
 ] as const;
 
 export type HomepageDesign = typeof HOMEPAGE_DESIGNS[number]['id'];

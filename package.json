@@ -17,7 +17,7 @@
   "workspaces": ["artifacts/*", "lib/*", "lib/integrations/*", "scripts"],
   "overrides": {"esbuild": "0.28.2", "react": "19.1.0", "react-dom": "19.1.0"},
   "dependencies": {
-    "@replit/connectors-sdk": "^0.4.3"
+    "@localcheck/connectors-sdk": "^0.4.3"
   },
   "devDependencies": {
     "prettier": "^3.9.10",

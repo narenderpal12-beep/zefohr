@@ -6,7 +6,7 @@ const logger = pino();
 const command=process.argv[2];
 try {
   if(command==="migrate" || command==="setup"){
-    if(process.env.REPLIT_DEPLOYMENT) throw new Error("Use Replit Publish to apply production schema changes.");
+    if(process.env.localcheck_DEPLOYMENT) throw new Error("Use localcheck Publish to apply production schema changes.");
     await pool.query(await readFile(new URL("../migrations/001_initial.sql",import.meta.url),"utf8"));
     logger.info("Development schema ready");
   }

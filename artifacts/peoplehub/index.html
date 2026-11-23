@@ -3,6 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      html, body { margin: 0; min-height: 100%; background: #060816; }
+      html[data-initial-mode="light"], html[data-initial-mode="light"] body { background: #fff; }
+      html:not(.app-ready) #root { visibility: hidden; }
+      #initial-loading {
+        position: fixed; inset: 0; z-index: 99999; display: grid; place-items: start center;
+        overflow: hidden; padding: clamp(18px, 4vw, 52px); box-sizing: border-box;
+        color: #f2f3fb; background: #060816;
+        transition: opacity 180ms ease, visibility 0s linear 180ms;
+      }
+      html[data-initial-mode="light"] #initial-loading { color: #172033; background: #fff; }
+      html.app-ready #initial-loading { opacity: 0; visibility: hidden; pointer-events: none; }
+      .initial-loading-shell { width: min(1160px, 100%); }
+      .initial-loading-nav { height: 44px; display: flex; align-items: center; justify-content: space-between; margin-bottom: clamp(42px, 9vh, 100px); }
+      .initial-loading-brand { width: 118px; height: 22px; border-radius: 8px; }
+      .initial-loading-links { display: flex; gap: 18px; }
+      .initial-loading-links i { display: block; width: 52px; height: 9px; border-radius: 9px; }
+      .initial-loading-hero { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(30px, 7vw, 88px); }
+      .initial-loading-copy { max-width: 500px; }
+      .initial-loading-line, .initial-loading-card, .initial-loading-pill {
+        background: linear-gradient(100deg, rgba(130,140,175,.10) 25%, rgba(130,140,175,.22) 45%, rgba(130,140,175,.10) 65%);
+        background-size: 240% 100%; animation: initial-loading-shimmer 1.5s ease-in-out infinite;
+      }
+      .initial-loading-line { height: 14px; max-width: 420px; margin: 13px 0; border-radius: 10px; }
+      .initial-loading-line.title { height: clamp(27px, 4vw, 43px); max-width: 460px; }
+      .initial-loading-line.short { max-width: 290px; }
+      .initial-loading-actions { display: flex; gap: 12px; margin-top: 28px; }
+      .initial-loading-pill { width: 132px; height: 42px; border-radius: 999px; }
+      .initial-loading-art { min-height: 270px; border: 1px solid rgba(130,140,175,.14); border-radius: 24px; }
+      .initial-loading-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: clamp(44px, 9vh, 100px); }
+      .initial-loading-card { height: 112px; border: 1px solid rgba(130,140,175,.12); border-radius: 16px; }
+      @keyframes initial-loading-shimmer { to { background-position: -240% 0; } }
+      @media (max-width: 680px) {
+        #initial-loading { padding: 20px; }
+        .initial-loading-links { display: none; }
+        .initial-loading-hero { grid-template-columns: 1fr; gap: 24px; }
+        .initial-loading-art { min-height: 150px; }
+        .initial-loading-cards { grid-template-columns: 1fr; margin-top: 28px; }
+        .initial-loading-card { height: 68px; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .initial-loading-line, .initial-loading-card, .initial-loading-pill { animation: none; }
+        #initial-loading { transition: none; }
+      }
+    </style>
     <title>ZefoHR</title>
     <meta name="description" content="ZefoHR helps HR teams deliver fast, seamless, transparent and personalised employee services." />
     <meta name="robots" content="index, follow" />
@@ -18,6 +63,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   </head>
   <body>
+    <div id="initial-loading" role="status" aria-label="Loading ZefoHR">
+      <div class="initial-loading-shell" aria-hidden="true">
+        <div class="initial-loading-nav">
+          <div class="initial-loading-brand initial-loading-line"></div>
+          <div class="initial-loading-links"><i class="initial-loading-line"></i><i class="initial-loading-line"></i><i class="initial-loading-line"></i><i class="initial-loading-line"></i></div>
+        </div>
+        <div class="initial-loading-hero">
+          <div class="initial-loading-copy">
+            <div class="initial-loading-line short"></div>
+            <div class="initial-loading-line title"></div>
+            <div class="initial-loading-line title short"></div>
+            <div class="initial-loading-line"></div>
+            <div class="initial-loading-line short"></div>
+            <div class="initial-loading-actions"><div class="initial-loading-pill"></div><div class="initial-loading-pill"></div></div>
+          </div>
+          <div class="initial-loading-art initial-loading-line"></div>
+        </div>
+        <div class="initial-loading-cards"><div class="initial-loading-card"></div><div class="initial-loading-card"></div><div class="initial-loading-card"></div></div>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

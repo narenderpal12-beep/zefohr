@@ -32,7 +32,7 @@ export function HomepageDesignPicker() {
   return (
     <section className="glass mt-6 rounded-2xl p-5 sm:p-6" data-testid="homepage-design-picker">
       <h2 className="font-display text-lg font-bold">Homepage design</h2>
-      <p className="mt-1 text-xs text-muted-foreground">Keep all three designs. Choose one for the public homepage, then save it here. Preview does not change the saved selection.</p>
+      <p className="mt-1 text-xs text-muted-foreground"> The Original homepage is currently available for the public website..</p>
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <label className="block min-w-[230px] flex-1">
           <span className="mb-1 block text-xs font-medium">Homepage shown on the website</span>

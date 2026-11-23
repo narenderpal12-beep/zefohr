@@ -19,7 +19,7 @@ export function configureApp(app:Express) {
       defaultSrc:["'self'"],scriptSrc:["'self'","'unsafe-inline'","https://www.googletagmanager.com"],
       styleSrc:["'self'","'unsafe-inline'","https://fonts.googleapis.com"],
       fontSrc:["'self'","https://fonts.gstatic.com","data:"],imgSrc:["'self'","https:","data:"],
-      connectSrc:["'self'","https:","ws:","wss:"],frameAncestors:["'self'","https://*.replit.dev","https://*.replit.com","https://replit.com"],
+      connectSrc:["'self'","https:","ws:","wss:"],frameAncestors:["'self'","https://*.localcheck.dev","https://*.localcheck.com","https://localcheck.com"],
       upgradeInsecureRequests:process.env.NODE_ENV==="production"?[]:null,
     },
   },crossOriginEmbedderPolicy:false,frameguard:false}));

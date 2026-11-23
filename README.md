@@ -9,8 +9,8 @@ This project uses **npm workspaces only** and a single root `package-lock.json`.
 ```sh
 npm install
 npm run db:setup
-# Replit: run the managed PeopleHub and API Server workflows.
-# Outside Replit, with PORT and BASE_PATH set:
+# localcheck: run the managed PeopleHub and API Server workflows.
+# Outside localcheck, with PORT and BASE_PATH set:
 npm run dev
 ```
 
@@ -23,7 +23,7 @@ The standalone site defaults to port 3000 and `/`. Managed workflows supply thei
 - `lib/peoplehub/migrations`: plain SQL development migrations using `pg`; no ORM migrations.
 - `lib/api-spec/openapi.yaml`: API contract; regenerate with `npm run codegen --workspace=@workspace/api-spec`.
 
-The SSR Express app mounts the same API itself, so it can run as one standalone production app. In this Replit project the existing `/api` service remains the most-specific route. Both services use the same business code, PostgreSQL database and signing secret.
+The SSR Express app mounts the same API itself, so it can run as one standalone production app. In this localcheck project the existing `/api` service remains the most-specific route. Both services use the same business code, PostgreSQL database and signing secret.
 
 ## Environment
 
@@ -31,7 +31,7 @@ Never commit credentials or `.env` files.
 
 | Key | Purpose |
 | --- | --- |
-| `DATABASE_URL` | Managed PostgreSQL connection, supplied by Replit |
+| `DATABASE_URL` | Managed PostgreSQL connection, supplied by localcheck |
 | `PORT` | Service port supplied by the managed workflow |
 | `BASE_PATH` | `/` for the PeopleHub root website |
 | `JWT_SECRET` | Strong random signing secret; existing `SESSION_SECRET` is used if absent |
@@ -54,7 +54,7 @@ npm run db:seed --workspace=@workspace/peoplehub-core -- --reset # deliberately 
 
 The SQL migration is idempotent. `--reset` overwrites CMS content and should not be used casually. Normal seed runs do not overwrite edits, blog posts, landing pages or SEO customisations.
 
-**Production:** use Replit Publish's schema-diff confirmation to apply managed database schema changes. Startup does not execute schema DDL. Content seeding is idempotent. Production legal identity, policy text, contact details, site URL and super-admin secrets must be configured before launch.
+**Production:** use localcheck Publish's schema-diff confirmation to apply managed database schema changes. Startup does not execute schema DDL. Content seeding is idempotent. Production legal identity, policy text, contact details, site URL and super-admin secrets must be configured before launch.
 
 ## Editing content
 

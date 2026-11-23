@@ -15,10 +15,7 @@
   "private": true,
   "packageManager": "npm@11.19.1",
   "workspaces": ["artifacts/*", "lib/*", "lib/integrations/*", "scripts"],
-  "overrides": {"esbuild": "0.28.2", "react": "19.1.0", "react-dom": "19.1.0"},
-  "dependencies": {
-    "@localcheck/connectors-sdk": "^0.4.3"
-  },
+  "overrides": {"esbuild": "0.28.2", "react": "19.1.0", "react-dom": "19.1.0"},   
   "devDependencies": {
     "prettier": "^3.9.10",
     "typescript": "~5.9.3"
